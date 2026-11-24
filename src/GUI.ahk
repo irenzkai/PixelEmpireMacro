@@ -105,7 +105,7 @@ BuildGUI() {
     themePrimaryText.Push({ctrl: txtWayRangePct, onCard: true})
     pageControls["MACRO"].Push(txtWayRangePct)
     AddFlatButton(150, 294, 26, 20, ">", false, (*) => AdjustWaystoneRange(10), "MACRO")
-    AddMutedLabel("MACRO", 184, 297, 248, "Scales equally by ratio (manual edits update 100%)", "Right")
+    AddMutedLabel("MACRO", 184, 297, 248, "Range scales equally by ratio", "Right")
 
     AddMutedLabel("MACRO", 28, 322, 404, "Increase ms to travel farther. Press F6 (or preset key) to toggle.")
 
