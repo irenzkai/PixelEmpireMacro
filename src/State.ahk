@@ -10,15 +10,18 @@ wideStarMode := false
 isUpdatingUI := false
 isBindingHotkey := false
 overlayVisible := false
+recoverySpriteTried := false
 
 step := 0
 completedLoops := 0
 recoveryCount := 0
 
 iniFile := A_ScriptDir "\waystone_config.ini"
-defaultWaystoneImg := A_ScriptDir "\waystone_prompt.png"
-legacyWardImg := A_ScriptDir "\ward_prompt.png"
-promptImg := FileExist(defaultWaystoneImg) ? defaultWaystoneImg : (FileExist(legacyWardImg) ? legacyWardImg : defaultWaystoneImg)
+defaultWaystoneImg := A_ScriptDir "\public\waystone_prompt.png"
+legacyWardImg := FileExist(A_ScriptDir "\public\ward_prompt.png") ? A_ScriptDir "\public\ward_prompt.png" : A_ScriptDir "\ward_prompt.png"
+promptImg := FileExist(defaultWaystoneImg) ? defaultWaystoneImg : legacyWardImg
+recoveryImg := A_ScriptDir "\public\waystone.png"
+recoveryTolerance := 50
 
 ; --- APPEARANCE & UI SETTINGS ---
 darkMode := true
@@ -72,5 +75,6 @@ chaosCfg  := {angle: 1750, zigDiag: 450, zigSide: 500}
 chaosBase := {angle: 1750, zigDiag: 450, zigSide: 500}
 chaosPct  := 100
 
-searchBox := {x1: 0, y1: 0, x2: 0, y2: 0}
+searchBox    := {x1: 0, y1: 0, x2: 0, y2: 0}
+robloxWinBox := {x1: 0, y1: 0, x2: 0, y2: 0}
 hudStatus := "Ready"

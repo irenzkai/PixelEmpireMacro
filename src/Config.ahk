@@ -3,7 +3,7 @@
 ; ==============================================================================
 
 LoadConfig() {
-    global iniFile, promptImg, imgTolerance, wideStarMode
+    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
     global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
@@ -16,8 +16,13 @@ LoadConfig() {
     if (savedImg != "")
         promptImg := savedImg
 
-    imgTolerance := ParseSetting(IniRead(iniFile, "General", "ImgTolerance", imgTolerance), imgTolerance, 0, 255)
-    wideStarMode := (IniRead(iniFile, "General", "WideStarMode", wideStarMode ? "1" : "0") = "1")
+    savedRecImg := IniRead(iniFile, "General", "RecoveryImg", recoveryImg)
+    if (savedRecImg != "")
+        recoveryImg := savedRecImg
+
+    recoveryTolerance := ParseSetting(IniRead(iniFile, "General", "RecoveryTolerance", recoveryTolerance), recoveryTolerance, 0, 255)
+    imgTolerance      := ParseSetting(IniRead(iniFile, "General", "ImgTolerance", imgTolerance), imgTolerance, 0, 255)
+    wideStarMode      := (IniRead(iniFile, "General", "WideStarMode", wideStarMode ? "1" : "0") = "1")
 
     darkMode         := (IniRead(iniFile, "Appearance", "DarkMode", darkMode ? "1" : "0") = "1")
     hudEnabled       := (IniRead(iniFile, "Appearance", "HudEnabled", hudEnabled ? "1" : "0") = "1")
@@ -97,13 +102,15 @@ LoadConfig() {
 }
 
 SaveConfig() {
-    global iniFile, promptImg, imgTolerance, wideStarMode
+    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
     global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
     global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     IniWrite(promptImg, iniFile, "General", "PromptImg")
+    IniWrite(recoveryImg, iniFile, "General", "RecoveryImg")
+    IniWrite(recoveryTolerance, iniFile, "General", "RecoveryTolerance")
     IniWrite(imgTolerance, iniFile, "General", "ImgTolerance")
     IniWrite(wideStarMode ? "1" : "0", iniFile, "General", "WideStarMode")
 

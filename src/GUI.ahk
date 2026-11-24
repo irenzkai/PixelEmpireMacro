@@ -6,18 +6,18 @@ BuildGUI() {
     global mainGui, activeTab, pageControls, clickableHwnds
     global themeCards, themeDividers, themePrimaryText, themeMutedText, themeEdits
     global themePrimaryBtns, themeSecondaryBtns, themeTabs
-    global btnThemeQuick, tabMacro, tabF9F7, tabSettings, tabCredits
-    global edtPromptPath, edtTolerance, txtImgStatus
+    global btnThemeQuick, tabWaystone, tabTower, tabF9F7, tabSettings, tabCredits
+    global edtPromptPath, edtRecoveryPath, edtTolerance, edtRecTolerance, txtImgStatus
     global radShortBtn, radWideBtn, edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet, txtWayRangePct
     global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag, txtF5RangePct
     global edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet, txtCirRangePct, btnF9TabQueue
     global edtChaosAngle, edtChaosZigDiag, edtChaosZigSide, txtChaosRangePct, btnF7TabRun
     global btnActWaystone, btnActTower, btnActPreset, btnActCircle, btnActChaos, btnActExit
     global btnSetDark, btnSetLight, btnSetHud, btnSetKeysToggle, hkBadges
-    global txtGuiStatus, promptImg, imgTolerance
+    global txtGuiStatus, promptImg, recoveryImg, imgTolerance, recoveryTolerance
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs
 
-    pageControls := Map("MACRO", [], "F9F7", [], "SETTINGS", [], "CREDITS", [])
+    pageControls := Map("WAYSTONE", [], "TOWER", [], "F9F7", [], "SETTINGS", [], "CREDITS", [])
     clickableHwnds := Map()
     themeCards := []
     themeDividers := []
@@ -35,239 +35,256 @@ BuildGUI() {
     mainGui.SetFont("s9", "Segoe UI")
 
     ; --- HEADER ---
-    lblTitle := mainGui.AddText("x16 y12 w260 h22 +0x80 +0x04000000", "PIXEL EMPIRE MACRO")
-    lblTitle.SetFont("s12 Bold", "Segoe UI")
+    lblTitle := mainGui.AddText("x20 y14 w300 h24 +0x80 +0x04000000", "PIXEL EMPIRE MACRO")
+    lblTitle.SetFont("s13 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: lblTitle, onCard: false})
 
-    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "FARMING / GRIND AUTOMATION")
-    lblSub.SetFont("s7 Bold", "Segoe UI")
+    lblSub := mainGui.AddText("x20 y38 w300 h16 +0x80 +0x04000000", "FARMING & GRIND AUTOMATION")
+    lblSub.SetFont("s8 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: lblSub, onCard: false})
 
-    btnThemeQuick := AddFlatButton(346, 16, 98, 26, "", false, (*) => ToggleDarkMode())
+    btnThemeQuick := AddFlatButton(406, 18, 114, 30, "", false, (*) => ToggleDarkMode())
 
     ; --- NAVIGATION TABS ---
-    tabMacro    := AddTabButton("MACRO",    16,  56, 102, 28, "MACRO")
-    tabF9F7     := AddTabButton("F9F7",     124, 56, 102, 28, "F9 / F7")
-    tabSettings := AddTabButton("SETTINGS", 232, 56, 102, 28, "SETTINGS")
-    tabCredits  := AddTabButton("CREDITS",  340, 56, 104, 28, "CREDITS")
+    tabWaystone := AddTabButton("WAYSTONE", 20,  66, 95, 30, "WAYSTONE")
+    tabTower    := AddTabButton("TOWER",    121, 66, 95, 30, "TOWER")
+    tabF9F7     := AddTabButton("F9F7",     222, 66, 95, 30, "F9 / F7")
+    tabSettings := AddTabButton("SETTINGS", 323, 66, 95, 30, "SETTINGS")
+    tabCredits  := AddTabButton("CREDITS",  424, 66, 96, 30, "CREDITS")
 
-    AddDivider(16, 92, 428)
+    AddDivider(20, 106, 500)
 
     ; ==========================================================================
-    ; TAB 1: MACRO (WAYSTONE PROMPT + F8 8-STAR + F5 TOWER MODE + QUICK ACTIONS)
+    ; TAB 1: WAYSTONE (DETECTION & F8 8-STAR)
     ; ==========================================================================
-    AddCard("MACRO", 16, 102, 428, 88)
-    AddCardTitle("MACRO", 28, 110, 230, "WAYSTONE PROMPT IMAGE")
-    txtImgStatus := mainGui.AddText("x340 y110 w92 h16 Right +0x80 +0x04000000", "")
+    AddCard("WAYSTONE", 20, 116, 500, 144)
+    AddCardTitle("WAYSTONE", 36, 128, 280, "WAYSTONE VISION & SPRITES")
+    txtImgStatus := mainGui.AddText("x374 y128 w130 h16 Right +0x80 +0x04000000", "")
     txtImgStatus.SetFont("s8 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: txtImgStatus, onCard: true})
-    pageControls["MACRO"].Push(txtImgStatus)
+    pageControls["WAYSTONE"].Push(txtImgStatus)
 
-    edtPromptPath := AddStyledEdit("MACRO", 28, 130, 318, 22, promptImg, "ReadOnly")
-    AddFlatButton(352, 130, 80, 22, "Import...", false, ImportPromptImage, "MACRO")
+    AddMutedLabel("WAYSTONE", 36, 158, 56, "Prompt:")
+    edtPromptPath := AddStyledEdit("WAYSTONE", 96, 154, 312, 26, promptImg, "ReadOnly")
+    AddFlatButton(416, 154, 88, 26, "Import...", false, ImportPromptImage, "WAYSTONE")
 
-    AddMutedLabel("MACRO", 28, 160, 62, "Tolerance:")
-    edtTolerance := AddStyledEdit("MACRO", 92, 158, 48, 22, imgTolerance, "Number")
+    AddMutedLabel("WAYSTONE", 36, 192, 56, "Sprite:")
+    edtRecoveryPath := AddStyledEdit("WAYSTONE", 96, 188, 312, 26, recoveryImg, "ReadOnly")
+    AddFlatButton(416, 188, 88, 26, "Sprite...", false, ImportRecoveryImage, "WAYSTONE")
+
+    AddMutedLabel("WAYSTONE", 36, 226, 70, "Prompt Tol:")
+    edtTolerance := AddStyledEdit("WAYSTONE", 108, 222, 56, 26, imgTolerance, "Number")
     edtTolerance.OnEvent("Change", OnSettingsChanged)
 
-    AddFlatButton(148, 158, 116, 22, "Test Waystone", false, TestWaystoneDetection, "MACRO")
-    AddMutedLabel("MACRO", 272, 160, 160, "Return to Town (E)", "Right")
+    AddMutedLabel("WAYSTONE", 180, 226, 64, "Sprite Tol:")
+    edtRecTolerance := AddStyledEdit("WAYSTONE", 246, 222, 56, 26, recoveryTolerance, "Number")
+    edtRecTolerance.OnEvent("Change", OnSettingsChanged)
+
+    AddFlatButton(364, 222, 140, 26, "Test Waystone", false, TestWaystoneDetection, "WAYSTONE")
 
     ; --- F8 WAYSTONE 8-STAR CARD ---
-    AddCard("MACRO", 16, 198, 428, 148)
-    AddCardTitle("MACRO", 28, 206, 204, "WAYSTONE 8-STAR TIMES (MS)")
+    AddCard("WAYSTONE", 20, 270, 500, 206)
+    AddCardTitle("WAYSTONE", 36, 284, 220, "F8 WAYSTONE 8-STAR TIMES (MS)")
 
-    radShortBtn := AddFlatButton(242, 204, 66, 20, "SHORT", false, (*) => SelectWaystonePreset(false), "MACRO")
-    radWideBtn  := AddFlatButton(312, 204, 74, 20, "VERY WIDE", false, (*) => SelectWaystonePreset(true), "MACRO")
-    AddFlatButton(390, 204, 42, 20, "RST", false, ResetPresetDefaults, "MACRO")
+    radShortBtn := AddFlatButton(284, 280, 72, 24, "SHORT", false, (*) => SelectWaystonePreset(false), "WAYSTONE")
+    radWideBtn  := AddFlatButton(362, 280, 88, 24, "VERY WIDE", false, (*) => SelectWaystonePreset(true), "WAYSTONE")
+    AddFlatButton(456, 280, 48, 24, "RST", false, ResetWaystoneDefaults, "WAYSTONE")
 
-    AddMutedLabel("MACRO", 28, 237, 52, "Up (W):")
-    edtWayUp := AddStyledEdit("MACRO", 82, 234, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 154, 237, 56, "Down (S):")
-    edtWayDown := AddStyledEdit("MACRO", 212, 234, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 284, 237, 56, "Diagonal:")
-    edtWayDiag := AddStyledEdit("MACRO", 342, 234, 90, 22, "", "Number")
+    AddMutedLabel("WAYSTONE", 36, 322, 56, "Up (W):")
+    edtWayUp := AddStyledEdit("WAYSTONE", 94, 318, 76, 26, "", "Number")
+    AddMutedLabel("WAYSTONE", 192, 322, 64, "Down (S):")
+    edtWayDown := AddStyledEdit("WAYSTONE", 258, 318, 76, 26, "", "Number")
+    AddMutedLabel("WAYSTONE", 356, 322, 62, "Diagonal:")
+    edtWayDiag := AddStyledEdit("WAYSTONE", 420, 318, 84, 26, "", "Number")
 
-    AddMutedLabel("MACRO", 28, 267, 52, "Left (A):")
-    edtWayLeft := AddStyledEdit("MACRO", 82, 264, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 154, 267, 56, "Right (D):")
-    edtWayRight := AddStyledEdit("MACRO", 212, 264, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 284, 267, 56, "Ret Max:")
-    edtWayRet := AddStyledEdit("MACRO", 342, 264, 90, 22, "", "Number")
+    AddMutedLabel("WAYSTONE", 36, 358, 56, "Left (A):")
+    edtWayLeft := AddStyledEdit("WAYSTONE", 94, 354, 76, 26, "", "Number")
+    AddMutedLabel("WAYSTONE", 192, 358, 64, "Right (D):")
+    edtWayRight := AddStyledEdit("WAYSTONE", 258, 354, 76, 26, "", "Number")
+    AddMutedLabel("WAYSTONE", 356, 358, 62, "Ret Max:")
+    edtWayRet := AddStyledEdit("WAYSTONE", 420, 354, 84, 26, "", "Number")
 
     for ctrl in [edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet]
         ctrl.OnEvent("Change", OnWaystoneManualEdit)
 
-    AddMutedLabel("MACRO", 28, 297, 46, "Range:")
-    AddFlatButton(76, 294, 26, 20, "<", false, (*) => AdjustWaystoneRange(-10), "MACRO")
-    txtWayRangePct := mainGui.AddText("x104 y296 w44 h18 Center +0x80 +0x04000000", "100%")
+    AddMutedLabel("WAYSTONE", 36, 398, 52, "Range:")
+    AddFlatButton(94, 394, 34, 26, "<", false, (*) => AdjustWaystoneRange(-10), "WAYSTONE")
+    txtWayRangePct := mainGui.AddText("x132 y398 w50 h18 Center +0x80 +0x04000000", "100%")
     txtWayRangePct.SetFont("s8 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: txtWayRangePct, onCard: true})
-    pageControls["MACRO"].Push(txtWayRangePct)
-    AddFlatButton(150, 294, 26, 20, ">", false, (*) => AdjustWaystoneRange(10), "MACRO")
-    AddMutedLabel("MACRO", 184, 297, 248, "Range scales equally by ratio", "Right")
+    pageControls["WAYSTONE"].Push(txtWayRangePct)
+    AddFlatButton(186, 394, 34, 26, ">", false, (*) => AdjustWaystoneRange(10), "WAYSTONE")
+    AddMutedLabel("WAYSTONE", 232, 398, 272, "Scales all values equally by ratio", "Right")
 
-    AddMutedLabel("MACRO", 28, 322, 404, "Increase ms to travel farther. Press F6 (or preset key) to toggle.")
+    AddMutedLabel("WAYSTONE", 36, 438, 468, "Manual edits set your 100% ratio baseline. Press F6 (or preset key) to toggle.")
 
-    ; --- F5 TOWER MODE CARD ---
-    AddCard("MACRO", 16, 354, 428, 102)
-    AddCardTitle("MACRO", 28, 362, 240, "TOWER MODE / FREE RANGE (MS)")
+    ; ==========================================================================
+    ; TAB 2: TOWER MODE (F5 FREE RANGE)
+    ; ==========================================================================
+    AddCard("TOWER", 20, 116, 500, 232)
+    AddCardTitle("TOWER", 36, 130, 300, "F5 TOWER MODE / FREE RANGE (MS)")
+    AddFlatButton(404, 126, 100, 24, "Reset Tower", false, ResetTowerDefaults, "TOWER")
 
-    AddMutedLabel("MACRO", 272, 362, 44, "Range:")
-    AddFlatButton(318, 360, 26, 20, "<", false, (*) => AdjustTowerRange(-10), "MACRO")
-    txtF5RangePct := mainGui.AddText("x346 y362 w44 h18 Center +0x80 +0x04000000", "100%")
-    txtF5RangePct.SetFont("s8 Bold", "Segoe UI")
-    themePrimaryText.Push({ctrl: txtF5RangePct, onCard: true})
-    pageControls["MACRO"].Push(txtF5RangePct)
-    AddFlatButton(392, 360, 26, 20, ">", false, (*) => AdjustTowerRange(10), "MACRO")
+    AddMutedLabel("TOWER", 36, 170, 64, "Ring Edge:")
+    edtF5Ring := AddStyledEdit("TOWER", 102, 166, 68, 26, f5RingEdgeMs, "Number")
+    AddMutedLabel("TOWER", 192, 170, 60, "Up (W):")
+    edtF5Up := AddStyledEdit("TOWER", 254, 166, 76, 26, f5UpMs, "Number")
+    AddMutedLabel("TOWER", 352, 170, 64, "Down (S):")
+    edtF5Down := AddStyledEdit("TOWER", 418, 166, 86, 26, f5DownMs, "Number")
 
-    AddMutedLabel("MACRO", 28, 393, 58, "Ring Edge:")
-    edtF5Ring := AddStyledEdit("MACRO", 88, 390, 54, 22, f5RingEdgeMs, "Number")
-    AddMutedLabel("MACRO", 156, 393, 50, "Up (W):")
-    edtF5Up := AddStyledEdit("MACRO", 208, 390, 56, 22, f5UpMs, "Number")
-    AddMutedLabel("MACRO", 280, 393, 58, "Down (S):")
-    edtF5Down := AddStyledEdit("MACRO", 340, 390, 92, 22, f5DownMs, "Number")
-
-    AddMutedLabel("MACRO", 28, 423, 58, "Left (A):")
-    edtF5Left := AddStyledEdit("MACRO", 88, 420, 54, 22, f5LeftMs, "Number")
-    AddMutedLabel("MACRO", 156, 423, 52, "Right (D):")
-    edtF5Right := AddStyledEdit("MACRO", 208, 420, 56, 22, f5RightMs, "Number")
-    AddMutedLabel("MACRO", 280, 423, 58, "Diagonal:")
-    edtF5Diag := AddStyledEdit("MACRO", 340, 420, 92, 22, f5DiagMs, "Number")
+    AddMutedLabel("TOWER", 36, 208, 64, "Left (A):")
+    edtF5Left := AddStyledEdit("TOWER", 102, 204, 68, 26, f5LeftMs, "Number")
+    AddMutedLabel("TOWER", 192, 208, 60, "Right (D):")
+    edtF5Right := AddStyledEdit("TOWER", 254, 204, 76, 26, f5RightMs, "Number")
+    AddMutedLabel("TOWER", 352, 208, 64, "Diagonal:")
+    edtF5Diag := AddStyledEdit("TOWER", 418, 204, 86, 26, f5DiagMs, "Number")
 
     for ctrl in [edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag]
         ctrl.OnEvent("Change", OnTowerManualEdit)
 
-    ; --- QUICK ACTIONS CARD ---
-    AddCard("MACRO", 16, 464, 428, 98)
-    AddCardTitle("MACRO", 28, 472, 390, "QUICK ACTIONS")
+    AddMutedLabel("TOWER", 36, 252, 52, "Range:")
+    AddFlatButton(94, 248, 34, 26, "<", false, (*) => AdjustTowerRange(-10), "TOWER")
+    txtF5RangePct := mainGui.AddText("x132 y252 w50 h18 Center +0x80 +0x04000000", "100%")
+    txtF5RangePct.SetFont("s8 Bold", "Segoe UI")
+    themePrimaryText.Push({ctrl: txtF5RangePct, onCard: true})
+    pageControls["TOWER"].Push(txtF5RangePct)
+    AddFlatButton(186, 248, 34, 26, ">", false, (*) => AdjustTowerRange(10), "TOWER")
+    AddMutedLabel("TOWER", 232, 252, 272, "Scales Ring Edge & Cross equally", "Right")
 
-    btnActWaystone := AddFlatButton(28,  492, 198, 28, "", true,  ToggleWaystoneMode, "MACRO")
-    btnActTower    := AddFlatButton(234, 492, 198, 28, "", false, ToggleTowerMode,    "MACRO")
-
-    btnActPreset := AddFlatButton(28,  526, 96, 26, "", false, ToggleShortWidePreset, "MACRO")
-    btnActCircle := AddFlatButton(130, 526, 96, 26, "", false, QueuePerimeterCircle,  "MACRO")
-    btnActChaos  := AddFlatButton(232, 526, 96, 26, "", false, StartChaosStressTest,  "MACRO")
-    btnActExit   := AddFlatButton(334, 526, 98, 26, "", false, ExitMacro,             "MACRO")
+    AddMutedLabel("TOWER", 36, 294, 468, "Waystone-free continuous loop: 8-sided octagonal sweep followed by full X")
+    AddMutedLabel("TOWER", 36, 314, 468, "diagonals and cardinal flanks. Ideal when farming without a Waystone prompt.")
 
     ; ==========================================================================
-    ; TAB 2: F9 PERIMETER CIRCLE & F7 CHAOS STRESS TEST
+    ; TAB 3: F9 PERIMETER CIRCLE & F7 CHAOS STRESS TEST
     ; ==========================================================================
-    AddCard("F9F7", 16, 102, 428, 174)
-    AddCardTitle("F9F7", 28, 110, 260, "F9 PERIMETER CIRCLE TIMES (MS)")
-    AddFlatButton(390, 108, 42, 20, "RST", false, ResetF9F7Defaults, "F9F7")
+    AddCard("F9F7", 20, 116, 500, 194)
+    AddCardTitle("F9F7", 36, 128, 300, "F9 PERIMETER CIRCLE TIMES (MS)")
+    AddFlatButton(456, 126, 48, 24, "RST", false, ResetF9F7Defaults, "F9F7")
 
-    AddMutedLabel("F9F7", 28, 141, 56, "Out (W):")
-    edtCirOut := AddStyledEdit("F9F7", 86, 138, 56, 22, "", "Number")
-    AddMutedLabel("F9F7", 156, 141, 60, "Top Edge:")
-    edtCirEdge := AddStyledEdit("F9F7", 218, 138, 56, 22, "", "Number")
-    AddMutedLabel("F9F7", 286, 141, 54, "Ret Max:")
-    edtCirRet := AddStyledEdit("F9F7", 342, 138, 90, 22, "", "Number")
+    AddMutedLabel("F9F7", 36, 166, 62, "Out (W):")
+    edtCirOut := AddStyledEdit("F9F7", 100, 162, 70, 26, "", "Number")
+    AddMutedLabel("F9F7", 190, 166, 66, "Top Edge:")
+    edtCirEdge := AddStyledEdit("F9F7", 258, 162, 74, 26, "", "Number")
+    AddMutedLabel("F9F7", 354, 166, 60, "Ret Max:")
+    edtCirRet := AddStyledEdit("F9F7", 416, 162, 88, 26, "", "Number")
 
-    AddMutedLabel("F9F7", 28, 171, 56, "Cardinals:")
-    edtCirCard := AddStyledEdit("F9F7", 86, 168, 56, 22, "", "Number")
-    AddMutedLabel("F9F7", 156, 171, 60, "Diagonals:")
-    edtCirDiag := AddStyledEdit("F9F7", 218, 168, 56, 22, "", "Number")
-    btnF9TabQueue := AddFlatButton(312, 168, 120, 22, "", false, QueuePerimeterCircle, "F9F7")
+    AddMutedLabel("F9F7", 36, 202, 62, "Cardinals:")
+    edtCirCard := AddStyledEdit("F9F7", 100, 198, 70, 26, "", "Number")
+    AddMutedLabel("F9F7", 190, 202, 66, "Diagonals:")
+    edtCirDiag := AddStyledEdit("F9F7", 258, 198, 74, 26, "", "Number")
+    btnF9TabQueue := AddFlatButton(354, 198, 150, 26, "", false, QueuePerimeterCircle, "F9F7")
 
     for ctrl in [edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet]
         ctrl.OnEvent("Change", OnCircleManualEdit)
 
-    AddMutedLabel("F9F7", 28, 203, 46, "Range:")
-    AddFlatButton(76, 200, 26, 20, "<", false, (*) => AdjustCircleRange(-10), "F9F7")
-    txtCirRangePct := mainGui.AddText("x104 y202 w44 h18 Center +0x80 +0x04000000", "100%")
+    AddMutedLabel("F9F7", 36, 240, 52, "Range:")
+    AddFlatButton(94, 236, 34, 26, "<", false, (*) => AdjustCircleRange(-10), "F9F7")
+    txtCirRangePct := mainGui.AddText("x132 y240 w50 h18 Center +0x80 +0x04000000", "100%")
     txtCirRangePct.SetFont("s8 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: txtCirRangePct, onCard: true})
     pageControls["F9F7"].Push(txtCirRangePct)
-    AddFlatButton(150, 200, 26, 20, ">", false, (*) => AdjustCircleRange(10), "F9F7")
-    AddMutedLabel("F9F7", 184, 203, 248, "Lower % if circle travels too far out", "Right")
+    AddFlatButton(186, 236, 34, 26, ">", false, (*) => AdjustCircleRange(10), "F9F7")
+    AddMutedLabel("F9F7", 232, 240, 272, "Lower % if circle travels too far out", "Right")
 
-    AddMutedLabel("F9F7", 28, 232, 404, "Out (W) sets radius from Waystone. Top Edge is D; Cardinals are S/A/W;")
-    AddMutedLabel("F9F7", 28, 250, 404, "Diagonals are SE/SW/NW. Queues a one-shot sweep during F8 Waystone mode.")
+    AddMutedLabel("F9F7", 36, 276, 468, "Out (W) sets radius. Top Edge is D; Cardinals S/A/W; Diagonals SE/SW/NW.")
 
     ; --- F7 CHAOS STRESS TEST CARD ---
-    AddCard("F9F7", 16, 286, 428, 138)
-    AddCardTitle("F9F7", 28, 294, 220, "F7 CHAOS STRESS TEST (MS)")
+    AddCard("F9F7", 20, 322, 500, 154)
+    AddCardTitle("F9F7", 36, 334, 240, "F7 CHAOS STRESS TEST (MS)")
 
-    AddMutedLabel("F9F7", 272, 294, 44, "Range:")
-    AddFlatButton(318, 292, 26, 20, "<", false, (*) => AdjustChaosRange(-10), "F9F7")
-    txtChaosRangePct := mainGui.AddText("x346 y294 w44 h18 Center +0x80 +0x04000000", "100%")
+    AddMutedLabel("F9F7", 322, 334, 48, "Range:")
+    AddFlatButton(376, 331, 34, 24, "<", false, (*) => AdjustChaosRange(-10), "F9F7")
+    txtChaosRangePct := mainGui.AddText("x414 y334 w50 h18 Center +0x80 +0x04000000", "100%")
     txtChaosRangePct.SetFont("s8 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: txtChaosRangePct, onCard: true})
     pageControls["F9F7"].Push(txtChaosRangePct)
-    AddFlatButton(392, 292, 26, 20, ">", false, (*) => AdjustChaosRange(10), "F9F7")
+    AddFlatButton(468, 331, 36, 24, ">", false, (*) => AdjustChaosRange(10), "F9F7")
 
-    AddMutedLabel("F9F7", 28, 327, 68, "Long Angle:")
-    edtChaosAngle := AddStyledEdit("F9F7", 98, 324, 58, 22, "", "Number")
-    AddMutedLabel("F9F7", 170, 327, 56, "Zig Diag:")
-    edtChaosZigDiag := AddStyledEdit("F9F7", 228, 324, 56, 22, "", "Number")
-    AddMutedLabel("F9F7", 298, 327, 56, "Zig Side:")
-    edtChaosZigSide := AddStyledEdit("F9F7", 356, 324, 76, 22, "", "Number")
+    AddMutedLabel("F9F7", 36, 372, 72, "Long Angle:")
+    edtChaosAngle := AddStyledEdit("F9F7", 110, 368, 68, 26, "", "Number")
+    AddMutedLabel("F9F7", 200, 372, 58, "Zig Diag:")
+    edtChaosZigDiag := AddStyledEdit("F9F7", 260, 368, 68, 26, "", "Number")
+    AddMutedLabel("F9F7", 350, 372, 58, "Zig Side:")
+    edtChaosZigSide := AddStyledEdit("F9F7", 410, 368, 94, 26, "", "Number")
 
     for ctrl in [edtChaosAngle, edtChaosZigDiag, edtChaosZigSide]
         ctrl.OnEvent("Change", OnChaosManualEdit)
 
-    btnF7TabRun := AddFlatButton(28, 358, 176, 26, "", true, StartChaosStressTest, "F9F7")
-    AddFlatButton(314, 358, 118, 26, "Reset F9 & F7", false, ResetF9F7Defaults, "F9F7")
+    btnF7TabRun := AddFlatButton(36, 408, 210, 28, "", true, StartChaosStressTest, "F9F7")
+    AddFlatButton(364, 408, 140, 28, "Reset F9 & F7", false, ResetF9F7Defaults, "F9F7")
 
-    AddMutedLabel("F9F7", 28, 396, 404, "Runs outward chaos + reverse check, then auto-starts F8 Waystone on pass.")
+    AddMutedLabel("F9F7", 36, 446, 468, "Runs outward chaos + reverse check, then auto-starts F8 Waystone on pass.")
 
     ; ==========================================================================
-    ; TAB 3: SETTINGS (LIGHT/DARK MODE, OVERLAY HUD & HOTKEY SWITCH)
+    ; TAB 4: SETTINGS (LIGHT/DARK MODE, OVERLAY HUD & HOTKEY SWITCH)
     ; ==========================================================================
-    AddCard("SETTINGS", 16, 102, 428, 110)
-    AddCardTitle("SETTINGS", 28, 112, 390, "APPEARANCE & DISPLAY")
+    AddCard("SETTINGS", 20, 116, 500, 114)
+    AddCardTitle("SETTINGS", 36, 128, 390, "APPEARANCE & DISPLAY")
 
-    AddPrimaryLabel("SETTINGS", 28, 140, 180, "Interface Theme")
-    btnSetDark  := AddFlatButton(236, 136, 96, 26, "DARK MODE",  false, (*) => SetDarkMode(true),  "SETTINGS")
-    btnSetLight := AddFlatButton(336, 136, 96, 26, "LIGHT MODE", false, (*) => SetDarkMode(false), "SETTINGS")
+    AddPrimaryLabel("SETTINGS", 36, 156, 200, "Interface Theme")
+    btnSetDark  := AddFlatButton(290, 152, 102, 28, "DARK MODE",  false, (*) => SetDarkMode(true),  "SETTINGS")
+    btnSetLight := AddFlatButton(400, 152, 104, 28, "LIGHT MODE", false, (*) => SetDarkMode(false), "SETTINGS")
 
-    AddPrimaryLabel("SETTINGS", 28, 176, 190, "Floating Run Overlay")
-    AddFlatButton(236, 172, 96, 26, "Reset Pos", false, ResetOverlayPosition, "SETTINGS")
-    btnSetHud := AddFlatButton(336, 172, 96, 26, "", false, ToggleHudSetting, "SETTINGS")
+    AddPrimaryLabel("SETTINGS", 36, 194, 200, "Floating Run Overlay")
+    AddFlatButton(290, 190, 102, 28, "Reset Pos", false, ResetOverlayPosition, "SETTINGS")
+    btnSetHud := AddFlatButton(400, 190, 104, 28, "", false, ToggleHudSetting, "SETTINGS")
 
     ; --- HOTKEY SWITCH CARD ---
-    AddCard("SETTINGS", 16, 220, 428, 286)
-    AddCardTitle("SETTINGS", 28, 230, 200, "HOTKEY SWITCH")
+    AddCard("SETTINGS", 20, 240, 500, 236)
+    AddCardTitle("SETTINGS", 36, 250, 200, "HOTKEY SWITCH")
 
-    btnSetKeysToggle := AddFlatButton(244, 226, 94, 22, "", false, ToggleHotkeysEnabled, "SETTINGS")
-    AddFlatButton(344, 226, 88, 22, "Reset Keys", false, ResetDefaultHotkeys, "SETTINGS")
+    btnSetKeysToggle := AddFlatButton(290, 246, 102, 24, "", false, ToggleHotkeysEnabled, "SETTINGS")
+    AddFlatButton(400, 246, 104, 24, "Reset Keys", false, ResetDefaultHotkeys, "SETTINGS")
 
-    AddHotkeyRow("waystone", "Waystone 8-Star",          260)
-    AddHotkeyRow("tower",    "Tower Mode (Free Range)",  296)
-    AddHotkeyRow("preset",   "Toggle Short / Very Wide", 332)
-    AddHotkeyRow("circle",   "Queue Perimeter Circle",   368)
-    AddHotkeyRow("chaos",    "Chaos Stress Test",        404)
-    AddHotkeyRow("exit",     "Stop & Exit Macro",        440)
+    AddHotkeyRow("waystone", "Waystone 8-Star",          280)
+    AddHotkeyRow("tower",    "Tower Mode (Free Range)",  310)
+    AddHotkeyRow("preset",   "Toggle Short / Very Wide", 340)
+    AddHotkeyRow("circle",   "Queue Perimeter Circle",   370)
+    AddHotkeyRow("chaos",    "Chaos Stress Test",        400)
+    AddHotkeyRow("exit",     "Stop & Exit Macro",        430)
 
-    AddMutedLabel("SETTINGS", 28, 478, 404, "Click 'Change' then press any key (supports Ctrl / Shift / Alt combos).")
+    AddMutedLabel("SETTINGS", 36, 458, 468, "Click 'Change' then press any key (supports Ctrl / Shift / Alt combos).")
 
     ; ==========================================================================
-    ; TAB 4: CREDITS (DEV / CONTRIBUTOR AREA)
+    ; TAB 5: CREDITS (DEV / CONTRIBUTOR AREA)
     ; ==========================================================================
-    AddCard("CREDITS", 16, 102, 428, 108)
-    AddCardTitle("CREDITS", 28, 112, 200, "DEVELOPER")
-    AddPrimaryLabel("CREDITS", 28, 134, 260, "Chase", 13, true)
-    AddMutedLabel("CREDITS", 28, 158, 260, "@alphagamer121204")
-    AddMutedLabel("CREDITS", 28, 180, 290, "roblox.com/users/605992135/profile")
-    AddFlatButton(304, 138, 128, 32, "Open Profile  ↗", true, (*) => Run("https://www.roblox.com/users/605992135/profile"), "CREDITS")
+    AddCard("CREDITS", 20, 116, 500, 112)
+    AddCardTitle("CREDITS", 36, 128, 200, "DEVELOPER")
+    AddPrimaryLabel("CREDITS", 36, 150, 280, "Chase", 13, true)
+    AddMutedLabel("CREDITS", 36, 174, 280, "@alphagamer121204")
+    AddMutedLabel("CREDITS", 36, 196, 310, "roblox.com/users/605992135/profile")
+    AddFlatButton(364, 154, 140, 34, "Open Profile  ↗", true, (*) => Run("https://www.roblox.com/users/605992135/profile"), "CREDITS")
 
-    AddCard("CREDITS", 16, 220, 428, 108)
-    AddCardTitle("CREDITS", 28, 230, 200, "CONTRIBUTOR")
-    AddPrimaryLabel("CREDITS", 28, 252, 260, "kaze", 13, true)
-    AddMutedLabel("CREDITS", 28, 276, 260, "@kazefast")
-    AddMutedLabel("CREDITS", 28, 298, 290, "roblox.com/users/1676005584/profile")
-    AddFlatButton(304, 256, 128, 32, "Open Profile  ↗", true, (*) => Run("https://www.roblox.com/users/1676005584/profile"), "CREDITS")
+    AddCard("CREDITS", 20, 240, 500, 112)
+    AddCardTitle("CREDITS", 36, 252, 200, "CONTRIBUTOR")
+    AddPrimaryLabel("CREDITS", 36, 274, 280, "kaze", 13, true)
+    AddMutedLabel("CREDITS", 36, 298, 280, "@kazefast")
+    AddMutedLabel("CREDITS", 36, 320, 310, "roblox.com/users/1676005584/profile")
+    AddFlatButton(364, 278, 140, 34, "Open Profile  ↗", true, (*) => Run("https://www.roblox.com/users/1676005584/profile"), "CREDITS")
 
-    AddCard("CREDITS", 16, 338, 428, 110)
-    AddCardTitle("CREDITS", 28, 348, 390, "PROJECT ARCHITECTURE")
-    AddPrimaryLabel("CREDITS", 28, 370, 404, "Pixel Empire Macro · Modular AutoHotkey v2.0")
-    AddMutedLabel("CREDITS", 28, 392, 404, "Entry: PixelEmpireMacro.ahk")
-    AddMutedLabel("CREDITS", 28, 412, 404, "Modules: State · Config · VisionWindow · Movement · Modes/* · Hotkeys · GUI")
+    AddCard("CREDITS", 20, 364, 500, 112)
+    AddCardTitle("CREDITS", 36, 376, 390, "PROJECT ARCHITECTURE")
+    AddPrimaryLabel("CREDITS", 36, 398, 468, "Pixel Empire Macro · Modular AutoHotkey v2.0")
+    AddMutedLabel("CREDITS", 36, 422, 468, "Entry: PixelEmpireMacro.ahk")
+    AddMutedLabel("CREDITS", 36, 442, 468, "Modules: State · Config · VisionWindow · Movement · Modes/* · Hotkeys · GUI")
+
+    ; ==========================================================================
+    ; PERSISTENT QUICK ACTIONS BAR (ALWAYS VISIBLE)
+    ; ==========================================================================
+    AddCard("", 20, 488, 500, 98)
+    AddCardTitle("", 36, 496, 300, "QUICK ACTIONS")
+
+    btnActWaystone := AddFlatButton(36,  516, 230, 28, "", true,  ToggleWaystoneMode)
+    btnActTower    := AddFlatButton(274, 516, 230, 28, "", false, ToggleTowerMode)
+
+    btnActPreset := AddFlatButton(36,  550, 112, 26, "", false, ToggleShortWidePreset)
+    btnActCircle := AddFlatButton(154, 550, 112, 26, "", false, QueuePerimeterCircle)
+    btnActChaos  := AddFlatButton(272, 550, 112, 26, "", false, StartChaosStressTest)
+    btnActExit   := AddFlatButton(390, 550, 114, 26, "", false, ExitMacro)
 
     ; --- PERSISTENT FOOTER ---
-    AddDivider(16, 570, 428)
-    txtGuiStatus := mainGui.AddText("x16 y578 w428 h20 +0x80 +0x04000000", "● Ready")
+    AddDivider(20, 594, 500)
+    txtGuiStatus := mainGui.AddText("x20 y602 w500 h20 +0x80 +0x04000000", "● Ready")
     txtGuiStatus.SetFont("s8 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: txtGuiStatus, onCard: false})
 
@@ -283,10 +300,11 @@ BuildGUI() {
     RefreshImageStatus()
     RefreshHotkeyLabels()
     RefreshSettingsTabUI()
-    SwitchTab("MACRO")
+    SwitchTab("WAYSTONE")
 
-    mainGui.Show("w460 h606")
+    mainGui.Show("w540 h630")
     SendMessage(0x00B1, 999, 999, edtPromptPath.Hwnd)
+    SendMessage(0x00B1, 999, 999, edtRecoveryPath.Hwnd)
     ApplyTheme()
 }
 
@@ -506,7 +524,7 @@ AddRectBorder(x, y, w, h, tabName := "") {
     lft := mainGui.AddText("x" x " y" (y + 1) " w1 h" (h - 2) " Disabled +0x04000000", "")
     rgt := mainGui.AddText("x" (x + w - 1) " y" (y + 1) " w1 h" (h - 2) " Disabled +0x04000000", "")
     edges := [top, bot, lft, rgt]
-    if (tabName != "") {
+    if (tabName != "" && pageControls.Has(tabName)) {
         for e in edges
             pageControls[tabName].Push(e)
     }
@@ -518,7 +536,8 @@ AddCard(tabName, x, y, w, h) {
     edges := AddRectBorder(x, y, w, h, tabName)
     fill  := mainGui.AddText("x" (x + 1) " y" (y + 1) " w" (w - 2) " h" (h - 2) " Disabled +0x04000000", "")
     themeCards.Push({edges: edges, fill: fill})
-    pageControls[tabName].Push(fill)
+    if (tabName != "" && pageControls.Has(tabName))
+        pageControls[tabName].Push(fill)
 }
 
 AddDivider(x, y, w) {
@@ -533,7 +552,8 @@ AddCardTitle(tabName, x, y, w, text) {
     ctrl := mainGui.AddText("x" x " y" y " w" w " h16 +0x80 +0x04000000", text)
     ctrl.SetFont("s8 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: ctrl, onCard: true})
-    pageControls[tabName].Push(ctrl)
+    if (tabName != "" && pageControls.Has(tabName))
+        pageControls[tabName].Push(ctrl)
     return ctrl
 }
 
@@ -542,7 +562,8 @@ AddPrimaryLabel(tabName, x, y, w, text, fontSize := 9, isBold := false) {
     ctrl := mainGui.AddText("x" x " y" y " w" w " h22 +0x80 +0x04000000", text)
     ctrl.SetFont("s" fontSize (isBold ? " Bold" : ""), "Segoe UI")
     themePrimaryText.Push({ctrl: ctrl, onCard: true})
-    pageControls[tabName].Push(ctrl)
+    if (tabName != "" && pageControls.Has(tabName))
+        pageControls[tabName].Push(ctrl)
     return ctrl
 }
 
@@ -551,7 +572,8 @@ AddMutedLabel(tabName, x, y, w, text, alignOpt := "") {
     ctrl := mainGui.AddText("x" x " y" y " w" w " h18 " alignOpt " +0x80 +0x04000000", text)
     ctrl.SetFont("s8", "Segoe UI")
     themeMutedText.Push({ctrl: ctrl, onCard: true})
-    pageControls[tabName].Push(ctrl)
+    if (tabName != "" && pageControls.Has(tabName))
+        pageControls[tabName].Push(ctrl)
     return ctrl
 }
 
@@ -560,7 +582,8 @@ AddStyledEdit(tabName, x, y, w, h, defaultVal, extraOpts := "") {
     ctrl := mainGui.AddEdit("x" x " y" y " w" w " h" h " " extraOpts, defaultVal)
     ctrl.SetFont("s9", "Segoe UI")
     themeEdits.Push(ctrl)
-    pageControls[tabName].Push(ctrl)
+    if (tabName != "" && pageControls.Has(tabName))
+        pageControls[tabName].Push(ctrl)
     return ctrl
 }
 
@@ -579,7 +602,7 @@ AddFlatButton(x, y, w, h, text, isPrimary, callback, tabName := "") {
     else
         themeSecondaryBtns.Push(entry)
 
-    if (tabName != "")
+    if (tabName != "" && pageControls.Has(tabName))
         pageControls[tabName].Push(btn)
     return entry
 }
@@ -599,16 +622,16 @@ AddTabButton(tabKey, x, y, w, h, label) {
 AddHotkeyRow(actionKey, label, y) {
     global mainGui, pageControls, themeSecondaryBtns, hkBadges
 
-    AddPrimaryLabel("SETTINGS", 28, y + 3, 190, label)
+    AddPrimaryLabel("SETTINGS", 36, y + 3, 240, label)
 
-    edges := AddRectBorder(228, y, 98, 26, "SETTINGS")
-    badge := mainGui.AddText("x229 y" (y + 1) " w96 h24 Center 0x200 +0x80 +0x04000000", "")
+    edges := AddRectBorder(290, y, 102, 24, "SETTINGS")
+    badge := mainGui.AddText("x291 y" (y + 1) " w100 h22 Center 0x200 +0x80 +0x04000000", "")
     badge.SetFont("s8 Bold", "Segoe UI")
     themeSecondaryBtns.Push({edges: edges, btn: badge})
     pageControls["SETTINGS"].Push(badge)
     hkBadges[actionKey] := badge
 
-    AddFlatButton(334, y, 98, 26, "Change", false, (*) => RebindHotkey(actionKey), "SETTINGS")
+    AddFlatButton(400, y, 104, 24, "Change", false, (*) => RebindHotkey(actionKey), "SETTINGS")
 }
 
 HandleSetCursor(wParam, lParam, msg, hwnd) {
@@ -850,11 +873,19 @@ RefreshChaosUI() {
 }
 
 RefreshImageStatus() {
-    global promptImg, txtImgStatus, edtPromptPath
-    if !IsSet(edtPromptPath)
-        return
-    edtPromptPath.Value := promptImg
-    txtImgStatus.Text := FileExist(promptImg) ? "● READY" : "● MISSING"
+    global promptImg, recoveryImg, txtImgStatus, edtPromptPath, edtRecoveryPath
+    if IsSet(edtPromptPath)
+        edtPromptPath.Value := promptImg
+    if IsSet(edtRecoveryPath)
+        edtRecoveryPath.Value := recoveryImg
+    if IsSet(txtImgStatus) {
+        if !FileExist(promptImg)
+            txtImgStatus.Text := "● PROMPT MISSING"
+        else if !FileExist(recoveryImg)
+            txtImgStatus.Text := "● SPRITE MISSING"
+        else
+            txtImgStatus.Text := "● READY"
+    }
 }
 
 RefreshHotkeyLabels() {
@@ -901,10 +932,11 @@ SelectWaystonePreset(useWide) {
 }
 
 OnSettingsChanged(*) {
-    global isUpdatingUI, imgTolerance, edtTolerance
+    global isUpdatingUI, imgTolerance, edtTolerance, recoveryTolerance, edtRecTolerance
     if (isUpdatingUI)
         return
-    imgTolerance := ParseSetting(edtTolerance.Value, imgTolerance, 0, 255)
+    imgTolerance      := ParseSetting(edtTolerance.Value, imgTolerance, 0, 255)
+    recoveryTolerance := ParseSetting(edtRecTolerance.Value, recoveryTolerance, 0, 255)
     SaveConfig()
 }
 
@@ -1012,36 +1044,64 @@ OnChaosManualEdit(*) {
 }
 
 ImportPromptImage(*) {
-    global promptImg, mainGui
+    global promptImg, mainGui, edtPromptPath
     mainGui.Opt("+OwnDialogs")
     selected := FileSelect(3, A_ScriptDir, "Select Waystone Prompt Image (Return to Town (E) or shortened)", "Images (*.png; *.jpg; *.jpeg; *.bmp)")
     if (selected != "") {
         promptImg := selected
         RefreshImageStatus()
+        SendMessage(0x00B1, 999, 999, edtPromptPath.Hwnd)
         SaveConfig()
         UpdateGuiStatus("Imported prompt image.")
     }
 }
 
-TestWaystoneDetection(*) {
-    global mainGui, searchBox, imgTolerance
-    if !InitVisionAndWindow(true)
-        return
-
-    Sleep(80)
-    if (IsOnWaystone(&fx, &fy)) {
-        mainGui.Opt("+OwnDialogs")
-        MsgBox("Waystone Prompt DETECTED!`n`nCoordinates: X=" fx ", Y=" fy "`nSearch Box: (" searchBox.x1 "," searchBox.y1 ") to (" searchBox.x2 "," searchBox.y2 ")`nTolerance: " imgTolerance, "Waystone Test Passed", "Iconi")
-    } else {
-        mainGui.Opt("+OwnDialogs")
-        MsgBox("Waystone Prompt NOT detected.`n`nTips:`n1. Make sure 'Return to Town (E)' is clearly visible on screen.`n2. Import a tighter/shortened crop of the prompt text if your screen resolution changed.`n3. Try increasing Tolerance (currently " imgTolerance ").", "Waystone Test Failed", "Icon!")
+ImportRecoveryImage(*) {
+    global recoveryImg, mainGui, edtRecoveryPath
+    mainGui.Opt("+OwnDialogs")
+    selected := FileSelect(3, A_ScriptDir, "Select Recovery Waystone Sprite Image", "Images (*.png; *.jpg; *.jpeg; *.bmp)")
+    if (selected != "") {
+        recoveryImg := selected
+        RefreshImageStatus()
+        SendMessage(0x00B1, 999, 999, edtRecoveryPath.Hwnd)
+        SaveConfig()
+        UpdateGuiStatus("Imported recovery sprite.")
     }
 }
 
-ResetPresetDefaults(*) {
+TestWaystoneDetection(*) {
+    global mainGui, searchBox, imgTolerance, recoveryImg, recoveryTolerance
+    if !InitVisionAndWindow(true)
+        return
+
+    mainGui.Hide()
+    Sleep(120)
+    promptFound := IsOnWaystone(&fx, &fy)
+    statueFound := FindWaystoneStatue(&sx, &sy)
+    mainGui.Show()
+
+    promptMsg := promptFound
+        ? "FOUND at (" fx ", " fy ")"
+        : "NOT found (Tol: " imgTolerance ")"
+
+    GetImageDimensions(recoveryImg, &rw, &rh)
+    statueMsg := !FileExist(recoveryImg)
+        ? "FILE MISSING (" recoveryImg ")"
+        : (statueFound ? "FOUND at (" sx ", " sy ") [" rw "x" rh "px]" : "NOT found (Tol: " recoveryTolerance ", Size: " rw "x" rh "px)")
+
+    mainGui.Opt("+OwnDialogs")
+    MsgBox(
+        "Point 0 Prompt ('Return to Town'):`n  " promptMsg
+        "`n`nRecovery Sprite:`n  " statueMsg
+        "`n`nTip: If Recovery Sprite is NOT found, crop an opaque ~24x34px stone + rune patch from Roblox at your zoom level.",
+        "Waystone Detection Test",
+        (promptFound || statueFound) ? "Iconi" : "Icon!"
+    )
+}
+
+ResetWaystoneDefaults(*) {
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct, imgTolerance
-    global isUpdatingUI, edtTolerance
+    global imgTolerance, recoveryTolerance, isUpdatingUI, edtTolerance, edtRecTolerance
 
     shortCfg  := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
     shortBase := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
@@ -1050,6 +1110,21 @@ ResetPresetDefaults(*) {
     wideCfg  := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
     wideBase := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
     widePct  := 100
+
+    imgTolerance := 45
+    recoveryTolerance := 50
+    isUpdatingUI := true
+    edtTolerance.Value := imgTolerance
+    edtRecTolerance.Value := recoveryTolerance
+    isUpdatingUI := false
+
+    RefreshPresetUI()
+    SaveConfig()
+    UpdateGuiStatus("Reset Waystone move times & tolerances to defaults.")
+}
+
+ResetTowerDefaults(*) {
+    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
 
     f5RingEdgeMs := 1150
     f5UpMs       := 1750
@@ -1060,15 +1135,9 @@ ResetPresetDefaults(*) {
     f5Base       := {ring: 1150, up: 1750, down: 1750, left: 1750, right: 1750, diag: 1750}
     f5Pct        := 100
 
-    imgTolerance := 45
-    isUpdatingUI := true
-    edtTolerance.Value := imgTolerance
-    isUpdatingUI := false
-
-    RefreshPresetUI()
     RefreshTowerUI()
     SaveConfig()
-    UpdateGuiStatus("Reset Waystone & Tower move times to defaults.")
+    UpdateGuiStatus("Reset Tower Mode defaults.")
 }
 
 ResetF9F7Defaults(*) {
