@@ -1,4 +1,3 @@
-```markdown
 # Contributing to Pixel Empire Macro
 
 Thank you for your interest in contributing to **Pixel Empire Macro**!  
@@ -19,8 +18,6 @@ This guide explains how the project is structured, how to set up your local envi
 7. [Git & Pull Request Workflow](#7-git--pull-request-workflow)
 8. [Pre-PR Testing Checklist](#8-pre-pr-testing-checklist)
 9. [Reporting Bugs & Feature Requests](#9-reporting-bugs--feature-requests)
-
----
 
 ## 1. Prerequisites & Local Setup
 
