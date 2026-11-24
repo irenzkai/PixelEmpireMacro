@@ -13,6 +13,7 @@ ToggleTowerMode(*) {
     if !InitVisionAndWindow(false)
         return
 
+    ClearWaystoneOrigin()
     running := true
     freeCircleMode := true
     chaosTestRunning := false

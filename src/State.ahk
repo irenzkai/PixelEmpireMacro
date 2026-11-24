@@ -10,7 +10,6 @@ wideStarMode := false
 isUpdatingUI := false
 isBindingHotkey := false
 overlayVisible := false
-recoverySpriteTried := false
 
 step := 0
 completedLoops := 0
@@ -26,7 +25,7 @@ recoveryTolerance := 50
 ; --- APPEARANCE & UI SETTINGS ---
 darkMode := true
 hudEnabled := true
-activeTab := "MACRO"
+activeTab := "WAYSTONE"
 overlayCustomPos := false
 overlayX := -1
 overlayY := -1
@@ -75,6 +74,12 @@ chaosCfg  := {angle: 1750, zigDiag: 450, zigSide: 500}
 chaosBase := {angle: 1750, zigDiag: 450, zigSide: 500}
 chaosPct  := 100
 
-searchBox    := {x1: 0, y1: 0, x2: 0, y2: 0}
-robloxWinBox := {x1: 0, y1: 0, x2: 0, y2: 0}
+searchBox       := {x1: 0, y1: 0, x2: 0, y2: 0}
+robloxWinBox    := {x1: 0, y1: 0, x2: 0, y2: 0}
+statueSearchBox := {x1: 0, y1: 0, x2: 0, y2: 0}
 hudStatus := "Ready"
+
+; --- MARKED WAYSTONE ORIGIN DISPLACEMENT ---
+wayPosX := 0.0
+wayPosY := 0.0
+wayOriginMarked := false

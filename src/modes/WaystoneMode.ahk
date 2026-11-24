@@ -39,6 +39,7 @@ ToggleWaystoneMode(*) {
             return
         }
 
+        MarkWaystoneOrigin()
         step := 0
         completedLoops := 0
         recoveryCount := 0

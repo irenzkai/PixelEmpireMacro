@@ -19,6 +19,7 @@ StartChaosStressTest(*) {
         return
     }
 
+    MarkWaystoneOrigin()
     running := true
     chaosTestRunning := true
     freeCircleMode := false
@@ -85,7 +86,7 @@ RunChaosStressTest() {
         return
 
     if !IsOnWaystone() {
-        hudStatus := "Off-Center — Engaging Anti-Trap Homing..."
+        hudStatus := "Off-Center — Engaging Recovery..."
         AntiTrapRecovery()
     }
 
@@ -94,6 +95,7 @@ RunChaosStressTest() {
 
     if IsOnWaystone() {
         SoundBeep(1200, 150)
+        MarkWaystoneOrigin()
         chaosTestRunning := false
         step := 0
         completedLoops := 0

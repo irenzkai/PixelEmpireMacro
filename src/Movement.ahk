@@ -1,12 +1,56 @@
 ; ==============================================================================
-; CHARACTER MOVEMENT, HOMING, RECOVERY & ALT ANTI-AFK
+; CHARACTER MOVEMENT, ORIGIN TRACKING, HOMING, RECOVERY & ALT ANTI-AFK
 ; ==============================================================================
+
+MarkWaystoneOrigin() {
+    global wayPosX, wayPosY, wayOriginMarked
+    wayPosX := 0.0
+    wayPosY := 0.0
+    wayOriginMarked := true
+}
+
+ClearWaystoneOrigin() {
+    global wayPosX, wayPosY, wayOriginMarked
+    wayPosX := 0.0
+    wayPosY := 0.0
+    wayOriginMarked := false
+}
+
+RecordMoveDisplacement(keys, durationMs) {
+    global wayPosX, wayPosY, wayOriginMarked
+    if (!wayOriginMarked || durationMs <= 0 || keys.Length = 0)
+        return
+
+    factor := (keys.Length > 1) ? 0.7071 : 1.0
+    delta  := durationMs * factor
+
+    for k in keys {
+        if (k = "w")
+            wayPosY -= delta
+        else if (k = "s")
+            wayPosY += delta
+        else if (k = "a")
+            wayPosX -= delta
+        else if (k = "d")
+            wayPosX += delta
+    }
+}
+
+GetActiveHeldKeysList(held) {
+    list := []
+    for k in ["w", "a", "s", "d"] {
+        if (held[k])
+            list.Push(k)
+    }
+    return list
+}
 
 HoldKeys(keys, duration) {
     for k in keys
         SendEvent("{" k " down}")
     Sleep(duration)
     ReleaseMoveKeys()
+    RecordMoveDisplacement(keys, duration)
 }
 
 SyncMoveKeys(held, want) {
@@ -78,12 +122,18 @@ ReturnUntilPrompt(keys, limitMs) {
 
         if (elapsed >= 350 && IsOnWaystone()) {
             ReleaseMoveKeys()
+            MarkWaystoneOrigin()
             return true
         }
     }
 
     ReleaseMoveKeys()
-    return IsOnWaystone()
+    if (IsOnWaystone()) {
+        MarkWaystoneOrigin()
+        return true
+    }
+    RecordMoveDisplacement(keys, elapsed)
+    return false
 }
 
 PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
@@ -96,6 +146,7 @@ PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
 
     if (IsOnWaystone()) {
         ReleaseMoveKeys()
+        MarkWaystoneOrigin()
         hudStatus := "Recovered Point 0!"
         return true
     }
@@ -129,6 +180,7 @@ PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
     while (running && elapsed < maxDurationMs) {
         if (IsOnWaystone()) {
             ReleaseMoveKeys()
+            MarkWaystoneOrigin()
             hudStatus := "Recovered Point 0!"
             return true
         }
@@ -150,7 +202,6 @@ PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
                 return false
             }
 
-            ; Reject erratic cross-screen false-positive jumps
             if (Abs(nx - sx) > 180 || Abs(ny - sy) > 180) {
                 badSpots.Push({x: sx, y: sy})
                 badSpots.Push({x: nx, y: ny})
@@ -196,7 +247,11 @@ PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
                 if (centeredTicks >= 4) {
                     badSpots.Push({x: sx, y: sy})
                     ReleaseMoveKeys()
-                    return IsOnWaystone()
+                    if (IsOnWaystone()) {
+                        MarkWaystoneOrigin()
+                        return true
+                    }
+                    return false
                 }
             } else {
                 centeredTicks := 0
@@ -213,14 +268,115 @@ PathToWaystoneSprite(badSpots := "", maxDurationMs := 3200) {
 
         Sleep(tickMs)
         elapsed += tickMs
+        RecordMoveDisplacement(GetActiveHeldKeysList(held), tickMs)
     }
 
     ReleaseMoveKeys()
     if (IsOnWaystone()) {
+        MarkWaystoneOrigin()
         hudStatus := "Recovered Point 0!"
         return true
     }
     badSpots.Push({x: sx, y: sy})
+    return false
+}
+
+ReturnTowardMarkedOrigin(badSpots := "") {
+    global running, hudStatus, wayPosX, wayPosY, wayOriginMarked
+    if (!running || !wayOriginMarked)
+        return false
+
+    if !IsObject(badSpots)
+        badSpots := []
+
+    dx := -wayPosX
+    dy := -wayPosY
+
+    if (Abs(dx) < 140 && Abs(dy) < 140)
+        return false
+
+    dirLabel := GetCompassDir(dx, dy, 120)
+    hudStatus := "Returning to Marked Waystone (" dirLabel ")..."
+
+    segments := []
+    minAxis := Min(Abs(dx), Abs(dy))
+    if (minAxis >= 140) {
+        diagKeys := []
+        diagKeys.Push(dy < 0 ? "w" : "s")
+        diagKeys.Push(dx < 0 ? "a" : "d")
+        diagDur := Min(2600, Round(minAxis / 0.7071))
+        segments.Push({keys: diagKeys, dur: diagDur})
+
+        movedAxis := diagDur * 0.7071
+        remX := dx + (dx < 0 ? movedAxis : -movedAxis)
+        remY := dy + (dy < 0 ? movedAxis : -movedAxis)
+    } else {
+        remX := dx
+        remY := dy
+    }
+
+    if (Abs(remX) >= 140)
+        segments.Push({keys: [remX < 0 ? "a" : "d"], dur: Min(2600, Round(Abs(remX)))})
+    if (Abs(remY) >= 140)
+        segments.Push({keys: [remY < 0 ? "w" : "s"], dur: Min(2600, Round(Abs(remY)))})
+
+    for seg in segments {
+        if (!running) {
+            ReleaseMoveKeys()
+            return true
+        }
+        if (IsOnWaystone()) {
+            ReleaseMoveKeys()
+            MarkWaystoneOrigin()
+            hudStatus := "Recovered Point 0!"
+            return true
+        }
+        if (FindWaystoneStatue(&sx, &sy) && !IsNearBadSpot(sx, sy, badSpots)) {
+            ReleaseMoveKeys()
+            Sleep(25)
+            if (PathToWaystoneSprite(badSpots))
+                return true
+        }
+
+        moved := 0
+        for k in seg.keys
+            SendEvent("{" k " down}")
+
+        while (running && moved < seg.dur) {
+            chunk := Min(35, seg.dur - moved)
+            Sleep(chunk)
+            moved += chunk
+            RecordMoveDisplacement(seg.keys, chunk)
+
+            if (IsOnWaystone()) {
+                ReleaseMoveKeys()
+                MarkWaystoneOrigin()
+                hudStatus := "Recovered Point 0!"
+                return true
+            }
+            if (FindWaystoneStatue(&sx, &sy) && !IsNearBadSpot(sx, sy, badSpots)) {
+                ReleaseMoveKeys()
+                Sleep(25)
+                if (PathToWaystoneSprite(badSpots))
+                    return true
+                if (!running || IsOnWaystone()) {
+                    ReleaseMoveKeys()
+                    if (IsOnWaystone())
+                        MarkWaystoneOrigin()
+                    return true
+                }
+                for k in seg.keys
+                    SendEvent("{" k " down}")
+            }
+        }
+        ReleaseMoveKeys()
+    }
+
+    if (IsOnWaystone()) {
+        MarkWaystoneOrigin()
+        hudStatus := "Recovered Point 0!"
+        return true
+    }
     return false
 }
 
@@ -231,18 +387,20 @@ AntiTrapRecovery() {
 
     if (IsOnWaystone()) {
         ReleaseMoveKeys()
+        MarkWaystoneOrigin()
         hudStatus := "Recovered Point 0!"
         return
     }
 
-    ; Only try Waystone smooth pathing at start if sprite is detected
     if (FindWaystoneStatue(&sx, &sy) && !IsNearBadSpot(sx, sy, badSpots)) {
         hudStatus := "Recovery #" recoveryCount ": Waystone Detected -> Smooth Pathing..."
         if (PathToWaystoneSprite(badSpots))
             return
     }
 
-    ; Default recovery runs uninterrupted to get clear of trees/fences
+    if (ReturnTowardMarkedOrigin(badSpots))
+        return
+
     hudStatus := "Recovery #" recoveryCount ": Default Local Spiral..."
     localSpiral := [
         {keys: ["w"], dur: 240},
@@ -289,6 +447,7 @@ RunSearchSequence(moveList, allowSpriteLock := false, badSpots := "") {
         }
         if (IsOnWaystone()) {
             ReleaseMoveKeys()
+            MarkWaystoneOrigin()
             hudStatus := "Recovered Point 0!"
             return true
         }
@@ -300,6 +459,8 @@ RunSearchSequence(moveList, allowSpriteLock := false, badSpots := "") {
             spriteCooldownUntil := A_TickCount + 1200
             if (!running || IsOnWaystone()) {
                 ReleaseMoveKeys()
+                if (IsOnWaystone())
+                    MarkWaystoneOrigin()
                 return true
             }
         }
@@ -312,9 +473,11 @@ RunSearchSequence(moveList, allowSpriteLock := false, badSpots := "") {
             chunk := Min(35, move.dur - moved)
             Sleep(chunk)
             moved += chunk
+            RecordMoveDisplacement(move.keys, chunk)
 
             if (IsOnWaystone()) {
                 ReleaseMoveKeys()
+                MarkWaystoneOrigin()
                 hudStatus := "Recovered Point 0!"
                 return true
             }
@@ -326,6 +489,8 @@ RunSearchSequence(moveList, allowSpriteLock := false, badSpots := "") {
                 spriteCooldownUntil := A_TickCount + 1200
                 if (!running || IsOnWaystone()) {
                     ReleaseMoveKeys()
+                    if (IsOnWaystone())
+                        MarkWaystoneOrigin()
                     return true
                 }
                 for k in move.keys
