@@ -172,4 +172,3 @@ If you find a bug or want to propose a feature, open a GitHub Issue with:
 - **Windows version & screen resolution** (e.g., `Windows 11, 1920x1080`)
 - **Mode affected** (`Waystone 8-Star`, `Tower Mode`, `Perimeter Circle`, `Chaos Test`, `GUI`, or `Hotkeys`)
 - **Steps to reproduce** and any error dialog screenshot or exact message
-```
