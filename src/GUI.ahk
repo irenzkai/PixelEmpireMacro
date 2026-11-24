@@ -1,21 +1,23 @@
 ; ==============================================================================
-; BLACK & WHITE GUI + FLOATING OVERLAY HUD + RATIO RANGE SCALER
+; BLACK & WHITE GUI + FLOATING OVERLAY HUD + RATIO RANGE SCALERS
 ; ==============================================================================
 
 BuildGUI() {
     global mainGui, activeTab, pageControls, clickableHwnds
     global themeCards, themeDividers, themePrimaryText, themeMutedText, themeEdits
     global themePrimaryBtns, themeSecondaryBtns, themeTabs
-    global btnThemeQuick, tabMacro, tabSettings, tabCredits
+    global btnThemeQuick, tabMacro, tabF9F7, tabSettings, tabCredits
     global edtPromptPath, edtTolerance, txtImgStatus
     global radShortBtn, radWideBtn, edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet, txtWayRangePct
     global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag, txtF5RangePct
+    global edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet, txtCirRangePct, btnF9TabQueue
+    global edtChaosAngle, edtChaosZigDiag, edtChaosZigSide, txtChaosRangePct, btnF7TabRun
     global btnActWaystone, btnActTower, btnActPreset, btnActCircle, btnActChaos, btnActExit
     global btnSetDark, btnSetLight, btnSetHud, btnSetKeysToggle, hkBadges
     global txtGuiStatus, promptImg, imgTolerance
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs
 
-    pageControls := Map("MACRO", [], "SETTINGS", [], "CREDITS", [])
+    pageControls := Map("MACRO", [], "F9F7", [], "SETTINGS", [], "CREDITS", [])
     clickableHwnds := Map()
     themeCards := []
     themeDividers := []
@@ -37,21 +39,22 @@ BuildGUI() {
     lblTitle.SetFont("s12 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: lblTitle, onCard: false})
 
-    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "FARMING / GRIND AUTOMATION")
+    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "WAYSTONE & TOWER AUTOMATION")
     lblSub.SetFont("s7 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: lblSub, onCard: false})
 
     btnThemeQuick := AddFlatButton(346, 16, 98, 26, "", false, (*) => ToggleDarkMode())
 
     ; --- NAVIGATION TABS ---
-    tabMacro    := AddTabButton("MACRO",    16,  56, 138, 28, "MACRO")
-    tabSettings := AddTabButton("SETTINGS", 160, 56, 138, 28, "SETTINGS")
-    tabCredits  := AddTabButton("CREDITS",  304, 56, 140, 28, "CREDITS")
+    tabMacro    := AddTabButton("MACRO",    16,  56, 102, 28, "MACRO")
+    tabF9F7     := AddTabButton("F9F7",     124, 56, 102, 28, "F9 / F7")
+    tabSettings := AddTabButton("SETTINGS", 232, 56, 102, 28, "SETTINGS")
+    tabCredits  := AddTabButton("CREDITS",  340, 56, 104, 28, "CREDITS")
 
     AddDivider(16, 92, 428)
 
     ; ==========================================================================
-    ; TAB 1: MACRO
+    ; TAB 1: MACRO (WAYSTONE PROMPT + F8 8-STAR + F5 TOWER MODE + QUICK ACTIONS)
     ; ==========================================================================
     AddCard("MACRO", 16, 102, 428, 88)
     AddCardTitle("MACRO", 28, 110, 230, "WAYSTONE PROMPT IMAGE")
@@ -102,7 +105,7 @@ BuildGUI() {
     themePrimaryText.Push({ctrl: txtWayRangePct, onCard: true})
     pageControls["MACRO"].Push(txtWayRangePct)
     AddFlatButton(150, 294, 26, 20, ">", false, (*) => AdjustWaystoneRange(10), "MACRO")
-    AddMutedLabel("MACRO", 184, 297, 248, "Range scales equally by ratio", "Right")
+    AddMutedLabel("MACRO", 184, 297, 248, "Scales equally by ratio (manual edits update 100%)", "Right")
 
     AddMutedLabel("MACRO", 28, 322, 404, "Increase ms to travel farther. Press F6 (or preset key) to toggle.")
 
@@ -148,7 +151,69 @@ BuildGUI() {
     btnActExit   := AddFlatButton(334, 526, 98, 26, "", false, ExitMacro,             "MACRO")
 
     ; ==========================================================================
-    ; TAB 2: SETTINGS (LIGHT/DARK MODE, OVERLAY HUD & HOTKEY SWITCH)
+    ; TAB 2: F9 PERIMETER CIRCLE & F7 CHAOS STRESS TEST
+    ; ==========================================================================
+    AddCard("F9F7", 16, 102, 428, 174)
+    AddCardTitle("F9F7", 28, 110, 260, "F9 PERIMETER CIRCLE TIMES (MS)")
+    AddFlatButton(390, 108, 42, 20, "RST", false, ResetF9F7Defaults, "F9F7")
+
+    AddMutedLabel("F9F7", 28, 141, 56, "Out (W):")
+    edtCirOut := AddStyledEdit("F9F7", 86, 138, 56, 22, "", "Number")
+    AddMutedLabel("F9F7", 156, 141, 60, "Top Edge:")
+    edtCirEdge := AddStyledEdit("F9F7", 218, 138, 56, 22, "", "Number")
+    AddMutedLabel("F9F7", 286, 141, 54, "Ret Max:")
+    edtCirRet := AddStyledEdit("F9F7", 342, 138, 90, 22, "", "Number")
+
+    AddMutedLabel("F9F7", 28, 171, 56, "Cardinals:")
+    edtCirCard := AddStyledEdit("F9F7", 86, 168, 56, 22, "", "Number")
+    AddMutedLabel("F9F7", 156, 171, 60, "Diagonals:")
+    edtCirDiag := AddStyledEdit("F9F7", 218, 168, 56, 22, "", "Number")
+    btnF9TabQueue := AddFlatButton(312, 168, 120, 22, "", false, QueuePerimeterCircle, "F9F7")
+
+    for ctrl in [edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet]
+        ctrl.OnEvent("Change", OnCircleManualEdit)
+
+    AddMutedLabel("F9F7", 28, 203, 46, "Range:")
+    AddFlatButton(76, 200, 26, 20, "<", false, (*) => AdjustCircleRange(-10), "F9F7")
+    txtCirRangePct := mainGui.AddText("x104 y202 w44 h18 Center +0x80 +0x04000000", "100%")
+    txtCirRangePct.SetFont("s8 Bold", "Segoe UI")
+    themePrimaryText.Push({ctrl: txtCirRangePct, onCard: true})
+    pageControls["F9F7"].Push(txtCirRangePct)
+    AddFlatButton(150, 200, 26, 20, ">", false, (*) => AdjustCircleRange(10), "F9F7")
+    AddMutedLabel("F9F7", 184, 203, 248, "Lower % if circle travels too far out", "Right")
+
+    AddMutedLabel("F9F7", 28, 232, 404, "Out (W) sets radius from Waystone. Top Edge is D; Cardinals are S/A/W;")
+    AddMutedLabel("F9F7", 28, 250, 404, "Diagonals are SE/SW/NW. Queues a one-shot sweep during F8 Waystone mode.")
+
+    ; --- F7 CHAOS STRESS TEST CARD ---
+    AddCard("F9F7", 16, 286, 428, 138)
+    AddCardTitle("F9F7", 28, 294, 220, "F7 CHAOS STRESS TEST (MS)")
+
+    AddMutedLabel("F9F7", 272, 294, 44, "Range:")
+    AddFlatButton(318, 292, 26, 20, "<", false, (*) => AdjustChaosRange(-10), "F9F7")
+    txtChaosRangePct := mainGui.AddText("x346 y294 w44 h18 Center +0x80 +0x04000000", "100%")
+    txtChaosRangePct.SetFont("s8 Bold", "Segoe UI")
+    themePrimaryText.Push({ctrl: txtChaosRangePct, onCard: true})
+    pageControls["F9F7"].Push(txtChaosRangePct)
+    AddFlatButton(392, 292, 26, 20, ">", false, (*) => AdjustChaosRange(10), "F9F7")
+
+    AddMutedLabel("F9F7", 28, 327, 68, "Long Angle:")
+    edtChaosAngle := AddStyledEdit("F9F7", 98, 324, 58, 22, "", "Number")
+    AddMutedLabel("F9F7", 170, 327, 56, "Zig Diag:")
+    edtChaosZigDiag := AddStyledEdit("F9F7", 228, 324, 56, 22, "", "Number")
+    AddMutedLabel("F9F7", 298, 327, 56, "Zig Side:")
+    edtChaosZigSide := AddStyledEdit("F9F7", 356, 324, 76, 22, "", "Number")
+
+    for ctrl in [edtChaosAngle, edtChaosZigDiag, edtChaosZigSide]
+        ctrl.OnEvent("Change", OnChaosManualEdit)
+
+    btnF7TabRun := AddFlatButton(28, 358, 176, 26, "", true, StartChaosStressTest, "F9F7")
+    AddFlatButton(314, 358, 118, 26, "Reset F9 & F7", false, ResetF9F7Defaults, "F9F7")
+
+    AddMutedLabel("F9F7", 28, 396, 404, "Runs outward chaos + reverse check, then auto-starts F8 Waystone on pass.")
+
+    ; ==========================================================================
+    ; TAB 3: SETTINGS (LIGHT/DARK MODE, OVERLAY HUD & HOTKEY SWITCH)
     ; ==========================================================================
     AddCard("SETTINGS", 16, 102, 428, 110)
     AddCardTitle("SETTINGS", 28, 112, 390, "APPEARANCE & DISPLAY")
@@ -178,7 +243,7 @@ BuildGUI() {
     AddMutedLabel("SETTINGS", 28, 478, 404, "Click 'Change' then press any key (supports Ctrl / Shift / Alt combos).")
 
     ; ==========================================================================
-    ; TAB 3: CREDITS (DEV / CONTRIBUTOR AREA)
+    ; TAB 4: CREDITS (DEV / CONTRIBUTOR AREA)
     ; ==========================================================================
     AddCard("CREDITS", 16, 102, 428, 108)
     AddCardTitle("CREDITS", 28, 112, 200, "DEVELOPER")
@@ -198,7 +263,7 @@ BuildGUI() {
     AddCardTitle("CREDITS", 28, 348, 390, "PROJECT ARCHITECTURE")
     AddPrimaryLabel("CREDITS", 28, 370, 404, "Pixel Empire Macro · Modular AutoHotkey v2.0")
     AddMutedLabel("CREDITS", 28, 392, 404, "Entry: PixelEmpireMacro.ahk")
-    AddMutedLabel("CREDITS", 28, 412, 404, "Modules: State · Config · VisionWindow · Movement · Modes · Hotkeys · GUI")
+    AddMutedLabel("CREDITS", 28, 412, 404, "Modules: State · Config · VisionWindow · Movement · Modes/* · Hotkeys · GUI")
 
     ; --- PERSISTENT FOOTER ---
     AddDivider(16, 570, 428)
@@ -213,6 +278,8 @@ BuildGUI() {
     BuildOverlayGUI()
     RefreshPresetUI()
     RefreshTowerUI()
+    RefreshCircleUI()
+    RefreshChaosUI()
     RefreshImageStatus()
     RefreshHotkeyLabels()
     RefreshSettingsTabUI()
@@ -355,7 +422,7 @@ ApplyOverlayTheme() {
 }
 
 ; ==============================================================================
-; RATIO-LOCKED RANGE < > SCALING
+; RATIO-LOCKED RANGE < > SCALING (WAYSTONE, TOWER, CIRCLE, CHAOS)
 ; ==============================================================================
 
 AdjustWaystoneRange(deltaPct) {
@@ -387,6 +454,34 @@ AdjustTowerRange(deltaPct) {
     RefreshTowerUI()
     SaveConfig()
     UpdateGuiStatus("Tower Range scaled to " f5Pct "%")
+}
+
+AdjustCircleRange(deltaPct) {
+    global circleCfg, circleBase, circlePct
+    circlePct := Max(10, Min(500, circlePct + deltaPct))
+    scale := circlePct / 100.0
+    circleCfg.out  := Max(50,  Round(circleBase.out * scale))
+    circleCfg.edge := Max(50,  Round(circleBase.edge * scale))
+    circleCfg.card := Max(50,  Round(circleBase.card * scale))
+    circleCfg.diag := Max(50,  Round(circleBase.diag * scale))
+    circleCfg.ret  := Max(100, Round(circleBase.ret * scale))
+
+    RefreshCircleUI()
+    SaveConfig()
+    UpdateGuiStatus("F9 Circle Range scaled to " circlePct "%")
+}
+
+AdjustChaosRange(deltaPct) {
+    global chaosCfg, chaosBase, chaosPct
+    chaosPct := Max(10, Min(500, chaosPct + deltaPct))
+    scale := chaosPct / 100.0
+    chaosCfg.angle   := Max(50, Round(chaosBase.angle * scale))
+    chaosCfg.zigDiag := Max(50, Round(chaosBase.zigDiag * scale))
+    chaosCfg.zigSide := Max(50, Round(chaosBase.zigSide * scale))
+
+    RefreshChaosUI()
+    SaveConfig()
+    UpdateGuiStatus("F7 Chaos Range scaled to " chaosPct "%")
 }
 
 ApplyRatioToObj(targetObj, baseObj, pct, hasRet := false) {
@@ -722,6 +817,38 @@ RefreshTowerUI() {
     isUpdatingUI := false
 }
 
+RefreshCircleUI() {
+    global isUpdatingUI, circleCfg, circlePct
+    global edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet, txtCirRangePct
+
+    if !IsSet(edtCirOut)
+        return
+
+    isUpdatingUI := true
+    edtCirOut.Value  := circleCfg.out
+    edtCirEdge.Value := circleCfg.edge
+    edtCirCard.Value := circleCfg.card
+    edtCirDiag.Value := circleCfg.diag
+    edtCirRet.Value  := circleCfg.ret
+    txtCirRangePct.Text := circlePct "%"
+    isUpdatingUI := false
+}
+
+RefreshChaosUI() {
+    global isUpdatingUI, chaosCfg, chaosPct
+    global edtChaosAngle, edtChaosZigDiag, edtChaosZigSide, txtChaosRangePct
+
+    if !IsSet(edtChaosAngle)
+        return
+
+    isUpdatingUI := true
+    edtChaosAngle.Value   := chaosCfg.angle
+    edtChaosZigDiag.Value := chaosCfg.zigDiag
+    edtChaosZigSide.Value := chaosCfg.zigSide
+    txtChaosRangePct.Text := chaosPct "%"
+    isUpdatingUI := false
+}
+
 RefreshImageStatus() {
     global promptImg, txtImgStatus, edtPromptPath
     if !IsSet(edtPromptPath)
@@ -732,6 +859,7 @@ RefreshImageStatus() {
 
 RefreshHotkeyLabels() {
     global hotkeys, btnActWaystone, btnActTower, btnActPreset, btnActCircle, btnActChaos, btnActExit
+    global btnF9TabQueue, btnF7TabRun
     if !IsSet(btnActWaystone)
         return
 
@@ -741,6 +869,11 @@ RefreshHotkeyLabels() {
     btnActCircle.btn.Text   := "Circle [" FormatHotkeyShort(hotkeys.circle) "]"
     btnActChaos.btn.Text    := "Chaos [" FormatHotkeyShort(hotkeys.chaos) "]"
     btnActExit.btn.Text     := "Exit [" FormatHotkeyShort(hotkeys.exit) "]"
+
+    if IsSet(btnF9TabQueue)
+        btnF9TabQueue.btn.Text := "Queue Circle [" FormatHotkeyShort(hotkeys.circle) "]"
+    if IsSet(btnF7TabRun)
+        btnF7TabRun.btn.Text := "Run Chaos Test [" FormatHotkeyShort(hotkeys.chaos) "]"
 }
 
 RefreshSettingsTabUI() {
@@ -834,6 +967,50 @@ OnTowerManualEdit(*) {
     SaveConfig()
 }
 
+OnCircleManualEdit(*) {
+    global isUpdatingUI, circleCfg, circleBase, circlePct
+    global edtCirOut, edtCirEdge, edtCirCard, edtCirDiag, edtCirRet, txtCirRangePct
+
+    if (isUpdatingUI)
+        return
+
+    circleCfg.out  := ParseSetting(edtCirOut.Value, circleCfg.out, 50, 30000)
+    circleCfg.edge := ParseSetting(edtCirEdge.Value, circleCfg.edge, 50, 30000)
+    circleCfg.card := ParseSetting(edtCirCard.Value, circleCfg.card, 50, 30000)
+    circleCfg.diag := ParseSetting(edtCirDiag.Value, circleCfg.diag, 50, 30000)
+    circleCfg.ret  := ParseSetting(edtCirRet.Value, circleCfg.ret, 100, 60000)
+
+    circleBase.out  := circleCfg.out
+    circleBase.edge := circleCfg.edge
+    circleBase.card := circleCfg.card
+    circleBase.diag := circleCfg.diag
+    circleBase.ret  := circleCfg.ret
+    circlePct := 100
+    txtCirRangePct.Text := "100%"
+
+    SaveConfig()
+}
+
+OnChaosManualEdit(*) {
+    global isUpdatingUI, chaosCfg, chaosBase, chaosPct
+    global edtChaosAngle, edtChaosZigDiag, edtChaosZigSide, txtChaosRangePct
+
+    if (isUpdatingUI)
+        return
+
+    chaosCfg.angle   := ParseSetting(edtChaosAngle.Value, chaosCfg.angle, 50, 30000)
+    chaosCfg.zigDiag := ParseSetting(edtChaosZigDiag.Value, chaosCfg.zigDiag, 50, 30000)
+    chaosCfg.zigSide := ParseSetting(edtChaosZigSide.Value, chaosCfg.zigSide, 50, 30000)
+
+    chaosBase.angle   := chaosCfg.angle
+    chaosBase.zigDiag := chaosCfg.zigDiag
+    chaosBase.zigSide := chaosCfg.zigSide
+    chaosPct := 100
+    txtChaosRangePct.Text := "100%"
+
+    SaveConfig()
+}
+
 ImportPromptImage(*) {
     global promptImg, mainGui
     mainGui.Opt("+OwnDialogs")
@@ -891,7 +1068,24 @@ ResetPresetDefaults(*) {
     RefreshPresetUI()
     RefreshTowerUI()
     SaveConfig()
-    UpdateGuiStatus("Reset move times & ranges to defaults.")
+    UpdateGuiStatus("Reset Waystone & Tower move times to defaults.")
+}
+
+ResetF9F7Defaults(*) {
+    global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
+
+    circleCfg  := {out: 1350, edge: 800, card: 960, diag: 960, ret: 2600}
+    circleBase := {out: 1350, edge: 800, card: 960, diag: 960, ret: 2600}
+    circlePct  := 100
+
+    chaosCfg  := {angle: 1750, zigDiag: 450, zigSide: 500}
+    chaosBase := {angle: 1750, zigDiag: 450, zigSide: 500}
+    chaosPct  := 100
+
+    RefreshCircleUI()
+    RefreshChaosUI()
+    SaveConfig()
+    UpdateGuiStatus("Reset F9 Circle & F7 Chaos defaults.")
 }
 
 UpdateGuiStatus(msg) {

@@ -52,9 +52,10 @@ widePct  := 100
 microStepMs  := 80
 imgTolerance := 45
 
-; --- F9 ONE-SHOT PERIMETER CIRCLE TUNING ---
-circleOutMs  := 1350
-circleEdgeMs := 800
+; --- F9 ONE-SHOT PERIMETER CIRCLE TUNING + RATIO RANGE % ---
+circleCfg  := {out: 1350, edge: 800, card: 960, diag: 960, ret: 2600}
+circleBase := {out: 1350, edge: 800, card: 960, diag: 960, ret: 2600}
+circlePct  := 100
 
 ; --- F5 TOWER MODE (FREE RANGE MODE) TUNING + RATIO RANGE % ---
 f5RingEdgeMs := 1150
@@ -66,8 +67,10 @@ f5DiagMs     := 1750
 f5Base       := {ring: 1150, up: 1750, down: 1750, left: 1750, right: 1750, diag: 1750}
 f5Pct        := 100
 
-; --- F7 CHAOS STRESS TEST TUNING ---
-chaosAngleMs := 1750
+; --- F7 CHAOS STRESS TEST TUNING + RATIO RANGE % ---
+chaosCfg  := {angle: 1750, zigDiag: 450, zigSide: 500}
+chaosBase := {angle: 1750, zigDiag: 450, zigSide: 500}
+chaosPct  := 100
 
 searchBox := {x1: 0, y1: 0, x2: 0, y2: 0}
 hudStatus := "Ready"

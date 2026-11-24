@@ -6,6 +6,7 @@ LoadConfig() {
     global iniFile, promptImg, imgTolerance, wideStarMode
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
     global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     if !FileExist(iniFile)
@@ -73,12 +74,33 @@ LoadConfig() {
     f5Base.left  := ParseSetting(IniRead(iniFile, "TowerBase", "Left", f5LeftMs), f5LeftMs)
     f5Base.right := ParseSetting(IniRead(iniFile, "TowerBase", "Right", f5RightMs), f5RightMs)
     f5Base.diag  := ParseSetting(IniRead(iniFile, "TowerBase", "Diag", f5DiagMs), f5DiagMs)
+
+    circleCfg.out  := ParseSetting(IniRead(iniFile, "CircleMode", "Out", circleCfg.out), circleCfg.out)
+    circleCfg.edge := ParseSetting(IniRead(iniFile, "CircleMode", "Edge", circleCfg.edge), circleCfg.edge)
+    circleCfg.card := ParseSetting(IniRead(iniFile, "CircleMode", "Card", circleCfg.card), circleCfg.card)
+    circleCfg.diag := ParseSetting(IniRead(iniFile, "CircleMode", "Diag", circleCfg.diag), circleCfg.diag)
+    circleCfg.ret  := ParseSetting(IniRead(iniFile, "CircleMode", "Ret", circleCfg.ret), circleCfg.ret, 100, 60000)
+    circlePct      := ParseSetting(IniRead(iniFile, "CircleMode", "RangePct", 100), 100, 10, 500)
+    circleBase.out  := ParseSetting(IniRead(iniFile, "CircleBase", "Out", circleCfg.out), circleCfg.out)
+    circleBase.edge := ParseSetting(IniRead(iniFile, "CircleBase", "Edge", circleCfg.edge), circleCfg.edge)
+    circleBase.card := ParseSetting(IniRead(iniFile, "CircleBase", "Card", circleCfg.card), circleCfg.card)
+    circleBase.diag := ParseSetting(IniRead(iniFile, "CircleBase", "Diag", circleCfg.diag), circleCfg.diag)
+    circleBase.ret  := ParseSetting(IniRead(iniFile, "CircleBase", "Ret", circleCfg.ret), circleCfg.ret, 100, 60000)
+
+    chaosCfg.angle   := ParseSetting(IniRead(iniFile, "ChaosMode", "Angle", chaosCfg.angle), chaosCfg.angle)
+    chaosCfg.zigDiag := ParseSetting(IniRead(iniFile, "ChaosMode", "ZigDiag", chaosCfg.zigDiag), chaosCfg.zigDiag)
+    chaosCfg.zigSide := ParseSetting(IniRead(iniFile, "ChaosMode", "ZigSide", chaosCfg.zigSide), chaosCfg.zigSide)
+    chaosPct         := ParseSetting(IniRead(iniFile, "ChaosMode", "RangePct", 100), 100, 10, 500)
+    chaosBase.angle   := ParseSetting(IniRead(iniFile, "ChaosBase", "Angle", chaosCfg.angle), chaosCfg.angle)
+    chaosBase.zigDiag := ParseSetting(IniRead(iniFile, "ChaosBase", "ZigDiag", chaosCfg.zigDiag), chaosCfg.zigDiag)
+    chaosBase.zigSide := ParseSetting(IniRead(iniFile, "ChaosBase", "ZigSide", chaosCfg.zigSide), chaosCfg.zigSide)
 }
 
 SaveConfig() {
     global iniFile, promptImg, imgTolerance, wideStarMode
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
     global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
     global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     IniWrite(promptImg, iniFile, "General", "PromptImg")
@@ -140,6 +162,26 @@ SaveConfig() {
     IniWrite(f5Base.left, iniFile, "TowerBase", "Left")
     IniWrite(f5Base.right, iniFile, "TowerBase", "Right")
     IniWrite(f5Base.diag, iniFile, "TowerBase", "Diag")
+
+    IniWrite(circleCfg.out, iniFile, "CircleMode", "Out")
+    IniWrite(circleCfg.edge, iniFile, "CircleMode", "Edge")
+    IniWrite(circleCfg.card, iniFile, "CircleMode", "Card")
+    IniWrite(circleCfg.diag, iniFile, "CircleMode", "Diag")
+    IniWrite(circleCfg.ret, iniFile, "CircleMode", "Ret")
+    IniWrite(circlePct, iniFile, "CircleMode", "RangePct")
+    IniWrite(circleBase.out, iniFile, "CircleBase", "Out")
+    IniWrite(circleBase.edge, iniFile, "CircleBase", "Edge")
+    IniWrite(circleBase.card, iniFile, "CircleBase", "Card")
+    IniWrite(circleBase.diag, iniFile, "CircleBase", "Diag")
+    IniWrite(circleBase.ret, iniFile, "CircleBase", "Ret")
+
+    IniWrite(chaosCfg.angle, iniFile, "ChaosMode", "Angle")
+    IniWrite(chaosCfg.zigDiag, iniFile, "ChaosMode", "ZigDiag")
+    IniWrite(chaosCfg.zigSide, iniFile, "ChaosMode", "ZigSide")
+    IniWrite(chaosPct, iniFile, "ChaosMode", "RangePct")
+    IniWrite(chaosBase.angle, iniFile, "ChaosBase", "Angle")
+    IniWrite(chaosBase.zigDiag, iniFile, "ChaosBase", "ZigDiag")
+    IniWrite(chaosBase.zigSide, iniFile, "ChaosBase", "ZigSide")
 }
 
 ParseSetting(rawVal, fallback, minVal := 50, maxVal := 30000) {
