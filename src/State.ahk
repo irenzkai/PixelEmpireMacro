@@ -9,6 +9,7 @@ freeCircleMode := false
 wideStarMode := false
 isUpdatingUI := false
 isBindingHotkey := false
+overlayVisible := false
 
 step := 0
 completedLoops := 0
@@ -23,6 +24,9 @@ promptImg := FileExist(defaultWaystoneImg) ? defaultWaystoneImg : (FileExist(leg
 darkMode := true
 hudEnabled := true
 activeTab := "MACRO"
+overlayCustomPos := false
+overlayX := -1
+overlayY := -1
 
 ; --- HOTKEY SWITCH CONFIGURATION ---
 hotkeysEnabled := true
@@ -36,9 +40,14 @@ hotkeys := {
 }
 registeredHotkeys := []
 
-; --- F6 / F8 WAYSTONE 8-STAR PRESETS (Short vs Very Wide) ---
-shortCfg := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+; --- F6 / F8 WAYSTONE 8-STAR PRESETS (Short vs Very Wide + Ratio Range %) ---
+shortCfg  := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+shortBase := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+shortPct  := 100
+
 wideCfg  := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
+wideBase := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
+widePct  := 100
 
 microStepMs  := 80
 imgTolerance := 45
@@ -47,13 +56,15 @@ imgTolerance := 45
 circleOutMs  := 1350
 circleEdgeMs := 800
 
-; --- F5 TOWER MODE (FREE RANGE MODE) TUNING ---
+; --- F5 TOWER MODE (FREE RANGE MODE) TUNING + RATIO RANGE % ---
 f5RingEdgeMs := 1150
 f5UpMs       := 1750
 f5DownMs     := 1750
 f5LeftMs     := 1750
 f5RightMs    := 1750
 f5DiagMs     := 1750
+f5Base       := {ring: 1150, up: 1750, down: 1750, left: 1750, right: 1750, diag: 1750}
+f5Pct        := 100
 
 ; --- F7 CHAOS STRESS TEST TUNING ---
 chaosAngleMs := 1750

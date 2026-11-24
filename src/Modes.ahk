@@ -3,7 +3,7 @@
 ; ==============================================================================
 
 ToggleShortWidePreset(*) {
-    global wideStarMode, hudStatus, running, shortCfg, wideCfg, hudEnabled
+    global wideStarMode, hudStatus, running, shortCfg, wideCfg
     wideStarMode := !wideStarMode
     RefreshPresetUI()
     SaveConfig()
@@ -12,16 +12,16 @@ ToggleShortWidePreset(*) {
     SoundBeep(wideStarMode ? 1200 : 850, 100)
     if (running) {
         hudStatus := "Switched 8-Star Strip Mode -> " modeName
-        UpdateGuiStatus(hudStatus)
+        UpdateHUD()
     } else {
         UpdateGuiStatus("Preset: " modeName)
-        if (hudEnabled)
-            ToolTip("8-Star Strip Preset: " modeName "`nWaystone [" FormatHotkeyShort(hotkeys.waystone) "] | Tower [" FormatHotkeyShort(hotkeys.tower) "]", 20, 20)
     }
 }
 
 ToggleWaystoneMode(*) {
     global running, circleRequested, chaosTestRunning, freeCircleMode, step, completedLoops, recoveryCount, hudStatus, wideStarMode
+    global mainGui, hudEnabled
+
     if (chaosTestRunning || freeCircleMode) {
         StopAll("Switched / Stopped")
         return
@@ -48,7 +48,14 @@ ToggleWaystoneMode(*) {
         modeLabel := wideStarMode ? "VERY WIDE" : "SHORT"
         hudStatus := "Waystone 8-Star (" modeLabel ") Active!"
         UpdateGuiStatus(hudStatus)
-        SetTimer(UpdateHUD, 50)
+
+        if (hudEnabled) {
+            if IsSet(mainGui)
+                mainGui.Hide()
+            ShowOverlay()
+        }
+
+        SetTimer(UpdateHUD, 80)
         SetTimer(AltAntiAFK, 600000)
         SetTimer(RunHomingCycle, -10)
     } else {
@@ -58,6 +65,8 @@ ToggleWaystoneMode(*) {
 
 ToggleTowerMode(*) {
     global running, freeCircleMode, chaosTestRunning, completedLoops, recoveryCount, hudStatus
+    global mainGui, hudEnabled
+
     if (running) {
         StopAll("Stopped Tower Mode")
         return
@@ -73,13 +82,22 @@ ToggleTowerMode(*) {
     recoveryCount := 0
     hudStatus := "Tower Mode: Starting Free Range Loop..."
     UpdateGuiStatus(hudStatus)
-    SetTimer(UpdateHUD, 50)
+
+    if (hudEnabled) {
+        if IsSet(mainGui)
+            mainGui.Hide()
+        ShowOverlay()
+    }
+
+    SetTimer(UpdateHUD, 80)
     SetTimer(AltAntiAFK, 600000)
     SetTimer(RunFreeCircleCrossLoop, -10)
 }
 
 StartChaosStressTest(*) {
-    global running, chaosTestRunning, freeCircleMode, recoveryCount
+    global running, chaosTestRunning, freeCircleMode, recoveryCount, hudStatus
+    global mainGui, hudEnabled
+
     if (running || chaosTestRunning) {
         StopAll("Stress Test Stopped")
         return
@@ -98,21 +116,28 @@ StartChaosStressTest(*) {
     chaosTestRunning := true
     freeCircleMode := false
     recoveryCount := 0
-    SetTimer(UpdateHUD, 50)
+    hudStatus := "Starting Chaos Stress Test..."
+
+    if (hudEnabled) {
+        if IsSet(mainGui)
+            mainGui.Hide()
+        ShowOverlay()
+    }
+
+    SetTimer(UpdateHUD, 80)
     SetTimer(RunChaosStressTest, -10)
 }
 
 QueuePerimeterCircle(*) {
-    global running, chaosTestRunning, freeCircleMode, circleRequested, hudStatus, hudEnabled
+    global running, chaosTestRunning, freeCircleMode, circleRequested, hudStatus
     if (!running || chaosTestRunning || freeCircleMode) {
-        if (hudEnabled)
-            ToolTip("Start Waystone 8-Star farming first before queuing Circle!", 20, 20)
+        UpdateGuiStatus("Start Waystone 8-Star farming first before queuing Circle!")
         return
     }
     circleRequested := true
     SoundBeep(1100, 100)
     hudStatus := "Queued Wide Circle..."
-    UpdateGuiStatus(hudStatus)
+    UpdateHUD()
 }
 
 ; --- TOWER MODE LOOP (FREE RANGE) ---
@@ -142,7 +167,7 @@ RunFreeCircleCrossLoop() {
     for seg in circleSegments {
         if (!running || !freeCircleMode)
             return
-        hudStatus := "Tower " seg.label
+        hudStatus := "Tower " seg.label " (" seg.dur "ms)"
         HoldKeys(seg.keys, seg.dur)
     }
 
@@ -347,7 +372,7 @@ ExecutePerimeterCircle() {
 }
 
 StopAll(reason) {
-    global running, chaosTestRunning, freeCircleMode, completedLoops, recoveryCount, hudEnabled
+    global running, chaosTestRunning, freeCircleMode, completedLoops, mainGui
     running := false
     chaosTestRunning := false
     freeCircleMode := false
@@ -357,15 +382,25 @@ StopAll(reason) {
     SetTimer(UpdateHUD, 0)
     SetTimer(AltAntiAFK, 0)
     ReleaseMoveKeys()
+    ToolTip()
+    HideOverlay()
+    if IsSet(mainGui)
+        mainGui.Show()
     UpdateGuiStatus("Stopped (" reason ") | Loops: " completedLoops)
-    if (hudEnabled)
-        ToolTip("STOPPED (" reason ")`nCompleted Loops: " completedLoops " | Recoveries: " recoveryCount, 20, 20)
-    else
-        ToolTip()
 }
 
 ExitMacro(*) {
-    StopAll("Exited")
+    global running, chaosTestRunning, freeCircleMode
+    running := false
+    chaosTestRunning := false
+    freeCircleMode := false
+    SetTimer(RunHomingCycle, 0)
+    SetTimer(RunFreeCircleCrossLoop, 0)
+    SetTimer(RunChaosStressTest, 0)
+    SetTimer(UpdateHUD, 0)
+    SetTimer(AltAntiAFK, 0)
+    ReleaseMoveKeys()
     ToolTip()
+    HideOverlay()
     ExitApp()
 }

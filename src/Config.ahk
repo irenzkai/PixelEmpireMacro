@@ -3,9 +3,10 @@
 ; ==============================================================================
 
 LoadConfig() {
-    global iniFile, promptImg, imgTolerance, wideStarMode, shortCfg, wideCfg
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs
-    global darkMode, hudEnabled, hotkeysEnabled, hotkeys
+    global iniFile, promptImg, imgTolerance, wideStarMode
+    global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
+    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     if !FileExist(iniFile)
         return
@@ -17,10 +18,13 @@ LoadConfig() {
     imgTolerance := ParseSetting(IniRead(iniFile, "General", "ImgTolerance", imgTolerance), imgTolerance, 0, 255)
     wideStarMode := (IniRead(iniFile, "General", "WideStarMode", wideStarMode ? "1" : "0") = "1")
 
-    darkMode       := (IniRead(iniFile, "Appearance", "DarkMode", darkMode ? "1" : "0") = "1")
-    hudEnabled     := (IniRead(iniFile, "Appearance", "HudEnabled", hudEnabled ? "1" : "0") = "1")
-    hotkeysEnabled := (IniRead(iniFile, "Hotkeys", "Enabled", hotkeysEnabled ? "1" : "0") = "1")
+    darkMode         := (IniRead(iniFile, "Appearance", "DarkMode", darkMode ? "1" : "0") = "1")
+    hudEnabled       := (IniRead(iniFile, "Appearance", "HudEnabled", hudEnabled ? "1" : "0") = "1")
+    overlayCustomPos := (IniRead(iniFile, "Appearance", "OverlayCustomPos", "0") = "1")
+    overlayX         := ParseSetting(IniRead(iniFile, "Appearance", "OverlayX", -1), -1, -10000, 10000)
+    overlayY         := ParseSetting(IniRead(iniFile, "Appearance", "OverlayY", -1), -1, -10000, 10000)
 
+    hotkeysEnabled := (IniRead(iniFile, "Hotkeys", "Enabled", hotkeysEnabled ? "1" : "0") = "1")
     hotkeys.waystone := IniRead(iniFile, "Hotkeys", "Waystone", hotkeys.waystone)
     hotkeys.tower    := IniRead(iniFile, "Hotkeys", "Tower", hotkeys.tower)
     hotkeys.preset   := IniRead(iniFile, "Hotkeys", "Preset", hotkeys.preset)
@@ -34,6 +38,13 @@ LoadConfig() {
     shortCfg.right := ParseSetting(IniRead(iniFile, "ShortPreset", "Right", shortCfg.right), shortCfg.right)
     shortCfg.diag  := ParseSetting(IniRead(iniFile, "ShortPreset", "Diag", shortCfg.diag), shortCfg.diag)
     shortCfg.ret   := ParseSetting(IniRead(iniFile, "ShortPreset", "Ret", shortCfg.ret), shortCfg.ret, 100, 60000)
+    shortPct       := ParseSetting(IniRead(iniFile, "ShortPreset", "RangePct", 100), 100, 10, 500)
+    shortBase.up    := ParseSetting(IniRead(iniFile, "ShortBase", "Up", shortCfg.up), shortCfg.up)
+    shortBase.down  := ParseSetting(IniRead(iniFile, "ShortBase", "Down", shortCfg.down), shortCfg.down)
+    shortBase.left  := ParseSetting(IniRead(iniFile, "ShortBase", "Left", shortCfg.left), shortCfg.left)
+    shortBase.right := ParseSetting(IniRead(iniFile, "ShortBase", "Right", shortCfg.right), shortCfg.right)
+    shortBase.diag  := ParseSetting(IniRead(iniFile, "ShortBase", "Diag", shortCfg.diag), shortCfg.diag)
+    shortBase.ret   := ParseSetting(IniRead(iniFile, "ShortBase", "Ret", shortCfg.ret), shortCfg.ret, 100, 60000)
 
     wideCfg.up     := ParseSetting(IniRead(iniFile, "WidePreset", "Up", wideCfg.up), wideCfg.up)
     wideCfg.down   := ParseSetting(IniRead(iniFile, "WidePreset", "Down", wideCfg.down), wideCfg.down)
@@ -41,6 +52,13 @@ LoadConfig() {
     wideCfg.right  := ParseSetting(IniRead(iniFile, "WidePreset", "Right", wideCfg.right), wideCfg.right)
     wideCfg.diag   := ParseSetting(IniRead(iniFile, "WidePreset", "Diag", wideCfg.diag), wideCfg.diag)
     wideCfg.ret    := ParseSetting(IniRead(iniFile, "WidePreset", "Ret", wideCfg.ret), wideCfg.ret, 100, 60000)
+    widePct        := ParseSetting(IniRead(iniFile, "WidePreset", "RangePct", 100), 100, 10, 500)
+    wideBase.up    := ParseSetting(IniRead(iniFile, "WideBase", "Up", wideCfg.up), wideCfg.up)
+    wideBase.down  := ParseSetting(IniRead(iniFile, "WideBase", "Down", wideCfg.down), wideCfg.down)
+    wideBase.left  := ParseSetting(IniRead(iniFile, "WideBase", "Left", wideCfg.left), wideCfg.left)
+    wideBase.right := ParseSetting(IniRead(iniFile, "WideBase", "Right", wideCfg.right), wideCfg.right)
+    wideBase.diag  := ParseSetting(IniRead(iniFile, "WideBase", "Diag", wideCfg.diag), wideCfg.diag)
+    wideBase.ret   := ParseSetting(IniRead(iniFile, "WideBase", "Ret", wideCfg.ret), wideCfg.ret, 100, 60000)
 
     f5RingEdgeMs := ParseSetting(IniRead(iniFile, "TowerMode", "RingEdge", f5RingEdgeMs), f5RingEdgeMs)
     f5UpMs       := ParseSetting(IniRead(iniFile, "TowerMode", "Up", f5UpMs), f5UpMs)
@@ -48,12 +66,20 @@ LoadConfig() {
     f5LeftMs     := ParseSetting(IniRead(iniFile, "TowerMode", "Left", f5LeftMs), f5LeftMs)
     f5RightMs    := ParseSetting(IniRead(iniFile, "TowerMode", "Right", f5RightMs), f5RightMs)
     f5DiagMs     := ParseSetting(IniRead(iniFile, "TowerMode", "Diag", f5DiagMs), f5DiagMs)
+    f5Pct        := ParseSetting(IniRead(iniFile, "TowerMode", "RangePct", 100), 100, 10, 500)
+    f5Base.ring  := ParseSetting(IniRead(iniFile, "TowerBase", "RingEdge", f5RingEdgeMs), f5RingEdgeMs)
+    f5Base.up    := ParseSetting(IniRead(iniFile, "TowerBase", "Up", f5UpMs), f5UpMs)
+    f5Base.down  := ParseSetting(IniRead(iniFile, "TowerBase", "Down", f5DownMs), f5DownMs)
+    f5Base.left  := ParseSetting(IniRead(iniFile, "TowerBase", "Left", f5LeftMs), f5LeftMs)
+    f5Base.right := ParseSetting(IniRead(iniFile, "TowerBase", "Right", f5RightMs), f5RightMs)
+    f5Base.diag  := ParseSetting(IniRead(iniFile, "TowerBase", "Diag", f5DiagMs), f5DiagMs)
 }
 
 SaveConfig() {
-    global iniFile, promptImg, imgTolerance, wideStarMode, shortCfg, wideCfg
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs
-    global darkMode, hudEnabled, hotkeysEnabled, hotkeys
+    global iniFile, promptImg, imgTolerance, wideStarMode
+    global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
+    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     IniWrite(promptImg, iniFile, "General", "PromptImg")
     IniWrite(imgTolerance, iniFile, "General", "ImgTolerance")
@@ -61,6 +87,9 @@ SaveConfig() {
 
     IniWrite(darkMode ? "1" : "0", iniFile, "Appearance", "DarkMode")
     IniWrite(hudEnabled ? "1" : "0", iniFile, "Appearance", "HudEnabled")
+    IniWrite(overlayCustomPos ? "1" : "0", iniFile, "Appearance", "OverlayCustomPos")
+    IniWrite(overlayX, iniFile, "Appearance", "OverlayX")
+    IniWrite(overlayY, iniFile, "Appearance", "OverlayY")
 
     IniWrite(hotkeysEnabled ? "1" : "0", iniFile, "Hotkeys", "Enabled")
     IniWrite(hotkeys.waystone, iniFile, "Hotkeys", "Waystone")
@@ -76,6 +105,13 @@ SaveConfig() {
     IniWrite(shortCfg.right, iniFile, "ShortPreset", "Right")
     IniWrite(shortCfg.diag, iniFile, "ShortPreset", "Diag")
     IniWrite(shortCfg.ret, iniFile, "ShortPreset", "Ret")
+    IniWrite(shortPct, iniFile, "ShortPreset", "RangePct")
+    IniWrite(shortBase.up, iniFile, "ShortBase", "Up")
+    IniWrite(shortBase.down, iniFile, "ShortBase", "Down")
+    IniWrite(shortBase.left, iniFile, "ShortBase", "Left")
+    IniWrite(shortBase.right, iniFile, "ShortBase", "Right")
+    IniWrite(shortBase.diag, iniFile, "ShortBase", "Diag")
+    IniWrite(shortBase.ret, iniFile, "ShortBase", "Ret")
 
     IniWrite(wideCfg.up, iniFile, "WidePreset", "Up")
     IniWrite(wideCfg.down, iniFile, "WidePreset", "Down")
@@ -83,6 +119,13 @@ SaveConfig() {
     IniWrite(wideCfg.right, iniFile, "WidePreset", "Right")
     IniWrite(wideCfg.diag, iniFile, "WidePreset", "Diag")
     IniWrite(wideCfg.ret, iniFile, "WidePreset", "Ret")
+    IniWrite(widePct, iniFile, "WidePreset", "RangePct")
+    IniWrite(wideBase.up, iniFile, "WideBase", "Up")
+    IniWrite(wideBase.down, iniFile, "WideBase", "Down")
+    IniWrite(wideBase.left, iniFile, "WideBase", "Left")
+    IniWrite(wideBase.right, iniFile, "WideBase", "Right")
+    IniWrite(wideBase.diag, iniFile, "WideBase", "Diag")
+    IniWrite(wideBase.ret, iniFile, "WideBase", "Ret")
 
     IniWrite(f5RingEdgeMs, iniFile, "TowerMode", "RingEdge")
     IniWrite(f5UpMs, iniFile, "TowerMode", "Up")
@@ -90,6 +133,13 @@ SaveConfig() {
     IniWrite(f5LeftMs, iniFile, "TowerMode", "Left")
     IniWrite(f5RightMs, iniFile, "TowerMode", "Right")
     IniWrite(f5DiagMs, iniFile, "TowerMode", "Diag")
+    IniWrite(f5Pct, iniFile, "TowerMode", "RangePct")
+    IniWrite(f5Base.ring, iniFile, "TowerBase", "RingEdge")
+    IniWrite(f5Base.up, iniFile, "TowerBase", "Up")
+    IniWrite(f5Base.down, iniFile, "TowerBase", "Down")
+    IniWrite(f5Base.left, iniFile, "TowerBase", "Left")
+    IniWrite(f5Base.right, iniFile, "TowerBase", "Right")
+    IniWrite(f5Base.diag, iniFile, "TowerBase", "Diag")
 }
 
 ParseSetting(rawVal, fallback, minVal := 50, maxVal := 30000) {

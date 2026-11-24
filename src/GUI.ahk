@@ -1,5 +1,5 @@
 ; ==============================================================================
-; BLACK & WHITE GUI (DARK / LIGHT MODE, SETTINGS, HOTKEY SWITCH, CREDITS)
+; BLACK & WHITE GUI + FLOATING OVERLAY HUD + RATIO RANGE SCALER
 ; ==============================================================================
 
 BuildGUI() {
@@ -8,8 +8,8 @@ BuildGUI() {
     global themePrimaryBtns, themeSecondaryBtns, themeTabs
     global btnThemeQuick, tabMacro, tabSettings, tabCredits
     global edtPromptPath, edtTolerance, txtImgStatus
-    global radShortBtn, radWideBtn, edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet
-    global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag
+    global radShortBtn, radWideBtn, edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet, txtWayRangePct
+    global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag, txtF5RangePct
     global btnActWaystone, btnActTower, btnActPreset, btnActCircle, btnActChaos, btnActExit
     global btnSetDark, btnSetLight, btnSetHud, btnSetKeysToggle, hkBadges
     global txtGuiStatus, promptImg, imgTolerance
@@ -37,7 +37,7 @@ BuildGUI() {
     lblTitle.SetFont("s12 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: lblTitle, onCard: false})
 
-    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "WAYSTONE & TOWER AUTOMATION")
+    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "FARMING / GRIND AUTOMATION")
     lblSub.SetFont("s7 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: lblSub, onCard: false})
 
@@ -53,85 +53,102 @@ BuildGUI() {
     ; ==========================================================================
     ; TAB 1: MACRO
     ; ==========================================================================
-    AddCard("MACRO", 16, 102, 428, 90)
+    AddCard("MACRO", 16, 102, 428, 88)
     AddCardTitle("MACRO", 28, 110, 230, "WAYSTONE PROMPT IMAGE")
     txtImgStatus := mainGui.AddText("x340 y110 w92 h16 Right +0x80 +0x04000000", "")
     txtImgStatus.SetFont("s8 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: txtImgStatus, onCard: true})
     pageControls["MACRO"].Push(txtImgStatus)
 
-    edtPromptPath := AddStyledEdit("MACRO", 28, 131, 318, 22, promptImg, "ReadOnly")
-    AddFlatButton(352, 131, 80, 22, "Import...", false, ImportPromptImage, "MACRO")
+    edtPromptPath := AddStyledEdit("MACRO", 28, 130, 318, 22, promptImg, "ReadOnly")
+    AddFlatButton(352, 130, 80, 22, "Import...", false, ImportPromptImage, "MACRO")
 
-    AddMutedLabel("MACRO", 28, 162, 62, "Tolerance:")
-    edtTolerance := AddStyledEdit("MACRO", 92, 160, 48, 22, imgTolerance, "Number")
+    AddMutedLabel("MACRO", 28, 160, 62, "Tolerance:")
+    edtTolerance := AddStyledEdit("MACRO", 92, 158, 48, 22, imgTolerance, "Number")
     edtTolerance.OnEvent("Change", OnSettingsChanged)
 
-    AddFlatButton(148, 160, 116, 22, "Test Waystone", false, TestWaystoneDetection, "MACRO")
-    AddMutedLabel("MACRO", 272, 162, 160, "Return to Town (E)", "Right")
+    AddFlatButton(148, 158, 116, 22, "Test Waystone", false, TestWaystoneDetection, "MACRO")
+    AddMutedLabel("MACRO", 272, 160, 160, "Return to Town (E)", "Right")
 
     ; --- F8 WAYSTONE 8-STAR CARD ---
-    AddCard("MACRO", 16, 200, 428, 128)
-    AddCardTitle("MACRO", 28, 208, 204, "WAYSTONE 8-STAR TIMES (MS)")
+    AddCard("MACRO", 16, 198, 428, 148)
+    AddCardTitle("MACRO", 28, 206, 204, "WAYSTONE 8-STAR TIMES (MS)")
 
-    radShortBtn := AddFlatButton(242, 206, 66, 20, "SHORT", false, (*) => SelectWaystonePreset(false), "MACRO")
-    radWideBtn  := AddFlatButton(312, 206, 74, 20, "VERY WIDE", false, (*) => SelectWaystonePreset(true), "MACRO")
-    AddFlatButton(390, 206, 42, 20, "RST", false, ResetPresetDefaults, "MACRO")
+    radShortBtn := AddFlatButton(242, 204, 66, 20, "SHORT", false, (*) => SelectWaystonePreset(false), "MACRO")
+    radWideBtn  := AddFlatButton(312, 204, 74, 20, "VERY WIDE", false, (*) => SelectWaystonePreset(true), "MACRO")
+    AddFlatButton(390, 204, 42, 20, "RST", false, ResetPresetDefaults, "MACRO")
 
-    AddMutedLabel("MACRO", 28, 239, 52, "Up (W):")
-    edtWayUp := AddStyledEdit("MACRO", 82, 236, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 154, 239, 56, "Down (S):")
-    edtWayDown := AddStyledEdit("MACRO", 212, 236, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 284, 239, 56, "Diagonal:")
-    edtWayDiag := AddStyledEdit("MACRO", 342, 236, 90, 22, "", "Number")
+    AddMutedLabel("MACRO", 28, 237, 52, "Up (W):")
+    edtWayUp := AddStyledEdit("MACRO", 82, 234, 56, 22, "", "Number")
+    AddMutedLabel("MACRO", 154, 237, 56, "Down (S):")
+    edtWayDown := AddStyledEdit("MACRO", 212, 234, 56, 22, "", "Number")
+    AddMutedLabel("MACRO", 284, 237, 56, "Diagonal:")
+    edtWayDiag := AddStyledEdit("MACRO", 342, 234, 90, 22, "", "Number")
 
-    AddMutedLabel("MACRO", 28, 269, 52, "Left (A):")
-    edtWayLeft := AddStyledEdit("MACRO", 82, 266, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 154, 269, 56, "Right (D):")
-    edtWayRight := AddStyledEdit("MACRO", 212, 266, 56, 22, "", "Number")
-    AddMutedLabel("MACRO", 284, 269, 56, "Ret Max:")
-    edtWayRet := AddStyledEdit("MACRO", 342, 266, 90, 22, "", "Number")
+    AddMutedLabel("MACRO", 28, 267, 52, "Left (A):")
+    edtWayLeft := AddStyledEdit("MACRO", 82, 264, 56, 22, "", "Number")
+    AddMutedLabel("MACRO", 154, 267, 56, "Right (D):")
+    edtWayRight := AddStyledEdit("MACRO", 212, 264, 56, 22, "", "Number")
+    AddMutedLabel("MACRO", 284, 267, 56, "Ret Max:")
+    edtWayRet := AddStyledEdit("MACRO", 342, 264, 90, 22, "", "Number")
 
     for ctrl in [edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet]
-        ctrl.OnEvent("Change", OnSettingsChanged)
+        ctrl.OnEvent("Change", OnWaystoneManualEdit)
 
-    AddMutedLabel("MACRO", 28, 298, 404, "Increase ms to travel farther. Toggle Short / Very Wide anytime.")
+    AddMutedLabel("MACRO", 28, 297, 46, "Range:")
+    AddFlatButton(76, 294, 26, 20, "<", false, (*) => AdjustWaystoneRange(-10), "MACRO")
+    txtWayRangePct := mainGui.AddText("x104 y296 w44 h18 Center +0x80 +0x04000000", "100%")
+    txtWayRangePct.SetFont("s8 Bold", "Segoe UI")
+    themePrimaryText.Push({ctrl: txtWayRangePct, onCard: true})
+    pageControls["MACRO"].Push(txtWayRangePct)
+    AddFlatButton(150, 294, 26, 20, ">", false, (*) => AdjustWaystoneRange(10), "MACRO")
+    AddMutedLabel("MACRO", 184, 297, 248, "Range scales equally by ratio", "Right")
+
+    AddMutedLabel("MACRO", 28, 322, 404, "Increase ms to travel farther. Press F6 (or preset key) to toggle.")
 
     ; --- F5 TOWER MODE CARD ---
-    AddCard("MACRO", 16, 336, 428, 98)
-    AddCardTitle("MACRO", 28, 344, 390, "TOWER MODE / FREE RANGE TIMES (MS)")
+    AddCard("MACRO", 16, 354, 428, 102)
+    AddCardTitle("MACRO", 28, 362, 240, "TOWER MODE / FREE RANGE (MS)")
 
-    AddMutedLabel("MACRO", 28, 371, 58, "Ring Edge:")
-    edtF5Ring := AddStyledEdit("MACRO", 88, 368, 54, 22, f5RingEdgeMs, "Number")
-    AddMutedLabel("MACRO", 156, 371, 50, "Up (W):")
-    edtF5Up := AddStyledEdit("MACRO", 208, 368, 56, 22, f5UpMs, "Number")
-    AddMutedLabel("MACRO", 280, 371, 58, "Down (S):")
-    edtF5Down := AddStyledEdit("MACRO", 340, 368, 92, 22, f5DownMs, "Number")
+    AddMutedLabel("MACRO", 272, 362, 44, "Range:")
+    AddFlatButton(318, 360, 26, 20, "<", false, (*) => AdjustTowerRange(-10), "MACRO")
+    txtF5RangePct := mainGui.AddText("x346 y362 w44 h18 Center +0x80 +0x04000000", "100%")
+    txtF5RangePct.SetFont("s8 Bold", "Segoe UI")
+    themePrimaryText.Push({ctrl: txtF5RangePct, onCard: true})
+    pageControls["MACRO"].Push(txtF5RangePct)
+    AddFlatButton(392, 360, 26, 20, ">", false, (*) => AdjustTowerRange(10), "MACRO")
 
-    AddMutedLabel("MACRO", 28, 401, 58, "Left (A):")
-    edtF5Left := AddStyledEdit("MACRO", 88, 398, 54, 22, f5LeftMs, "Number")
-    AddMutedLabel("MACRO", 156, 401, 52, "Right (D):")
-    edtF5Right := AddStyledEdit("MACRO", 208, 398, 56, 22, f5RightMs, "Number")
-    AddMutedLabel("MACRO", 280, 401, 58, "Diagonal:")
-    edtF5Diag := AddStyledEdit("MACRO", 340, 398, 92, 22, f5DiagMs, "Number")
+    AddMutedLabel("MACRO", 28, 393, 58, "Ring Edge:")
+    edtF5Ring := AddStyledEdit("MACRO", 88, 390, 54, 22, f5RingEdgeMs, "Number")
+    AddMutedLabel("MACRO", 156, 393, 50, "Up (W):")
+    edtF5Up := AddStyledEdit("MACRO", 208, 390, 56, 22, f5UpMs, "Number")
+    AddMutedLabel("MACRO", 280, 393, 58, "Down (S):")
+    edtF5Down := AddStyledEdit("MACRO", 340, 390, 92, 22, f5DownMs, "Number")
+
+    AddMutedLabel("MACRO", 28, 423, 58, "Left (A):")
+    edtF5Left := AddStyledEdit("MACRO", 88, 420, 54, 22, f5LeftMs, "Number")
+    AddMutedLabel("MACRO", 156, 423, 52, "Right (D):")
+    edtF5Right := AddStyledEdit("MACRO", 208, 420, 56, 22, f5RightMs, "Number")
+    AddMutedLabel("MACRO", 280, 423, 58, "Diagonal:")
+    edtF5Diag := AddStyledEdit("MACRO", 340, 420, 92, 22, f5DiagMs, "Number")
 
     for ctrl in [edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag]
-        ctrl.OnEvent("Change", OnSettingsChanged)
+        ctrl.OnEvent("Change", OnTowerManualEdit)
 
     ; --- QUICK ACTIONS CARD ---
-    AddCard("MACRO", 16, 442, 428, 102)
-    AddCardTitle("MACRO", 28, 450, 390, "QUICK ACTIONS")
+    AddCard("MACRO", 16, 464, 428, 98)
+    AddCardTitle("MACRO", 28, 472, 390, "QUICK ACTIONS")
 
-    btnActWaystone := AddFlatButton(28,  472, 198, 30, "", true,  ToggleWaystoneMode, "MACRO")
-    btnActTower    := AddFlatButton(234, 472, 198, 30, "", false, ToggleTowerMode,    "MACRO")
+    btnActWaystone := AddFlatButton(28,  492, 198, 28, "", true,  ToggleWaystoneMode, "MACRO")
+    btnActTower    := AddFlatButton(234, 492, 198, 28, "", false, ToggleTowerMode,    "MACRO")
 
-    btnActPreset := AddFlatButton(28,  508, 96, 26, "", false, ToggleShortWidePreset, "MACRO")
-    btnActCircle := AddFlatButton(130, 508, 96, 26, "", false, QueuePerimeterCircle,  "MACRO")
-    btnActChaos  := AddFlatButton(232, 508, 96, 26, "", false, StartChaosStressTest,  "MACRO")
-    btnActExit   := AddFlatButton(334, 508, 98, 26, "", false, ExitMacro,             "MACRO")
+    btnActPreset := AddFlatButton(28,  526, 96, 26, "", false, ToggleShortWidePreset, "MACRO")
+    btnActCircle := AddFlatButton(130, 526, 96, 26, "", false, QueuePerimeterCircle,  "MACRO")
+    btnActChaos  := AddFlatButton(232, 526, 96, 26, "", false, StartChaosStressTest,  "MACRO")
+    btnActExit   := AddFlatButton(334, 526, 98, 26, "", false, ExitMacro,             "MACRO")
 
     ; ==========================================================================
-    ; TAB 2: SETTINGS (LIGHT/DARK MODE & HOTKEY SWITCH)
+    ; TAB 2: SETTINGS (LIGHT/DARK MODE, OVERLAY HUD & HOTKEY SWITCH)
     ; ==========================================================================
     AddCard("SETTINGS", 16, 102, 428, 110)
     AddCardTitle("SETTINGS", 28, 112, 390, "APPEARANCE & DISPLAY")
@@ -140,7 +157,8 @@ BuildGUI() {
     btnSetDark  := AddFlatButton(236, 136, 96, 26, "DARK MODE",  false, (*) => SetDarkMode(true),  "SETTINGS")
     btnSetLight := AddFlatButton(336, 136, 96, 26, "LIGHT MODE", false, (*) => SetDarkMode(false), "SETTINGS")
 
-    AddPrimaryLabel("SETTINGS", 28, 176, 210, "Floating HUD ToolTip")
+    AddPrimaryLabel("SETTINGS", 28, 176, 190, "Floating Run Overlay")
+    AddFlatButton(236, 172, 96, 26, "Reset Pos", false, ResetOverlayPosition, "SETTINGS")
     btnSetHud := AddFlatButton(336, 172, 96, 26, "", false, ToggleHudSetting, "SETTINGS")
 
     ; --- HOTKEY SWITCH CARD ---
@@ -183,28 +201,207 @@ BuildGUI() {
     AddMutedLabel("CREDITS", 28, 412, 404, "Modules: State · Config · VisionWindow · Movement · Modes · Hotkeys · GUI")
 
     ; --- PERSISTENT FOOTER ---
-    AddDivider(16, 554, 428)
-    txtGuiStatus := mainGui.AddText("x16 y562 w428 h20 +0x80 +0x04000000", "● Ready")
+    AddDivider(16, 570, 428)
+    txtGuiStatus := mainGui.AddText("x16 y578 w428 h20 +0x80 +0x04000000", "● Ready")
     txtGuiStatus.SetFont("s8 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: txtGuiStatus, onCard: false})
 
     mainGui.OnEvent("Close", (*) => ExitMacro())
     OnMessage(0x0020, HandleSetCursor)
+    OnMessage(0x0201, HandleOverlayDrag)
 
+    BuildOverlayGUI()
     RefreshPresetUI()
+    RefreshTowerUI()
     RefreshImageStatus()
     RefreshHotkeyLabels()
     RefreshSettingsTabUI()
     SwitchTab("MACRO")
 
-    mainGui.Show("w460 h590")
-    ; Clear default blue highlight on read-only path Edit & scroll to filename
+    mainGui.Show("w460 h606")
     SendMessage(0x00B1, 999, 999, edtPromptPath.Hwnd)
     ApplyTheme()
 }
 
 ; ==============================================================================
-; CUSTOM BLACK & WHITE COMPONENT BUILDERS (NON-OVERLAPPING BORDERS)
+; FLOATING RUN OVERLAY BAR (MOVABLE + CLEAR STOP BUTTON)
+; ==============================================================================
+
+BuildOverlayGUI() {
+    global overlayGui, overlayEdges, overlayTitleTxt, overlayStatusTxt, overlayHintTxt, overlayStopBtn, clickableHwnds
+
+    overlayGui := Gui("+AlwaysOnTop +ToolWindow -Caption", "PixelEmpireHUD")
+    overlayGui.MarginX := 0
+    overlayGui.MarginY := 0
+    overlayGui.SetFont("s9", "Segoe UI")
+
+    w := 440, h := 58
+    top := overlayGui.AddText("x0 y0 w" w " h1 Disabled +0x04000000", "")
+    bot := overlayGui.AddText("x0 y" (h - 1) " w" w " h1 Disabled +0x04000000", "")
+    lft := overlayGui.AddText("x0 y1 w1 h" (h - 2) " Disabled +0x04000000", "")
+    rgt := overlayGui.AddText("x" (w - 1) " y1 w1 h" (h - 2) " Disabled +0x04000000", "")
+    overlayEdges := [top, bot, lft, rgt]
+
+    overlayTitleTxt := overlayGui.AddText("x14 y7 w306 h17 +0x80 +0x04000000", "● RUNNING")
+    overlayTitleTxt.SetFont("s8 Bold", "Segoe UI")
+
+    overlayStatusTxt := overlayGui.AddText("x14 y24 w306 h17 +0x80 +0x04000000", "Ready")
+    overlayStatusTxt.SetFont("s8", "Segoe UI")
+
+    overlayHintTxt := overlayGui.AddText("x14 y41 w306 h12 +0x80 +0x04000000", "Drag anywhere on bar to move")
+    overlayHintTxt.SetFont("s7", "Segoe UI")
+
+    sTop := overlayGui.AddText("x328 y10 w98 h1 Disabled +0x04000000", "")
+    sBot := overlayGui.AddText("x328 y47 w98 h1 Disabled +0x04000000", "")
+    sLft := overlayGui.AddText("x328 y11 w1 h36 Disabled +0x04000000", "")
+    sRgt := overlayGui.AddText("x425 y11 w1 h36 Disabled +0x04000000", "")
+    sBtn := overlayGui.AddText("x329 y11 w96 h36 Center 0x200 +0x80 +0x04000000", "■ STOP")
+    sBtn.SetFont("s9 Bold", "Segoe UI")
+    sBtn.OnEvent("Click", (*) => StopAll("Stopped by user"))
+    clickableHwnds[sBtn.Hwnd] := true
+
+    overlayStopBtn := {edges: [sTop, sBot, sLft, sRgt], btn: sBtn}
+}
+
+ShowOverlay() {
+    global overlayGui, overlayVisible, overlayCustomPos, overlayX, overlayY
+    if !IsSet(overlayGui)
+        return
+
+    ApplyOverlayTheme()
+    UpdateHUD()
+
+    if (!overlayCustomPos || overlayX < 0 || overlayY < 0) {
+        windows := GetSortedRobloxWindows()
+        if (windows.Length > 0) {
+            WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " windows[1])
+            ox := wx + ((ww - 440) // 2)
+            oy := wy + wh - Max(115, Round(wh * 0.155))
+        } else {
+            ox := (A_ScreenWidth - 440) // 2
+            oy := A_ScreenHeight - 165
+        }
+    } else {
+        ox := overlayX
+        oy := overlayY
+    }
+
+    overlayVisible := true
+    overlayGui.Show("x" ox " y" oy " w440 h58 NoActivate")
+}
+
+HideOverlay() {
+    global overlayGui, overlayVisible
+    overlayVisible := false
+    if IsSet(overlayGui)
+        overlayGui.Hide()
+}
+
+ResetOverlayPosition(*) {
+    global overlayCustomPos, overlayX, overlayY, overlayVisible
+    overlayCustomPos := false
+    overlayX := -1
+    overlayY := -1
+    SaveConfig()
+    if (overlayVisible)
+        ShowOverlay()
+    UpdateGuiStatus("Overlay position reset to bottom-center above hotbar.")
+}
+
+HandleOverlayDrag(wParam, lParam, msg, hwnd) {
+    global overlayGui, overlayVisible, overlayStopBtn, overlayCustomPos, overlayX, overlayY
+
+    if (!overlayVisible || !IsSet(overlayGui))
+        return
+
+    isOverlay := (hwnd = overlayGui.Hwnd) || (DllCall("GetParent", "ptr", hwnd, "ptr") = overlayGui.Hwnd)
+    if (!isOverlay)
+        return
+
+    if (hwnd = overlayStopBtn.btn.Hwnd)
+        return
+
+    SendMessage(0xA1, 2, 0, overlayGui.Hwnd)
+    try {
+        WinGetPos(&ox, &oy, , , "ahk_id " overlayGui.Hwnd)
+        overlayX := ox
+        overlayY := oy
+        overlayCustomPos := true
+        SaveConfig()
+    }
+    return 0
+}
+
+ApplyOverlayTheme() {
+    global overlayGui, overlayEdges, overlayTitleTxt, overlayStatusTxt, overlayHintTxt, overlayStopBtn
+    if !IsSet(overlayGui)
+        return
+
+    p := GetPalette()
+    overlayGui.BackColor := p.bg
+    for e in overlayEdges
+        e.Opt("+Background" SubStr(p.priBorder, 3))
+
+    overlayTitleTxt.Opt("+Background" SubStr(p.bg, 3))
+    overlayTitleTxt.SetFont("c" SubStr(p.text, 3))
+    overlayStatusTxt.Opt("+Background" SubStr(p.bg, 3))
+    overlayStatusTxt.SetFont("c" SubStr(p.muted, 3))
+    overlayHintTxt.Opt("+Background" SubStr(p.bg, 3))
+    overlayHintTxt.SetFont("c" SubStr(p.muted, 3))
+
+    StyleButton(overlayStopBtn, p.priBg, p.priText, p.priBorder)
+    if WinExist("ahk_id " overlayGui.Hwnd)
+        WinRedraw("ahk_id " overlayGui.Hwnd)
+}
+
+; ==============================================================================
+; RATIO-LOCKED RANGE < > SCALING
+; ==============================================================================
+
+AdjustWaystoneRange(deltaPct) {
+    global wideStarMode, shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
+    if (wideStarMode) {
+        widePct := Max(10, Min(500, widePct + deltaPct))
+        ApplyRatioToObj(wideCfg, wideBase, widePct, true)
+    } else {
+        shortPct := Max(10, Min(500, shortPct + deltaPct))
+        ApplyRatioToObj(shortCfg, shortBase, shortPct, true)
+    }
+    RefreshPresetUI()
+    SaveConfig()
+    pct := wideStarMode ? widePct : shortPct
+    UpdateGuiStatus("Waystone Range scaled to " pct "%")
+}
+
+AdjustTowerRange(deltaPct) {
+    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    f5Pct := Max(10, Min(500, f5Pct + deltaPct))
+    scale := f5Pct / 100.0
+    f5RingEdgeMs := Max(50, Round(f5Base.ring * scale))
+    f5UpMs       := Max(50, Round(f5Base.up * scale))
+    f5DownMs     := Max(50, Round(f5Base.down * scale))
+    f5LeftMs     := Max(50, Round(f5Base.left * scale))
+    f5RightMs    := Max(50, Round(f5Base.right * scale))
+    f5DiagMs     := Max(50, Round(f5Base.diag * scale))
+
+    RefreshTowerUI()
+    SaveConfig()
+    UpdateGuiStatus("Tower Range scaled to " f5Pct "%")
+}
+
+ApplyRatioToObj(targetObj, baseObj, pct, hasRet := false) {
+    scale := pct / 100.0
+    targetObj.up    := Max(50, Round(baseObj.up * scale))
+    targetObj.down  := Max(50, Round(baseObj.down * scale))
+    targetObj.left  := Max(50, Round(baseObj.left * scale))
+    targetObj.right := Max(50, Round(baseObj.right * scale))
+    targetObj.diag  := Max(50, Round(baseObj.diag * scale))
+    if (hasRet)
+        targetObj.ret := Max(100, Round(baseObj.ret * scale))
+}
+
+; ==============================================================================
+; CUSTOM BLACK & WHITE COMPONENT BUILDERS
 ; ==============================================================================
 
 AddRectBorder(x, y, w, h, tabName := "") {
@@ -381,14 +578,12 @@ ApplyTheme() {
     p := GetPalette()
     mainGui.BackColor := p.bg
 
-    ; Native Windows 10/11 Dark/Light Title Bar
     try DllCall("dwmapi\DwmSetWindowAttribute", "ptr", mainGui.Hwnd, "int", 20, "int*", darkMode ? 1 : 0, "int", 4)
 
     for c in themeCards {
         for e in c.edges
             e.Opt("+Background" SubStr(p.border, 3))
         c.fill.Opt("+Background" SubStr(p.cardBg, 3))
-        ; Push card background strictly behind all labels/edits/buttons
         DllCall("SetWindowPos", "ptr", c.fill.Hwnd, "ptr", 1, "int", 0, "int", 0, "int", 0, "int", 0, "uint", 0x0013)
     }
     for d in themeDividers {
@@ -435,6 +630,8 @@ ApplyTheme() {
 
     if WinExist("ahk_id " mainGui.Hwnd)
         WinRedraw("ahk_id " mainGui.Hwnd)
+
+    ApplyOverlayTheme()
 }
 
 StyleButton(entry, bgHex, txtHex, borderHex) {
@@ -475,10 +672,10 @@ ToggleHudSetting(*) {
     global hudEnabled
     hudEnabled := !hudEnabled
     if (!hudEnabled)
-        ToolTip()
+        HideOverlay()
     SaveConfig()
     RefreshSettingsTabUI()
-    UpdateGuiStatus(hudEnabled ? "Floating HUD Enabled" : "Floating HUD Disabled")
+    UpdateGuiStatus(hudEnabled ? "Floating Run Overlay Enabled" : "Floating Run Overlay Disabled")
 }
 
 ; ==============================================================================
@@ -486,23 +683,43 @@ ToggleHudSetting(*) {
 ; ==============================================================================
 
 RefreshPresetUI() {
-    global isUpdatingUI, wideStarMode, shortCfg, wideCfg
-    global edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet
+    global isUpdatingUI, wideStarMode, shortCfg, wideCfg, shortPct, widePct
+    global edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet, txtWayRangePct
 
     if !IsSet(edtWayUp)
         return
 
     isUpdatingUI := true
     cfg := wideStarMode ? wideCfg : shortCfg
+    pct := wideStarMode ? widePct : shortPct
     edtWayUp.Value    := cfg.up
     edtWayDown.Value  := cfg.down
     edtWayLeft.Value  := cfg.left
     edtWayRight.Value := cfg.right
     edtWayDiag.Value  := cfg.diag
     edtWayRet.Value   := cfg.ret
+    txtWayRangePct.Text := pct "%"
     isUpdatingUI := false
 
     ApplyTheme()
+}
+
+RefreshTowerUI() {
+    global isUpdatingUI, f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Pct
+    global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag, txtF5RangePct
+
+    if !IsSet(edtF5Ring)
+        return
+
+    isUpdatingUI := true
+    edtF5Ring.Value  := f5RingEdgeMs
+    edtF5Up.Value    := f5UpMs
+    edtF5Down.Value  := f5DownMs
+    edtF5Left.Value  := f5LeftMs
+    edtF5Right.Value := f5RightMs
+    edtF5Diag.Value  := f5DiagMs
+    txtF5RangePct.Text := f5Pct "%"
+    isUpdatingUI := false
 }
 
 RefreshImageStatus() {
@@ -551,17 +768,23 @@ SelectWaystonePreset(useWide) {
 }
 
 OnSettingsChanged(*) {
-    global isUpdatingUI, wideStarMode, shortCfg, wideCfg, imgTolerance
-    global edtTolerance, edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs
-    global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag
+    global isUpdatingUI, imgTolerance, edtTolerance
+    if (isUpdatingUI)
+        return
+    imgTolerance := ParseSetting(edtTolerance.Value, imgTolerance, 0, 255)
+    SaveConfig()
+}
+
+OnWaystoneManualEdit(*) {
+    global isUpdatingUI, wideStarMode, shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
+    global edtWayUp, edtWayDown, edtWayLeft, edtWayRight, edtWayDiag, edtWayRet, txtWayRangePct
 
     if (isUpdatingUI)
         return
 
-    imgTolerance := ParseSetting(edtTolerance.Value, imgTolerance, 0, 255)
+    cfg  := wideStarMode ? wideCfg  : shortCfg
+    base := wideStarMode ? wideBase : shortBase
 
-    cfg := wideStarMode ? wideCfg : shortCfg
     cfg.up    := ParseSetting(edtWayUp.Value, cfg.up, 50, 30000)
     cfg.down  := ParseSetting(edtWayDown.Value, cfg.down, 50, 30000)
     cfg.left  := ParseSetting(edtWayLeft.Value, cfg.left, 50, 30000)
@@ -569,12 +792,44 @@ OnSettingsChanged(*) {
     cfg.diag  := ParseSetting(edtWayDiag.Value, cfg.diag, 50, 30000)
     cfg.ret   := ParseSetting(edtWayRet.Value, cfg.ret, 100, 60000)
 
+    base.up    := cfg.up
+    base.down  := cfg.down
+    base.left  := cfg.left
+    base.right := cfg.right
+    base.diag  := cfg.diag
+    base.ret   := cfg.ret
+
+    if (wideStarMode)
+        widePct := 100
+    else
+        shortPct := 100
+    txtWayRangePct.Text := "100%"
+
+    SaveConfig()
+}
+
+OnTowerManualEdit(*) {
+    global isUpdatingUI, f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
+    global edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag, txtF5RangePct
+
+    if (isUpdatingUI)
+        return
+
     f5RingEdgeMs := ParseSetting(edtF5Ring.Value, f5RingEdgeMs, 50, 30000)
     f5UpMs       := ParseSetting(edtF5Up.Value, f5UpMs, 50, 30000)
     f5DownMs     := ParseSetting(edtF5Down.Value, f5DownMs, 50, 30000)
     f5LeftMs     := ParseSetting(edtF5Left.Value, f5LeftMs, 50, 30000)
     f5RightMs    := ParseSetting(edtF5Right.Value, f5RightMs, 50, 30000)
     f5DiagMs     := ParseSetting(edtF5Diag.Value, f5DiagMs, 50, 30000)
+
+    f5Base.ring  := f5RingEdgeMs
+    f5Base.up    := f5UpMs
+    f5Base.down  := f5DownMs
+    f5Base.left  := f5LeftMs
+    f5Base.right := f5RightMs
+    f5Base.diag  := f5DiagMs
+    f5Pct := 100
+    txtF5RangePct.Text := "100%"
 
     SaveConfig()
 }
@@ -607,11 +862,17 @@ TestWaystoneDetection(*) {
 }
 
 ResetPresetDefaults(*) {
-    global shortCfg, wideCfg, f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, imgTolerance
-    global isUpdatingUI, edtTolerance, edtF5Ring, edtF5Up, edtF5Down, edtF5Left, edtF5Right, edtF5Diag
+    global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
+    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct, imgTolerance
+    global isUpdatingUI, edtTolerance
 
-    shortCfg := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+    shortCfg  := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+    shortBase := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}
+    shortPct  := 100
+
     wideCfg  := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
+    wideBase := {up: 1650, down: 1950, left: 1950, right: 1950, diag: 1650, ret: 2600}
+    widePct  := 100
 
     f5RingEdgeMs := 1150
     f5UpMs       := 1750
@@ -619,22 +880,18 @@ ResetPresetDefaults(*) {
     f5LeftMs     := 1750
     f5RightMs    := 1750
     f5DiagMs     := 1750
+    f5Base       := {ring: 1150, up: 1750, down: 1750, left: 1750, right: 1750, diag: 1750}
+    f5Pct        := 100
+
     imgTolerance := 45
-
-    RefreshPresetUI()
-
     isUpdatingUI := true
     edtTolerance.Value := imgTolerance
-    edtF5Ring.Value    := f5RingEdgeMs
-    edtF5Up.Value      := f5UpMs
-    edtF5Down.Value    := f5DownMs
-    edtF5Left.Value    := f5LeftMs
-    edtF5Right.Value   := f5RightMs
-    edtF5Diag.Value    := f5DiagMs
     isUpdatingUI := false
 
+    RefreshPresetUI()
+    RefreshTowerUI()
     SaveConfig()
-    UpdateGuiStatus("Reset move times to defaults.")
+    UpdateGuiStatus("Reset move times & ranges to defaults.")
 }
 
 UpdateGuiStatus(msg) {
@@ -644,29 +901,32 @@ UpdateGuiStatus(msg) {
 }
 
 UpdateHUD() {
-    global running, chaosTestRunning, freeCircleMode, wideStarMode, completedLoops, recoveryCount, hudStatus, hudEnabled, hotkeys
+    global running, chaosTestRunning, freeCircleMode, wideStarMode, completedLoops, recoveryCount, hudStatus
+    global overlayVisible, overlayTitleTxt, overlayStatusTxt
     if (!running)
         return
 
-    if (chaosTestRunning) {
-        if (hudEnabled)
-            ToolTip("CHAOS STRESS TEST`nStatus: " hudStatus "`n" FormatHotkeyShort(hotkeys.chaos) " or " FormatHotkeyShort(hotkeys.exit) ": Abort", 20, 20)
-        UpdateGuiStatus(hudStatus)
-        return
-    }
-
     winCount := GetSortedRobloxWindows().Length
-    altInfo := (winCount > 1) ? " | Alts: " (winCount - 1) : ""
+    altInfo := (winCount > 1) ? " · Alts: " (winCount - 1) : ""
 
-    if (freeCircleMode) {
-        if (hudEnabled)
-            ToolTip("TOWER MODE (FREE RANGE) | Cycles: " completedLoops altInfo "`nStatus: " hudStatus "`n" FormatHotkeyShort(hotkeys.tower) ": Stop | " FormatHotkeyShort(hotkeys.exit) ": Exit", 20, 20)
+    if (chaosTestRunning) {
+        titleLine := "● CHAOS STRESS TEST" altInfo
+        UpdateGuiStatus(hudStatus)
+    } else if (freeCircleMode) {
+        titleLine := "● TOWER MODE  ·  Cycles: " completedLoops altInfo
         UpdateGuiStatus("Tower Mode (" completedLoops " cycles) - " hudStatus)
-        return
+    } else {
+        stripTag := wideStarMode ? "VERY WIDE" : "SHORT"
+        titleLine := "● WAYSTONE [" stripTag "]  ·  Loops: " completedLoops "  ·  Rec: " recoveryCount altInfo
+        UpdateGuiStatus("[" stripTag "] Loops: " completedLoops " - " hudStatus)
     }
 
-    stripTag := wideStarMode ? "VERY WIDE" : "SHORT"
-    if (hudEnabled)
-        ToolTip("WAYSTONE 8-STAR [" stripTag "] | Loops: " completedLoops " | Recoveries: " recoveryCount altInfo "`nStatus: " hudStatus "`n" FormatHotkeyShort(hotkeys.preset) ": Short/Wide | " FormatHotkeyShort(hotkeys.circle) ": Circle | " FormatHotkeyShort(hotkeys.exit) ": Exit", 20, 20)
-    UpdateGuiStatus("[" stripTag "] Loops: " completedLoops " - " hudStatus)
+    if (overlayVisible && IsSet(overlayTitleTxt)) {
+        try {
+            if (overlayTitleTxt.Text != titleLine)
+                overlayTitleTxt.Text := titleLine
+            if (overlayStatusTxt.Text != hudStatus)
+                overlayStatusTxt.Text := hudStatus
+        }
+    }
 }
