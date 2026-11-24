@@ -39,7 +39,7 @@ BuildGUI() {
     lblTitle.SetFont("s12 Bold", "Segoe UI")
     themePrimaryText.Push({ctrl: lblTitle, onCard: false})
 
-    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "WAYSTONE & TOWER AUTOMATION")
+    lblSub := mainGui.AddText("x16 y34 w260 h14 +0x80 +0x04000000", "FARMING / GRIND AUTOMATION")
     lblSub.SetFont("s7 Bold", "Segoe UI")
     themeMutedText.Push({ctrl: lblSub, onCard: false})
 
