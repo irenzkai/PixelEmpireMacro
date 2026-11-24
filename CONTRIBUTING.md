@@ -36,7 +36,7 @@ This guide explains how the project is structured, how to set up your local envi
    ```
 3. **Add the upstream remote** so you can stay up to date:
    ```bash
-   git remote add upstream https://github.com/ORIGINAL_OWNER/PixelEmpireMacro.git
+   git remote add upstream https://github.com/irenzkai/PixelEmpireMacro.git
    ```
 4. **Run the macro** by launching **`PixelEmpireMacro.ahk`** directly.  
    > ⚠️ **Important:** Never run files inside `src/` individually—they rely on the entry-point `#Include` order and shared global state in `PixelEmpireMacro.ahk`.
