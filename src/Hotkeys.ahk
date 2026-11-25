@@ -18,6 +18,7 @@ ApplyHotkeys() {
     bindings := [
         {key: hotkeys.waystone, fn: ToggleWaystoneMode},
         {key: hotkeys.tower,    fn: ToggleTowerMode},
+        {key: hotkeys.mapCycle, fn: ToggleMapCycleMode},
         {key: hotkeys.preset,   fn: ToggleShortWidePreset},
         {key: hotkeys.circle,   fn: QueuePerimeterCircle},
         {key: hotkeys.chaos,    fn: StartChaosStressTest},
@@ -50,6 +51,7 @@ ResetDefaultHotkeys(*) {
     hotkeys := {
         waystone: "F8",
         tower:    "F5",
+        mapCycle: "F4",
         preset:   "F6",
         circle:   "F9",
         chaos:    "F7",
@@ -69,7 +71,6 @@ RebindHotkey(actionName) {
 
     isBindingHotkey := true
 
-    ; Temporarily disable active hotkeys so pressing Esc or F8 doesn't trigger macro
     for hk in registeredHotkeys {
         try Hotkey(hk, "Off")
     }
@@ -118,6 +119,7 @@ FindHotkeyConflict(targetAction, candidateKey) {
     labels := Map(
         "waystone", "Waystone 8-Star",
         "tower",    "Tower Mode",
+        "mapCycle", "Map Cycle",
         "preset",   "Short / Wide",
         "circle",   "Queue Circle",
         "chaos",    "Chaos Test",

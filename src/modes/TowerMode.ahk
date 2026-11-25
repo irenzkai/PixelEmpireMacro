@@ -1,35 +1,142 @@
 ; ==============================================================================
-; TOWER MODE (FREE RANGE - WAYSTONE-FREE OCTAGONAL CIRCLE + FULL CROSS)
+; ENHANCED TOWER AUTOMATION
+;   Spawn (Bottom) -> Center -> Box Combat Walk -> Floor Cleared
+;   -> Return to Center -> Enter Top Portal -> Detect Next Floor -> Loop
 ; ==============================================================================
 
 ToggleTowerMode(*) {
-    global running, freeCircleMode, chaosTestRunning, completedLoops, recoveryCount, hudStatus
+    global running, freeCircleMode, chaosTestRunning, mapCycleMode, completedLoops, recoveryCount, hudStatus
+    global floorsCleared, towerPhase, towerPosX, towerPosY
 
-    if (running) {
-        StopAll("Stopped Tower Mode")
+    if (running && !freeCircleMode) {
+        StopAll("Switched / Stopped")
         return
     }
 
-    if !InitVisionAndWindow(false)
-        return
+    running := !running
+    if (running) {
+        if !InitVisionAndWindow(false) {
+            running := false
+            return
+        }
 
-    ClearWaystoneOrigin()
-    running := true
-    freeCircleMode := true
-    chaosTestRunning := false
-    completedLoops := 0
-    recoveryCount := 0
-    hudStatus := "Tower Mode: Starting Free Range Loop..."
-    UpdateGuiStatus(hudStatus)
+        running := true
+        freeCircleMode := true
+        chaosTestRunning := false
+        mapCycleMode := false
+        completedLoops := 0
+        recoveryCount := 0
+        floorsCleared := 0
+        towerPhase := "Starting"
+        towerPosX := 0.0
+        towerPosY := 0.0
 
-    ActivateRunOverlay()
-    SetTimer(UpdateHUD, 80)
-    SetTimer(AltAntiAFK, 600000)
-    SetTimer(RunFreeCircleCrossLoop, -10)
+        hudStatus := "Tower Mode Active — Assuming bottom of floor..."
+        UpdateGuiStatus(hudStatus)
+
+        ActivateRunOverlay()
+        SetTimer(UpdateHUD, 80)
+        SetTimer(AltAntiAFK, 600000)
+        SetTimer(RunTowerLoop, -10)
+    } else {
+        StopAll("Stopped Tower Mode")
+    }
 }
 
-RunFreeCircleCrossLoop() {
-    global running, freeCircleMode, f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, completedLoops, hudStatus
+RecordTowerDisplacement(keys, durationMs) {
+    global towerPosX, towerPosY
+    if (durationMs <= 0 || keys.Length = 0)
+        return
+    factor := (keys.Length > 1) ? 0.7071 : 1.0
+    delta  := durationMs * factor
+    for k in keys {
+        if (k = "w")
+            towerPosY -= delta
+        else if (k = "s")
+            towerPosY += delta
+        else if (k = "a")
+            towerPosX -= delta
+        else if (k = "d")
+            towerPosX += delta
+    }
+}
+
+TowerMoveStep(keys, durationMs, checkClear := true) {
+    global running, freeCircleMode
+    if (!running || !freeCircleMode) {
+        ReleaseMoveKeys()
+        return "STOP"
+    }
+
+    if (checkClear && IsFloorCleared()) {
+        ReleaseMoveKeys()
+        return "CLEARED"
+    }
+
+    for k in keys
+        SendEvent("{" k " down}")
+
+    elapsed := 0
+    while (running && freeCircleMode && elapsed < durationMs) {
+        chunk := Min(40, durationMs - elapsed)
+        Sleep(chunk)
+        elapsed += chunk
+        RecordTowerDisplacement(keys, chunk)
+
+        if (checkClear && IsFloorCleared()) {
+            ReleaseMoveKeys()
+            return "CLEARED"
+        }
+    }
+
+    ReleaseMoveKeys()
+    return "DONE"
+}
+
+ReturnToTowerCenter() {
+    global running, freeCircleMode, towerPosX, towerPosY, hudStatus
+    if (!running || !freeCircleMode)
+        return false
+
+    hudStatus := "Floor Cleared! Returning to Center..."
+    dx := -towerPosX
+    dy := -towerPosY
+
+    if (Abs(dx) < 40 && Abs(dy) < 40) {
+        towerPosX := 0.0
+        towerPosY := 0.0
+        return true
+    }
+
+    minAxis := Min(Abs(dx), Abs(dy))
+    if (minAxis >= 60) {
+        diagKeys := []
+        diagKeys.Push(dy < 0 ? "w" : "s")
+        diagKeys.Push(dx < 0 ? "a" : "d")
+        diagDur := Round(minAxis / 0.7071)
+        TowerMoveStep(diagKeys, diagDur, false)
+
+        movedAxis := diagDur * 0.7071
+        dx += (dx < 0 ? movedAxis : -movedAxis)
+        dy += (dy < 0 ? movedAxis : -movedAxis)
+    }
+
+    if (!running || !freeCircleMode)
+        return false
+
+    if (Abs(dx) >= 40)
+        TowerMoveStep([dx < 0 ? "a" : "d"], Round(Abs(dx)), false)
+    if (Abs(dy) >= 40)
+        TowerMoveStep([dy < 0 ? "w" : "s"], Round(Abs(dy)), false)
+
+    towerPosX := 0.0
+    towerPosY := 0.0
+    return true
+}
+
+RunTowerLoop() {
+    global running, freeCircleMode, towerCenterMs, towerRadiusMs, towerPortalMs
+    global towerPhase, floorsCleared, completedLoops, hudStatus
     if (!running || !freeCircleMode)
         return
 
@@ -40,47 +147,98 @@ RunFreeCircleCrossLoop() {
     }
     FocusWindow(windows[1])
 
-    circleSegments := [
-        {keys: ["w", "d"], dur: f5RingEdgeMs, label: "Circle 1/8: NE"},
-        {keys: ["d"],      dur: f5RingEdgeMs, label: "Circle 2/8: East"},
-        {keys: ["s", "d"], dur: f5RingEdgeMs, label: "Circle 3/8: SE"},
-        {keys: ["s"],      dur: f5RingEdgeMs, label: "Circle 4/8: South"},
-        {keys: ["s", "a"], dur: f5RingEdgeMs, label: "Circle 5/8: SW"},
-        {keys: ["a"],      dur: f5RingEdgeMs, label: "Circle 6/8: West"},
-        {keys: ["w", "a"], dur: f5RingEdgeMs, label: "Circle 7/8: NW"},
-        {keys: ["w"],      dur: f5RingEdgeMs, label: "Circle 8/8: North"}
+    ; ==========================================================================
+    ; PHASE 1: SPAWN (BOTTOM) -> CENTER OF BOX (Immediate W, no clear-check)
+    ; ==========================================================================
+    towerPhase := "To Center"
+    hudStatus := "Floor #" (floorsCleared + 1) ": Moving to Center (" towerCenterMs "ms)..."
+    towerPosX := 0.0
+    towerPosY := 0.0
+
+    TowerMoveStep(["w"], towerCenterMs, false)
+    if (!running || !freeCircleMode)
+        return
+
+    towerPosX := 0.0
+    towerPosY := 0.0
+
+    ; ==========================================================================
+    ; PHASE 2: COMBAT BOX WALK RADIUS AROUND CENTER
+    ; ==========================================================================
+    towerPhase := "Patrol"
+    halfR := Round(towerRadiusMs * 0.5)
+    fullR := towerRadiusMs
+
+    boxLegs := [
+        {keys: ["d"], dur: halfR, label: "East Flank"},
+        {keys: ["w"], dur: halfR, label: "NE Corner"},
+        {keys: ["a"], dur: fullR, label: "North Wall Sweep"},
+        {keys: ["s"], dur: fullR, label: "West Wall Sweep"},
+        {keys: ["d"], dur: fullR, label: "South Wall Sweep"},
+        {keys: ["w"], dur: halfR, label: "SE Return"},
+        {keys: ["a"], dur: halfR, label: "Center Re-Align"}
     ]
 
-    for seg in circleSegments {
-        if (!running || !freeCircleMode)
-            return
-        hudStatus := "Tower " seg.label " (" seg.dur "ms)"
-        HoldKeys(seg.keys, seg.dur)
+    while (running && freeCircleMode) {
+        clearedTriggered := false
+        for leg in boxLegs {
+            hudStatus := "Floor #" (floorsCleared + 1) " Combat: " leg.label
+            stepRes := TowerMoveStep(leg.keys, leg.dur, true)
+            if (!running || !freeCircleMode)
+                return
+            if (stepRes = "CLEARED") {
+                clearedTriggered := true
+                break
+            }
+        }
+
+        if (clearedTriggered || IsFloorCleared())
+            break
     }
 
-    crossLegs := [
-        {out: ["w", "d"], ret: ["s", "a"], dur: f5DiagMs,  label: "Cross 1/8: NE Diagonal"},
-        {out: ["s", "a"], ret: ["w", "d"], dur: f5DiagMs,  label: "Cross 2/8: SW Diagonal"},
-        {out: ["w", "a"], ret: ["s", "d"], dur: f5DiagMs,  label: "Cross 3/8: NW Diagonal"},
-        {out: ["s", "d"], ret: ["w", "a"], dur: f5DiagMs,  label: "Cross 4/8: SE Diagonal"},
-        {out: ["d"],      ret: ["a"],      dur: f5RightMs, label: "Cross 5/8: East Flank"},
-        {out: ["a"],      ret: ["d"],      dur: f5LeftMs,  label: "Cross 6/8: West Flank"},
-        {out: ["w"],      ret: ["s"],      dur: f5UpMs,    label: "Cross 7/8: North Flank"},
-        {out: ["s"],      ret: ["w"],      dur: f5DownMs,  label: "Cross 8/8: South Flank"}
-    ]
+    if (!running || !freeCircleMode)
+        return
 
-    for leg in crossLegs {
-        if (!running || !freeCircleMode)
-            return
-        hudStatus := "Tower " leg.label " (Out)"
-        HoldKeys(leg.out, leg.dur)
-        if (!running || !freeCircleMode)
-            return
-        hudStatus := "Tower " leg.label " (Back)"
-        HoldKeys(leg.ret, leg.dur)
+    ; ==========================================================================
+    ; PHASE 3: RETURN TO CENTER & RUN TO TOP PORTAL
+    ; ==========================================================================
+    towerPhase := "To Center"
+    ReturnToTowerCenter()
+    if (!running || !freeCircleMode)
+        return
+
+    towerPhase := "Entering Portal"
+    hudStatus := "Floor Cleared! Running to Top Portal (" towerPortalMs "ms)..."
+    TowerMoveStep(["w"], towerPortalMs, false)
+    if (!running || !freeCircleMode)
+        return
+
+    ; ==========================================================================
+    ; PHASE 4: WAIT FOR NEXT FLOOR INDICATOR
+    ; ==========================================================================
+    towerPhase := "Next Floor"
+    hudStatus := "Waiting for next floor indicator..."
+
+    waitStart := A_TickCount
+    arrivedNextFloor := false
+
+    while (running && freeCircleMode && (A_TickCount - waitStart < 10000)) {
+        if IsNextFloorIndicator() {
+            arrivedNextFloor := true
+            break
+        }
+        SendEvent("{w down}")
+        Sleep(60)
+        SendEvent("{w up}")
+        Sleep(220)
     }
 
-    completedLoops += 1
+    floorsCleared += 1
+    completedLoops := floorsCleared
+    SoundBeep(1250, 100)
+    hudStatus := "Floor #" floorsCleared " Complete! Spawning on Floor #" (floorsCleared + 1) "..."
+    Sleep(500)
+
     if (running && freeCircleMode)
-        SetTimer(RunFreeCircleCrossLoop, -30)
+        SetTimer(RunTowerLoop, -20)
 }

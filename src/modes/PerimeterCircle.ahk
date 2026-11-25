@@ -43,6 +43,6 @@ ExecutePerimeterCircle() {
     hudStatus := "CIRCLE: Homing back to Waystone..."
     foundWaystone := ReturnUntilPrompt(["s"], circleCfg.ret)
     if (running && !foundWaystone) {
-        AntiTrapRecovery()
+        AntiTrapRecovery(["s"])
     }
 }

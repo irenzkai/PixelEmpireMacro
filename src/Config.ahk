@@ -3,9 +3,13 @@
 ; ==============================================================================
 
 LoadConfig() {
-    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
+    global iniFile, promptImg, recoveryImg, recoveryOffImg, recoveryTolerance, imgTolerance, wideStarMode
+    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
+    global currentWaystoneIdx, maxWaystoneIdx, bossBannerTol, topLabelTol, portalTol
+    global bossComingImg, bossSpawnImg, bossDefeatedImg
+    global towerCenterMs, towerPortalMs, towerRadiusMs, towerBase, towerRangePct, towerImgTol
+    global inTowerImg, towerClearedImg, towerNextImg
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
     global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
     global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
@@ -20,9 +24,66 @@ LoadConfig() {
     if (savedRecImg != "")
         recoveryImg := savedRecImg
 
+    savedRecOffImg := IniRead(iniFile, "General", "RecoveryOffImg", recoveryOffImg)
+    if (savedRecOffImg != "")
+        recoveryOffImg := savedRecOffImg
+
     recoveryTolerance := ParseSetting(IniRead(iniFile, "General", "RecoveryTolerance", recoveryTolerance), recoveryTolerance, 0, 255)
     imgTolerance      := ParseSetting(IniRead(iniFile, "General", "ImgTolerance", imgTolerance), imgTolerance, 0, 255)
     wideStarMode      := (IniRead(iniFile, "General", "WideStarMode", wideStarMode ? "1" : "0") = "1")
+
+    savedMapOpen := IniRead(iniFile, "WorldMap", "OpenImg", mapOpenImg)
+    if (savedMapOpen != "")
+        mapOpenImg := savedMapOpen
+    savedArrow := IniRead(iniFile, "WorldMap", "ArrowImg", mapArrowImg)
+    if (savedArrow != "")
+        mapArrowImg := savedArrow
+    savedMapWay := IniRead(iniFile, "WorldMap", "WaystoneImg", mapWaystoneImg)
+    if (savedMapWay != "")
+        mapWaystoneImg := savedMapWay
+    savedMapWayOff := IniRead(iniFile, "WorldMap", "WaystoneOffImg", mapWaystoneOffImg)
+    if (savedMapWayOff != "")
+        mapWaystoneOffImg := savedMapWayOff
+    mapTolerance        := ParseSetting(IniRead(iniFile, "WorldMap", "Tolerance", mapTolerance), mapTolerance, 0, 255)
+    mapMsPerPx          := ParseSetting(IniRead(iniFile, "WorldMap", "MsPerPx", mapMsPerPx), mapMsPerPx, 5, 300)
+    useWorldMapRecovery := (IniRead(iniFile, "WorldMap", "Enabled", useWorldMapRecovery ? "1" : "0") = "1")
+
+    currentWaystoneIdx := ParseSetting(IniRead(iniFile, "MapCycle", "StartWs", currentWaystoneIdx), currentWaystoneIdx, 0, maxWaystoneIdx)
+    topLabelTol        := ParseSetting(IniRead(iniFile, "MapCycle", "TopLabelTol", topLabelTol), topLabelTol, 0, 255)
+    bossBannerTol      := ParseSetting(IniRead(iniFile, "MapCycle", "BossTol", bossBannerTol), bossBannerTol, 0, 255)
+    portalTol          := ParseSetting(IniRead(iniFile, "MapCycle", "PortalTol", portalTol), portalTol, 0, 255)
+
+    savedBossComing := IniRead(iniFile, "MapCycle", "BossComingImg", bossComingImg)
+    if (savedBossComing != "")
+        bossComingImg := savedBossComing
+    savedBossSpawn := IniRead(iniFile, "MapCycle", "BossSpawnImg", bossSpawnImg)
+    if (savedBossSpawn != "")
+        bossSpawnImg := savedBossSpawn
+    savedBossDef := IniRead(iniFile, "MapCycle", "BossDefeatedImg", bossDefeatedImg)
+    if (savedBossDef != "")
+        bossDefeatedImg := savedBossDef
+
+    savedInTower := IniRead(iniFile, "TowerMode", "InTowerImg", inTowerImg)
+    if (savedInTower != "")
+        inTowerImg := savedInTower
+    savedCleared := IniRead(iniFile, "TowerMode", "ClearedImg", towerClearedImg)
+    if (savedCleared != "")
+        towerClearedImg := savedCleared
+    savedNext := IniRead(iniFile, "TowerMode", "NextImg", towerNextImg)
+    if (savedNext != "")
+        towerNextImg := savedNext
+
+    rawCenter := Integer(IniRead(iniFile, "TowerMode", "CenterMs", 500))
+    rawPortal := Integer(IniRead(iniFile, "TowerMode", "PortalMs", 1000))
+    towerCenterMs := (rawCenter = 1500) ? 500 : ParseSetting(rawCenter, 500, 10, 30000)
+    towerRadiusMs := ParseSetting(IniRead(iniFile, "TowerMode", "RadiusMs", 500), 500, 10, 30000)
+    towerPortalMs := (rawPortal = 2000) ? 1000 : ParseSetting(rawPortal, 1000, 10, 30000)
+    towerRangePct := ParseSetting(IniRead(iniFile, "TowerMode", "RangePct", 100), 100, 10, 500)
+
+    towerBase.center := ParseSetting(IniRead(iniFile, "TowerBase", "CenterMs", towerCenterMs), towerCenterMs, 10, 30000)
+    towerBase.radius := ParseSetting(IniRead(iniFile, "TowerBase", "RadiusMs", towerRadiusMs), towerRadiusMs, 10, 30000)
+    towerBase.portal := ParseSetting(IniRead(iniFile, "TowerBase", "PortalMs", towerPortalMs), towerPortalMs, 10, 30000)
+    towerImgTol      := ParseSetting(IniRead(iniFile, "TowerMode", "ImgTolerance", towerImgTol), towerImgTol, 0, 255)
 
     darkMode         := (IniRead(iniFile, "Appearance", "DarkMode", darkMode ? "1" : "0") = "1")
     hudEnabled       := (IniRead(iniFile, "Appearance", "HudEnabled", hudEnabled ? "1" : "0") = "1")
@@ -30,13 +91,14 @@ LoadConfig() {
     overlayX         := ParseSetting(IniRead(iniFile, "Appearance", "OverlayX", -1), -1, -10000, 10000)
     overlayY         := ParseSetting(IniRead(iniFile, "Appearance", "OverlayY", -1), -1, -10000, 10000)
 
-    hotkeysEnabled := (IniRead(iniFile, "Hotkeys", "Enabled", hotkeysEnabled ? "1" : "0") = "1")
-    hotkeys.waystone := IniRead(iniFile, "Hotkeys", "Waystone", hotkeys.waystone)
-    hotkeys.tower    := IniRead(iniFile, "Hotkeys", "Tower", hotkeys.tower)
-    hotkeys.preset   := IniRead(iniFile, "Hotkeys", "Preset", hotkeys.preset)
-    hotkeys.circle   := IniRead(iniFile, "Hotkeys", "Circle", hotkeys.circle)
-    hotkeys.chaos    := IniRead(iniFile, "Hotkeys", "Chaos", hotkeys.chaos)
-    hotkeys.exit     := IniRead(iniFile, "Hotkeys", "Exit", hotkeys.exit)
+    hotkeysEnabled    := (IniRead(iniFile, "Hotkeys", "Enabled", hotkeysEnabled ? "1" : "0") = "1")
+    hotkeys.waystone  := IniRead(iniFile, "Hotkeys", "Waystone", hotkeys.waystone)
+    hotkeys.tower     := IniRead(iniFile, "Hotkeys", "Tower", hotkeys.tower)
+    hotkeys.mapCycle  := IniRead(iniFile, "Hotkeys", "MapCycle", hotkeys.mapCycle)
+    hotkeys.preset    := IniRead(iniFile, "Hotkeys", "Preset", hotkeys.preset)
+    hotkeys.circle    := IniRead(iniFile, "Hotkeys", "Circle", hotkeys.circle)
+    hotkeys.chaos     := IniRead(iniFile, "Hotkeys", "Chaos", hotkeys.chaos)
+    hotkeys.exit      := IniRead(iniFile, "Hotkeys", "Exit", hotkeys.exit)
 
     shortCfg.up    := ParseSetting(IniRead(iniFile, "ShortPreset", "Up", shortCfg.up), shortCfg.up)
     shortCfg.down  := ParseSetting(IniRead(iniFile, "ShortPreset", "Down", shortCfg.down), shortCfg.down)
@@ -66,20 +128,6 @@ LoadConfig() {
     wideBase.diag  := ParseSetting(IniRead(iniFile, "WideBase", "Diag", wideCfg.diag), wideCfg.diag)
     wideBase.ret   := ParseSetting(IniRead(iniFile, "WideBase", "Ret", wideCfg.ret), wideCfg.ret, 100, 60000)
 
-    f5RingEdgeMs := ParseSetting(IniRead(iniFile, "TowerMode", "RingEdge", f5RingEdgeMs), f5RingEdgeMs)
-    f5UpMs       := ParseSetting(IniRead(iniFile, "TowerMode", "Up", f5UpMs), f5UpMs)
-    f5DownMs     := ParseSetting(IniRead(iniFile, "TowerMode", "Down", f5DownMs), f5DownMs)
-    f5LeftMs     := ParseSetting(IniRead(iniFile, "TowerMode", "Left", f5LeftMs), f5LeftMs)
-    f5RightMs    := ParseSetting(IniRead(iniFile, "TowerMode", "Right", f5RightMs), f5RightMs)
-    f5DiagMs     := ParseSetting(IniRead(iniFile, "TowerMode", "Diag", f5DiagMs), f5DiagMs)
-    f5Pct        := ParseSetting(IniRead(iniFile, "TowerMode", "RangePct", 100), 100, 10, 500)
-    f5Base.ring  := ParseSetting(IniRead(iniFile, "TowerBase", "RingEdge", f5RingEdgeMs), f5RingEdgeMs)
-    f5Base.up    := ParseSetting(IniRead(iniFile, "TowerBase", "Up", f5UpMs), f5UpMs)
-    f5Base.down  := ParseSetting(IniRead(iniFile, "TowerBase", "Down", f5DownMs), f5DownMs)
-    f5Base.left  := ParseSetting(IniRead(iniFile, "TowerBase", "Left", f5LeftMs), f5LeftMs)
-    f5Base.right := ParseSetting(IniRead(iniFile, "TowerBase", "Right", f5RightMs), f5RightMs)
-    f5Base.diag  := ParseSetting(IniRead(iniFile, "TowerBase", "Diag", f5DiagMs), f5DiagMs)
-
     circleCfg.out  := ParseSetting(IniRead(iniFile, "CircleMode", "Out", circleCfg.out), circleCfg.out)
     circleCfg.edge := ParseSetting(IniRead(iniFile, "CircleMode", "Edge", circleCfg.edge), circleCfg.edge)
     circleCfg.card := ParseSetting(IniRead(iniFile, "CircleMode", "Card", circleCfg.card), circleCfg.card)
@@ -102,17 +150,49 @@ LoadConfig() {
 }
 
 SaveConfig() {
-    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
+    global iniFile, promptImg, recoveryImg, recoveryOffImg, recoveryTolerance, imgTolerance, wideStarMode
+    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
+    global currentWaystoneIdx, topLabelTol, bossBannerTol, portalTol, bossComingImg, bossSpawnImg, bossDefeatedImg
+    global towerCenterMs, towerRadiusMs, towerPortalMs, towerBase, towerRangePct, towerImgTol
+    global inTowerImg, towerClearedImg, towerNextImg
     global shortCfg, shortBase, shortPct, wideCfg, wideBase, widePct
-    global f5RingEdgeMs, f5UpMs, f5DownMs, f5LeftMs, f5RightMs, f5DiagMs, f5Base, f5Pct
     global circleCfg, circleBase, circlePct, chaosCfg, chaosBase, chaosPct
     global darkMode, hudEnabled, overlayCustomPos, overlayX, overlayY, hotkeysEnabled, hotkeys
 
     IniWrite(promptImg, iniFile, "General", "PromptImg")
     IniWrite(recoveryImg, iniFile, "General", "RecoveryImg")
+    IniWrite(recoveryOffImg, iniFile, "General", "RecoveryOffImg")
     IniWrite(recoveryTolerance, iniFile, "General", "RecoveryTolerance")
     IniWrite(imgTolerance, iniFile, "General", "ImgTolerance")
     IniWrite(wideStarMode ? "1" : "0", iniFile, "General", "WideStarMode")
+
+    IniWrite(mapOpenImg, iniFile, "WorldMap", "OpenImg")
+    IniWrite(mapArrowImg, iniFile, "WorldMap", "ArrowImg")
+    IniWrite(mapWaystoneImg, iniFile, "WorldMap", "WaystoneImg")
+    IniWrite(mapWaystoneOffImg, iniFile, "WorldMap", "WaystoneOffImg")
+    IniWrite(mapTolerance, iniFile, "WorldMap", "Tolerance")
+    IniWrite(mapMsPerPx, iniFile, "WorldMap", "MsPerPx")
+    IniWrite(useWorldMapRecovery ? "1" : "0", iniFile, "WorldMap", "Enabled")
+
+    IniWrite(currentWaystoneIdx, iniFile, "MapCycle", "StartWs")
+    IniWrite(topLabelTol, iniFile, "MapCycle", "TopLabelTol")
+    IniWrite(bossBannerTol, iniFile, "MapCycle", "BossTol")
+    IniWrite(portalTol, iniFile, "MapCycle", "PortalTol")
+    IniWrite(bossComingImg, iniFile, "MapCycle", "BossComingImg")
+    IniWrite(bossSpawnImg, iniFile, "MapCycle", "BossSpawnImg")
+    IniWrite(bossDefeatedImg, iniFile, "MapCycle", "BossDefeatedImg")
+
+    IniWrite(inTowerImg, iniFile, "TowerMode", "InTowerImg")
+    IniWrite(towerClearedImg, iniFile, "TowerMode", "ClearedImg")
+    IniWrite(towerNextImg, iniFile, "TowerMode", "NextImg")
+    IniWrite(towerCenterMs, iniFile, "TowerMode", "CenterMs")
+    IniWrite(towerRadiusMs, iniFile, "TowerMode", "RadiusMs")
+    IniWrite(towerPortalMs, iniFile, "TowerMode", "PortalMs")
+    IniWrite(towerRangePct, iniFile, "TowerMode", "RangePct")
+    IniWrite(towerBase.center, iniFile, "TowerBase", "CenterMs")
+    IniWrite(towerBase.radius, iniFile, "TowerBase", "RadiusMs")
+    IniWrite(towerBase.portal, iniFile, "TowerBase", "PortalMs")
+    IniWrite(towerImgTol, iniFile, "TowerMode", "ImgTolerance")
 
     IniWrite(darkMode ? "1" : "0", iniFile, "Appearance", "DarkMode")
     IniWrite(hudEnabled ? "1" : "0", iniFile, "Appearance", "HudEnabled")
@@ -123,6 +203,7 @@ SaveConfig() {
     IniWrite(hotkeysEnabled ? "1" : "0", iniFile, "Hotkeys", "Enabled")
     IniWrite(hotkeys.waystone, iniFile, "Hotkeys", "Waystone")
     IniWrite(hotkeys.tower, iniFile, "Hotkeys", "Tower")
+    IniWrite(hotkeys.mapCycle, iniFile, "Hotkeys", "MapCycle")
     IniWrite(hotkeys.preset, iniFile, "Hotkeys", "Preset")
     IniWrite(hotkeys.circle, iniFile, "Hotkeys", "Circle")
     IniWrite(hotkeys.chaos, iniFile, "Hotkeys", "Chaos")
@@ -155,20 +236,6 @@ SaveConfig() {
     IniWrite(wideBase.right, iniFile, "WideBase", "Right")
     IniWrite(wideBase.diag, iniFile, "WideBase", "Diag")
     IniWrite(wideBase.ret, iniFile, "WideBase", "Ret")
-
-    IniWrite(f5RingEdgeMs, iniFile, "TowerMode", "RingEdge")
-    IniWrite(f5UpMs, iniFile, "TowerMode", "Up")
-    IniWrite(f5DownMs, iniFile, "TowerMode", "Down")
-    IniWrite(f5LeftMs, iniFile, "TowerMode", "Left")
-    IniWrite(f5RightMs, iniFile, "TowerMode", "Right")
-    IniWrite(f5DiagMs, iniFile, "TowerMode", "Diag")
-    IniWrite(f5Pct, iniFile, "TowerMode", "RangePct")
-    IniWrite(f5Base.ring, iniFile, "TowerBase", "RingEdge")
-    IniWrite(f5Base.up, iniFile, "TowerBase", "Up")
-    IniWrite(f5Base.down, iniFile, "TowerBase", "Down")
-    IniWrite(f5Base.left, iniFile, "TowerBase", "Left")
-    IniWrite(f5Base.right, iniFile, "TowerBase", "Right")
-    IniWrite(f5Base.diag, iniFile, "TowerBase", "Diag")
 
     IniWrite(circleCfg.out, iniFile, "CircleMode", "Out")
     IniWrite(circleCfg.edge, iniFile, "CircleMode", "Edge")

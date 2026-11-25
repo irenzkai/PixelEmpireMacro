@@ -12,16 +12,27 @@ ActivateRunOverlay() {
 }
 
 StopAll(reason) {
-    global running, chaosTestRunning, freeCircleMode, completedLoops, mainGui
+    global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning
+    global completedLoops, mainGui, isScanningMap
     running := false
     chaosTestRunning := false
     freeCircleMode := false
+    mapCycleMode := false
+    shortestPathRunning := false
+    manualRecordRunning := false
     SetTimer(RunHomingCycle, 0)
-    SetTimer(RunFreeCircleCrossLoop, 0)
+    SetTimer(RunTowerLoop, 0)
     SetTimer(RunChaosStressTest, 0)
+    SetTimer(RunMapCycle, 0)
+    SetTimer(RunShortestPathQueue, 0)
+    SetTimer(RunManualPathRecorder, 0)
     SetTimer(UpdateHUD, 0)
     SetTimer(AltAntiAFK, 0)
     ReleaseMoveKeys()
+    if (isScanningMap) {
+        CloseWorldMap()
+        isScanningMap := false
+    }
     ClearWaystoneOrigin()
     ToolTip()
     HideOverlay()
@@ -31,16 +42,26 @@ StopAll(reason) {
 }
 
 ExitMacro(*) {
-    global running, chaosTestRunning, freeCircleMode
+    global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning, isScanningMap
     running := false
     chaosTestRunning := false
     freeCircleMode := false
+    mapCycleMode := false
+    shortestPathRunning := false
+    manualRecordRunning := false
     SetTimer(RunHomingCycle, 0)
-    SetTimer(RunFreeCircleCrossLoop, 0)
+    SetTimer(RunTowerLoop, 0)
     SetTimer(RunChaosStressTest, 0)
+    SetTimer(RunMapCycle, 0)
+    SetTimer(RunShortestPathQueue, 0)
+    SetTimer(RunManualPathRecorder, 0)
     SetTimer(UpdateHUD, 0)
     SetTimer(AltAntiAFK, 0)
     ReleaseMoveKeys()
+    if (isScanningMap) {
+        CloseWorldMap()
+        isScanningMap := false
+    }
     ClearWaystoneOrigin()
     ToolTip()
     HideOverlay()

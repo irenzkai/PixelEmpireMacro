@@ -6,3 +6,8 @@ waystone_config.ini
 *.bak
 *.tmp
 *.log
+
+__pycache__/
+agent_memory.db*
+/debug_ocr/
+/shortest_routes_log.txt
