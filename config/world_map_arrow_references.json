@@ -1,0 +1,61 @@
+{
+  "updated_at": "2026-11-27T09:06:54+08:00",
+  "reference_count": 5,
+  "loaded_count": 5,
+  "references": [
+    {
+      "path": "public/world_map_arrow_live/Screenshot 2026-11-27 085810.png",
+      "sha256": "d5394a021313d6ac0230468c86c9cf6c25c2ceb58405ffc6092c3cbae4ff4808",
+      "dimensions": [
+        43,
+        37
+      ],
+      "purpose": "Same rendered World Map player arrow; source background excluded from model"
+    },
+    {
+      "path": "public/world_map_arrow_live/Screenshot 2026-11-27 085822.png",
+      "sha256": "903939d737359acc04bf8cdacd700574c9eb5cc7ee8329fce2502d3fc27c0e6c",
+      "dimensions": [
+        47,
+        37
+      ],
+      "purpose": "Same rendered World Map player arrow; source background excluded from model"
+    },
+    {
+      "path": "public/world_map_arrow_live/Screenshot 2026-11-27 085846.png",
+      "sha256": "70f6e91f3e336f9a15d81c82a6e80a0d7a8d531ca76e5de5b5eba8afed708385",
+      "dimensions": [
+        38,
+        38
+      ],
+      "purpose": "Same rendered World Map player arrow; source background excluded from model"
+    },
+    {
+      "path": "public/world_map_arrow_live/Screenshot 2026-11-27 090024.png",
+      "sha256": "c055e711281442eb25f7d7b47f0adea229d41a4ddad43747fe09301a790aa562",
+      "dimensions": [
+        40,
+        36
+      ],
+      "purpose": "Same rendered World Map player arrow; source background excluded from model"
+    },
+    {
+      "path": "public/world_map_arrow_live/Screenshot 2026-11-27 090039.png",
+      "sha256": "7b01033baa481c0917b13ed2a65dfb46d15ea1074917dad3b5415cd76b73b8ac",
+      "dimensions": [
+        38,
+        38
+      ],
+      "purpose": "Same rendered World Map player arrow; source background excluded from model"
+    }
+  ],
+  "original_partial_reference": "public/map_arrow.png",
+  "original_preserved": true,
+  "observed_fill_rgb": [
+    255,
+    76,
+    65
+  ],
+  "animation": "Consistent with vertical bobbing/fractional pixel rasterization; static crops do not prove motion or asset provenance",
+  "detection_performance": "Await user Test Map; no agent-run detection"
+}

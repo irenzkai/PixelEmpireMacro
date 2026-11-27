@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "sheet": "public/waystone_default.png",
+  "columns": 4,
+  "rows": 1,
+  "body_box": [
+    4,
+    7,
+    12,
+    25
+  ],
+  "threshold": 0.65,
+  "scales": [
+    0.8,
+    1.0,
+    1.25,
+    1.5,
+    2.0,
+    2.5,
+    2.75,
+    3.0,
+    3.5,
+    4.0,
+    5.0,
+    6.0
+  ],
+  "max_query_width": 640,
+  "notes": "Candidate verification is separate from optional search coverage. Full-body/band gates and distinct-physical-object margin still apply at threshold 0.650. Cached models and recent accepted scale/local ROI prioritize work; lost tracking triggers full reacquisition. Live crops are additional generic references, never activation classes.",
+  "search_budget_ms": 160,
+  "preview_budget_ms": 320,
+  "max_result_age_ms": 350,
+  "min_edge_score": 0.55,
+  "min_luminance_score": 0.35,
+  "min_band_score": 0.4,
+  "min_candidate_margin": 0.045,
+  "initial_scale": 3.0,
+  "live_reference_dir": "public/waystone_live",
+  "live_body_box": [
+    0.24,
+    0.24,
+    0.52,
+    0.66
+  ],
+  "live_body_boxes": {},
+  "track_max_age_ms": 800,
+  "track_full_refresh_ms": 1500,
+  "track_padding_bodies": 2.0
+}

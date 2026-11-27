@@ -1,0 +1,182 @@
+{
+  "updated_at": "2026-11-27T07:36:51+08:00",
+  "object": "waystone",
+  "purpose": "Additional generic appearance references; filenames do not classify detection results",
+  "live_reference_count": 8,
+  "unique_asset_body_count": 4,
+  "loadable_model_count": 12,
+  "references": [
+    {
+      "original_filename": "Screenshot 2026-11-27 014846.png",
+      "filename": "waystone_unlit_green_background.png",
+      "path": "public/waystone_live/waystone_unlit_green_background.png",
+      "sha256": "daa062e1b63f322634108bd7d43158449b119f98d6a14440412bd213172bfce0",
+      "dimensions": [
+        80,
+        121
+      ],
+      "appearance": "Dim blue runes and dark stone, green background",
+      "canonical_body_dimensions": [
+        13,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 014856.png",
+      "filename": "waystone_lit_green_background.png",
+      "path": "public/waystone_live/waystone_lit_green_background.png",
+      "sha256": "315bd004662c76a0bd14848ef1d480099fe91ecf047a80fdb617d124421299f4",
+      "dimensions": [
+        72,
+        109
+      ],
+      "appearance": "Bright cyan runes and orb, green background",
+      "canonical_body_dimensions": [
+        13,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 014932.png",
+      "filename": "waystone_unlit_purple_background.png",
+      "path": "public/waystone_live/waystone_unlit_purple_background.png",
+      "sha256": "c455a21e7b21d16e7e4b9fbcdf69602e80573714112041e4cfabebfbcdd932fe",
+      "dimensions": [
+        67,
+        118
+      ],
+      "appearance": "Dark stone and dim blue runes, purple background",
+      "canonical_body_dimensions": [
+        11,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 014940.png",
+      "filename": "waystone_red_tint.png",
+      "path": "public/waystone_live/waystone_red_tint.png",
+      "sha256": "68f00ed316b3d63e9a9a85e6845d13f219655e93a04d86d6eb7e7d54069b129c",
+      "dimensions": [
+        74,
+        112
+      ],
+      "appearance": "Visible pink/red tint; no activation classification inferred",
+      "canonical_body_dimensions": [
+        13,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 014948.png",
+      "filename": "waystone_lit_purple_background.png",
+      "path": "public/waystone_live/waystone_lit_purple_background.png",
+      "sha256": "b880da5e996f59bd9fa94560c277eab65506fdd25caa005972e990ac7e7ab911",
+      "dimensions": [
+        73,
+        117
+      ],
+      "appearance": "Cyan-lit body and orb, purple background",
+      "canonical_body_dimensions": [
+        12,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 015637.png",
+      "filename": "waystone_unlit_dark.png",
+      "path": "public/waystone_live/waystone_unlit_dark.png",
+      "sha256": "dde7a48a6ad156baac263e0f1d323dfc61585c76169c6e7ae6991b9de0319b61",
+      "dimensions": [
+        65,
+        115
+      ],
+      "appearance": "Very dark stone and subdued runes",
+      "canonical_body_dimensions": [
+        11,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 015645.png",
+      "filename": "waystone_lit_diffuse_glow.png",
+      "path": "public/waystone_live/waystone_lit_diffuse_glow.png",
+      "sha256": "4a21f89ee8fe4a765d23a051c9283f0faf71cc60a437fbe7bae4fe07438130f2",
+      "dimensions": [
+        81,
+        128
+      ],
+      "appearance": "Broad pale cyan glow around the stone",
+      "canonical_body_dimensions": [
+        13,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    },
+    {
+      "original_filename": "Screenshot 2026-11-27 015651.png",
+      "filename": "waystone_lit_bright_cyan.png",
+      "path": "public/waystone_live/waystone_lit_bright_cyan.png",
+      "sha256": "4cbe243e090db105b31d457564dfe8db4a7bb510bc7a32d31b6c0644aa75cd56",
+      "dimensions": [
+        69,
+        112
+      ],
+      "appearance": "Bright cyan body and orb with visible halo",
+      "canonical_body_dimensions": [
+        12,
+        25
+      ],
+      "normalized_body_box": [
+        0.24,
+        0.24,
+        0.52,
+        0.66
+      ]
+    }
+  ],
+  "detection_run": false,
+  "setup_status": "approved",
+  "approval_scope": "Names, image preservation and loading only",
+  "detection_performance": "unverified"
+}

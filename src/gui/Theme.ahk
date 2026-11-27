@@ -129,6 +129,7 @@ SwitchTab(tabKey) {
     if (tabKey = "WAYSTONE")
         ApplyWayCardViewVisibility()
     ApplyTheme()
+    RefreshMainPreviews()
 }
 
 SwitchWayCardView(viewName) {
@@ -138,6 +139,7 @@ SwitchWayCardView(viewName) {
         ApplyWayCardViewVisibility()
     RefreshImageStatus()
     ApplyTheme()
+    RefreshMainPreviews()
 }
 
 ApplyWayCardViewVisibility() {

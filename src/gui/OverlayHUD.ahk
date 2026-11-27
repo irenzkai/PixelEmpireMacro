@@ -3,7 +3,11 @@
 ; ==============================================================================
 
 HandleOverlayStopClick(*) {
-    global manualRecordRunning
+    global manualRecordRunning, assetPickerActive
+    if assetPickerActive {
+        ExitAssetPicker()
+        return
+    }
     if (manualRecordRunning) {
         FinishManualPathRecording()
         return
@@ -47,7 +51,7 @@ BuildOverlayGUI() {
     overlayStopBtn := {edges: [sTop, sBot, sLft, sRgt], btn: sBtn}
 }
 
-ShowOverlay() {
+ShowOverlay(forceWindow := false) {
     global overlayGui, overlayVisible, overlayCustomPos, overlayX, overlayY
     if !IsSet(overlayGui)
         return
@@ -55,7 +59,7 @@ ShowOverlay() {
     ApplyOverlayTheme()
     UpdateHUD()
 
-    if (!overlayCustomPos || overlayX < 0 || overlayY < 0) {
+    if (forceWindow || !overlayCustomPos || overlayX < 0 || overlayY < 0) {
         windows := GetSortedRobloxWindows()
         if (windows.Length > 0) {
             WinGetPos(&wx, &wy, &ww, &wh, "ahk_id " windows[1])
@@ -72,6 +76,8 @@ ShowOverlay() {
 
     overlayVisible := true
     overlayGui.Show("x" ox " y" oy " w440 h58 NoActivate")
+    if forceWindow
+        WinSetAlwaysOnTop(true, "ahk_id " overlayGui.Hwnd)
 }
 
 HideOverlay() {
@@ -145,16 +151,20 @@ UpdateGuiStatus(msg) {
 }
 
 UpdateHUD() {
+    global assetPickerActive
     global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning, wideStarMode
     global completedLoops, recoveryCount, bossesHunted, currentWaystoneIdx, manualRecFromIdx, manualRecCrossedIdx, hudStatus
     global floorsCleared, towerPhase, overlayVisible, overlayTitleTxt, overlayStatusTxt
-    if (!running)
+    if (!running && !assetPickerActive)
         return
 
     winCount := GetSortedRobloxWindows().Length
     altInfo := (winCount > 1) ? " · Alts: " (winCount - 1) : ""
 
-    if (chaosTestRunning) {
+    if assetPickerActive {
+        titleLine := "ASSET PICKER ON — automated movement paused"
+        UpdateGuiStatus("Asset Picker: click/drag in Roblox. Esc/F11 exits.")
+    } else if (chaosTestRunning) {
         titleLine := "● CHAOS STRESS TEST" altInfo
         UpdateGuiStatus(hudStatus)
     } else if (manualRecordRunning) {

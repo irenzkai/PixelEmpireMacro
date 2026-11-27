@@ -7,6 +7,9 @@ waystone_config.ini
 *.tmp
 *.log
 
+# Temporary prompt files are created outside the repository; keep any local task traces out too.
+/.task-output/
+
 __pycache__/
 agent_memory.db*
 /debug_ocr/

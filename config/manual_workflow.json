@@ -1,0 +1,405 @@
+{
+  "current_item": 6,
+  "advance_requires_user_confirmation": true,
+  "updated_at": "2026-11-27T11:54:41+08:00",
+  "items": [
+    {
+      "number": 1,
+      "title": "GUI redesign",
+      "status": "approved"
+    },
+    {
+      "number": 2,
+      "title": "Fix Image Review",
+      "status": "approved",
+      "checks": {
+        "image_review": "approved",
+        "accidental_deletion_recovery": "approved"
+      }
+    },
+    {
+      "number": 3,
+      "title": "Agent overlay",
+      "status": "approved",
+      "checks": {
+        "gui_show_starts_overlay": "approved",
+        "f10_toggle": "approved",
+        "close_and_reopen": "approved",
+        "recording_summary_handoff": "approved"
+      },
+      "recording_sample": {
+        "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\routes\\demonstrations\\demo-20261127004058-817750718.ini",
+        "duration_ms": 7187,
+        "completion": "partial_arrival_unverified",
+        "stop_reason": "mouse_or_text_ui",
+        "arrival_verification": "unverified",
+        "approval_scope": "Recording details and manual copying only"
+      }
+    },
+    {
+      "number": 4,
+      "title": "Reference cleanup",
+      "status": "approved",
+      "checks": {
+        "prior_removals_audited": "complete",
+        "caller_checks": "complete",
+        "obsolete_diagnostic_removed": "complete",
+        "stale_reference_registrations": "none_found",
+        "protected_files": "unchanged"
+      }
+    },
+    {
+      "number": 5,
+      "title": "Waystone and World Map references",
+      "status": "approved",
+      "current_reference": null,
+      "world_map_variant_correction": "complete: one separate WorldMap/WaystoneImg reference; one generic live waystone",
+      "references": [
+        {
+          "number": 1,
+          "key": "waystone",
+          "title": "Live waystone (generic frame detector)",
+          "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\public\\waystone_default.png",
+          "sha256": "805caba95cc2f8d57f31829e139e8899ef78ac74acf19343fc87b1641ee5492a",
+          "dimensions": [
+            80,
+            35
+          ],
+          "frames": 4,
+          "frame_dimensions": [
+            20,
+            35
+          ],
+          "status": "approved",
+          "approval_scope": "Reference and associated detector manually approved by user (item 5 final approval)",
+          "decision": "keep"
+        },
+        {
+          "number": 2,
+          "key": "waystone_prompt",
+          "title": "Waystone interaction / ward prompt",
+          "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\public\\ward_prompt.png",
+          "sha256": "eecae66f49239e4774a476b5c8a919e44faac30df0ca1fd44fa57461ea40a879",
+          "dimensions": [
+            126,
+            36
+          ],
+          "status": "approved",
+          "decision": "keep",
+          "approval_scope": "Reference and associated detector manually approved by user (item 5 final approval)"
+        },
+        {
+          "number": 3,
+          "key": "world_map_open",
+          "title": "World Map open indicator",
+          "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\public\\map_open.png",
+          "sha256": "a9381397f4ba7f0e3ab6f5bae697d05f127d2458d4f955b81cd2a13c88d6f624",
+          "dimensions": [
+            772,
+            25
+          ],
+          "status": "approved",
+          "decision": "keep",
+          "approval_scope": "Reference and associated detector manually approved by user (item 5 final approval)"
+        },
+        {
+          "number": 4,
+          "key": "world_map_waystone",
+          "title": "World Map waystone",
+          "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\public\\map_waystone.png",
+          "sha256": "2b6da26a33333ee70e91677a25129278380e92309a52b28aa9273cf8e6286281",
+          "dimensions": [
+            4,
+            21
+          ],
+          "status": "approved",
+          "decision": "keep",
+          "approval_scope": "Reference and associated detector manually approved by user (item 5 final approval)"
+        },
+        {
+          "number": 5,
+          "key": "world_map_arrow",
+          "title": "World Map red player arrow",
+          "path": "C:\\Users\\DELL\\Desktop\\PixelEmpireMacro\\public\\map_arrow.png",
+          "sha256": "2c71a45a20f24b161c153578a421012abddf244b84a04495c582520c50f7bd35",
+          "dimensions": [
+            11,
+            20
+          ],
+          "status": "approved",
+          "decision": "keep",
+          "approval_scope": "Reference and associated detector manually approved by user (item 5 final approval)"
+        }
+      ],
+      "detector_check": "manually_approved_by_user",
+      "live_classification": "one generic waystone; no activation classification",
+      "detector_config": "config/waystone_detector.json",
+      "manual_results": {
+        "night_unlit_unobstructed": 0.59,
+        "night_unlit_illuminated": 0.604,
+        "night_lit_unobstructed": 0.603,
+        "night_obstructed_wrong_candidate": 0.54,
+        "threshold": 0.65,
+        "reported_ms": 861,
+        "ward_prompt": "FOUND in separate near-waystone check",
+        "live_detection_approved": true
+      },
+      "manual_budget_results": [
+        {
+          "score": 0.717,
+          "threshold": 0.65,
+          "margin": 0.019,
+          "total_ms": 450
+        },
+        {
+          "score": 0.908,
+          "threshold": 0.65,
+          "margin": 0.177,
+          "total_ms": 476
+        },
+        {
+          "score": 0.887,
+          "threshold": 0.65,
+          "margin": 0.118,
+          "total_ms": 495
+        }
+      ],
+      "live_crops": {
+        "folder": "public/waystone_live",
+        "status": "Source references, loading and live detector manually approved",
+        "loaded_count": 8,
+        "asset_body_count": 4,
+        "loadable_model_count": 12,
+        "loaded_files": [
+          "public/waystone_live/waystone_lit_bright_cyan.png",
+          "public/waystone_live/waystone_lit_diffuse_glow.png",
+          "public/waystone_live/waystone_lit_green_background.png",
+          "public/waystone_live/waystone_lit_purple_background.png",
+          "public/waystone_live/waystone_red_tint.png",
+          "public/waystone_live/waystone_unlit_dark.png",
+          "public/waystone_live/waystone_unlit_green_background.png",
+          "public/waystone_live/waystone_unlit_purple_background.png"
+        ],
+        "inventory": "config/waystone_live_references.json",
+        "runtime_refresh": "Automatic reference-signature invalidation on next user-initiated request"
+      },
+      "live_reference_setup_status": "approved",
+      "detection_performance": {
+        "status": "approved",
+        "requires_explicit_test_confirmation": false
+      },
+      "reference_setup_status": "approved",
+      "current_test": null,
+      "testing_process": "Item 5 complete; preserve approved detectors and references. No repeat setup/tests requested.",
+      "world_map_detector_config": "config/world_map_detector.json",
+      "world_map_icon_crops": [
+        {
+          "path": "public/world_map_waystone_live/Screenshot 2026-11-27 074738.png",
+          "sha256": "c89600a86a1f2228691735a47f968d00f8bf252dab3048b1239b54589878e7eb",
+          "dimensions": [
+            20,
+            37
+          ],
+          "purpose": "Same World Map waystone icon; actual rendered pixels, no activation classification"
+        },
+        {
+          "path": "public/world_map_waystone_live/Screenshot 2026-11-27 074755.png",
+          "sha256": "66945e1ed68907626deec3364a1ee339d43f5e4e83a48cdc04ce4893680bdc94",
+          "dimensions": [
+            20,
+            38
+          ],
+          "purpose": "Same World Map waystone icon; actual rendered pixels, no activation classification"
+        }
+      ],
+      "world_map_failure": {
+        "user_current_map": "WS29 Mossbound Tribunal",
+        "incorrect_selected_map": "WS30 Duskhollow of Lost Things",
+        "player_arrow": "Visible within Mossbound Tribunal",
+        "waystone": "Slightly below-left, in the same map area",
+        "diagnosis": "Test passed stale configured route WS30 before arrow detection; neighboring visible asset was selected first"
+      },
+      "world_map_manual_results": [
+        {
+          "scene": "Gilded Glass Palace",
+          "result": "arrow rejected; visible in supplied screenshot"
+        },
+        {
+          "scene": "Mossbound Tribunal with neighboring-map hover tooltip",
+          "result": "viewport rejected despite visible window"
+        },
+        {
+          "scene": "Mossbound Tribunal without tooltip",
+          "result": "user-confirmed successful detection",
+          "arrow": [
+            870,
+            533
+          ],
+          "waystone": [
+            959,
+            558
+          ],
+          "vector": [
+            89,
+            25
+          ]
+        },
+        {
+          "scene": "Gilded Glass Palace retry",
+          "result": "4 distinct arrow hypotheses; ambiguous 0.780/0.773"
+        },
+        {
+          "scene": "Mossbound Tribunal with neighboring-map tooltip retry",
+          "result": "user-confirmed successful window recovery and detection",
+          "arrow": [
+            920,
+            528
+          ],
+          "waystone": [
+            959,
+            558
+          ],
+          "vector": [
+            39,
+            30
+          ]
+        },
+        {
+          "scene": "Drumfield Carnival",
+          "result": "5 distinct arrow hypotheses; ambiguous 0.759/0.742"
+        },
+        {
+          "scene": "The Crimson Deep",
+          "result": "11 distinct arrow hypotheses; ambiguous 0.774/0.774"
+        },
+        {
+          "scene": "Gilded Glass Palace with and without notification",
+          "result": "UNKNOWN; 2 distinct arrows, scores 0.757/0.671"
+        },
+        {
+          "scene": "Toppled Gameboard",
+          "result": "successful user-supplied result",
+          "arrow": [
+            1030,
+            528
+          ],
+          "waystone": [
+            961,
+            552
+          ],
+          "vector": [
+            -69,
+            24
+          ]
+        },
+        {
+          "scene": "Candlewax Abbey",
+          "result": "UNKNOWN; 3 distinct arrows, scores 0.757/0.671"
+        },
+        {
+          "scene": "Drumfield Carnival retry",
+          "result": "UNKNOWN; 3 distinct arrows, scores 0.757/0.649"
+        },
+        {
+          "scene": "The Crimson Deep with map absent",
+          "result": "UNKNOWN; World Map header not confirmed; diagnostic preview only"
+        },
+        {
+          "scene": "The Crimson Deep with map visible",
+          "result": "successful user-supplied result",
+          "arrow": [
+            870,
+            554
+          ],
+          "waystone": [
+            961,
+            546
+          ],
+          "vector": [
+            91,
+            -8
+          ]
+        },
+        {
+          "scene": "Rimeveil Abyss",
+          "result": "WS22 and arrow correctly detected; waystone weak/ambiguous",
+          "arrow": [
+            880,
+            569
+          ]
+        },
+        {
+          "scene": "Starfall Isles",
+          "result": "WS18 and arrow correctly detected; waystone weak/ambiguous",
+          "arrow": [
+            1124,
+            591
+          ]
+        },
+        {
+          "scene": "Red player arrow overall latest feedback",
+          "result": "user: red arrow is now fine"
+        }
+      ],
+      "world_map_focused_fix": "Manually approved, including blue and unfamiliar maps; implementation preserved.",
+      "world_map_arrow_live": {
+        "folder": "public/world_map_arrow_live",
+        "reference_count": 5,
+        "loaded_count": 5,
+        "inventory": "config/world_map_arrow_references.json",
+        "source_files_preserved": true,
+        "filenames": "Original user filenames retained",
+        "detection_status": "approved"
+      },
+      "world_map_red_arrow_detection": "manually_confirmed_working_by_user; preserve rendered-arrow detector",
+      "approval_scope": "Full manual approval: Test Waystone, ward prompt, World Map open, red arrow, current map, map waystone and vector; blue and unfamiliar maps included. Supersedes historical pending results."
+    },
+    {
+      "number": 6,
+      "title": "F8 smooth movement and recovery",
+      "status": "map_gate_cache_awaiting_manual_feedback",
+      "scope": "F8 item 6 only; preserved successful ward-present sweep and all approved detectors/references. Latest user explicitly requests unlimited recovery retries until ward arrival or cancellation/focus/error stop.",
+      "validation": "Source review/syntax parsing and safe stopped startup only; no automated tests, detector captures, latency benchmarks or character actions. Final macro PID 2980; vision launcher PID 1972. One user recovery test requested.",
+      "manual_feedback": "User requests strict map/live gating and fresh capture after closure; simplify optimization around existing color/shape arrow and masked waystone matching, validated registration reuse, local tracking/broad fallback, timing diagnostics; no fixed latency promise.",
+      "revision": "Removed F8-only ward sampler. Reuse approved native IsOnWaystone image branch while moving; full approved async prompt check at startup without new evidence metadata. Startup timeout/unavailable stops instead of recovery. Continuous holds, overlays and recovery bounds preserved.",
+      "latest_change": "Global mapOpen plus transition view_epoch isolates live cache/results. Vendored Shins v2 for named cached exact map UI checks. Main map vectors reuse approved single-frame viewport/arrow/area/icon path with validated geometry and unchanged-label identity caching, local three-scale icon tracking and full fallback on uncertainty. No second native registration system. Expanded stage/cache/transition timings in Copy F8 Record.",
+      "confirmed_scope": "Ward-present sweep and prior live/occlusion/map recovery conditions; blocked-area extension not yet manually verified.",
+      "runtime_build": "tracker-20261127-v4-mapgate-shins"
+    },
+    {
+      "number": 7,
+      "title": "Current map OCR",
+      "status": "pending"
+    },
+    {
+      "number": 8,
+      "title": "Subarea references",
+      "status": "pending"
+    },
+    {
+      "number": 9,
+      "title": "Portal references",
+      "status": "pending"
+    },
+    {
+      "number": 10,
+      "title": "Relative map directions",
+      "status": "pending"
+    },
+    {
+      "number": 11,
+      "title": "Map tooltip records",
+      "status": "pending"
+    },
+    {
+      "number": 12,
+      "title": "Boss/miniboss notification OCR",
+      "status": "pending"
+    },
+    {
+      "number": 13,
+      "title": "Tower OCR",
+      "status": "pending"
+    }
+  ]
+}

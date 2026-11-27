@@ -23,6 +23,7 @@ AddCard(tabName, x, y, w, h) {
     themeCards.Push({edges: edges, fill: fill})
     if (tabName != "" && pageControls.Has(tabName))
         pageControls[tabName].Push(fill)
+    return {edges:edges,fill:fill}
 }
 
 AddDivider(x, y, w) {

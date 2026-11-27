@@ -15,7 +15,7 @@ GetCaptureCatalogCategories() {
 }
 
 GetCaptureItemsForCategory(catIdx) {
-    global promptImg, recoveryImg, recoveryOffImg, mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg
+    global promptImg, recoveryImg, mapOpenImg, mapArrowImg, mapWaystoneImg
     global bossComingImg, bossSpawnImg, bossAlreadyInImg, bossDefeatedImg
     global minibossComingImg, minibossSpawnImg, minibossAlreadyInImg, minibossDefeatedImg, youDefeatedBossImg
     global inTowerImg, towerClearedImg, towerNextImg
@@ -24,12 +24,10 @@ GetCaptureItemsForCategory(catIdx) {
     items := []
     if (catIdx = 1) {
         items.Push({name: "Waystone Prompt (Return to Town)", path: promptImg, kind: "PROMPT"})
-        items.Push({name: "Waystone Statue (Lit)",            path: recoveryImg, kind: "STATUE"})
-        items.Push({name: "Waystone Statue (Unlit)",          path: recoveryOffImg, kind: "STATUE"})
+        items.Push({name: "Waystone (animation frames)",            path: recoveryImg, kind: "STATUE"})
         items.Push({name: "World Map Open Header",            path: mapOpenImg, kind: "MAP_OPEN"})
         items.Push({name: "World Map Red Arrow",              path: mapArrowImg, kind: "MAP_ARROW"})
-        items.Push({name: "World Map Waystone (Lit)",         path: mapWaystoneImg, kind: "MAP_WAY"})
-        items.Push({name: "World Map Waystone (Unlit)",       path: mapWaystoneOffImg, kind: "MAP_WAY"})
+        items.Push({name: "World Map Waystone",               path: mapWaystoneImg, kind: "MAP_WAY"})
     } else if (catIdx = 2) {
         items.Push({name: "Boss Coming",       path: bossComingImg, kind: "BOSS"})
         items.Push({name: "Boss Spawn",        path: bossSpawnImg, kind: "BOSS"})
@@ -104,6 +102,7 @@ ToggleCaptureOneGo(*) {
 }
 
 RefreshCaptureUI() {
+    RefreshMainPreviews()
     global captureCategoryIdx, captureItemIdx, captureOneGo
     global txtCapCat, txtCapItem, txtCapPath, txtCapStatus, btnCapOneGo
     global captureBarVisible, capBarCatTxt, capBarItemTxt, capBarStatusTxt
@@ -281,6 +280,11 @@ SnapCurrentCaptureItem(*) {
     it := GetCurrentCaptureItem()
     if !IsObject(it)
         return
+    ; A scene crop must not overwrite the supplied animation sheet.
+    if it.kind = "STATUE" {
+        TestWaystoneDetection()
+        return
+    }
 
     if (captureBarVisible && IsSet(captureBarGui))
         captureBarGui.Hide()
@@ -342,8 +346,8 @@ VerifyCapturedItemOnScreen(it, &detected := false) {
         detected := IsOnWaystone(&fx, &fy)
         return detected ? ("DETECTED at (" fx "," fy ")") : ("Not detected (Prompt Tol: " imgTolerance ")")
     } else if (it.kind = "STATUE") {
-        detected := SearchImageWithCache(it.path, statueSearchBox, recoveryTolerance, &fx, &fy, &p, true)
-        return detected ? ("DETECTED at (" fx "," fy ")") : ("Not detected (Sprite Tol: " recoveryTolerance ")")
+        detected := FindWaystoneStatue(&fx, &fy, statueSearchBox)
+        return detected ? ("DETECTED at (" fx "," fy ")") : ("Not detected (minimum score: " recoveryTolerance "%)")
     } else if (it.kind = "MAP_OPEN" || it.kind = "MAP_ARROW" || it.kind = "MAP_WAY") {
         detected := SearchImageWithCache(it.path, mapBox, mapTolerance, &fx, &fy, &p, true)
         return detected ? ("DETECTED on Map at (" fx "," fy ")") : ("Not detected (open World Map M first, Tol: " mapTolerance ")")

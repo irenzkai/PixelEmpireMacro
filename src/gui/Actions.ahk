@@ -333,7 +333,7 @@ RefreshChaosUI() {
 }
 
 RefreshWorldMapUI() {
-    global isUpdatingUI, mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
+    global isUpdatingUI, mapOpenImg, mapArrowImg, mapWaystoneImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
     global edtMapOpenPath, edtMapArrowPath, edtMapWayPath, edtMapTol, edtMapMsPx, btnMapToggle
 
     if !IsSet(edtMapArrowPath)
@@ -353,7 +353,8 @@ RefreshWorldMapUI() {
 }
 
 RefreshImageStatus() {
-    global wayCardView, promptImg, recoveryImg, recoveryOffImg, mapOpenImg, mapArrowImg, mapWaystoneImg
+    RefreshMainPreviews()
+    global wayCardView, promptImg, recoveryImg, mapOpenImg, mapArrowImg, mapWaystoneImg
     global txtImgStatus, edtPromptPath, edtRecoveryPath, edtMapOpenPath, edtMapArrowPath, edtMapWayPath
 
     if IsSet(edtPromptPath)
@@ -371,7 +372,7 @@ RefreshImageStatus() {
         if (wayCardView = "WORLDMAP") {
             if !FileExist(mapArrowImg)
                 txtImgStatus.Text := "● ARROW MISSING"
-            else if (!FileExist(mapWaystoneImg) && !FileExist(mapWaystoneOffImg))
+            else if (!FileExist(mapWaystoneImg))
                 txtImgStatus.Text := "● ICON MISSING"
             else if !FileExist(mapOpenImg)
                 txtImgStatus.Text := "● OPEN IMG MISSING"
@@ -380,7 +381,7 @@ RefreshImageStatus() {
         } else {
             if !FileExist(promptImg)
                 txtImgStatus.Text := "● PROMPT MISSING"
-            else if (!FileExist(recoveryImg) && !FileExist(recoveryOffImg))
+            else if (!FileExist(recoveryImg))
                 txtImgStatus.Text := "● SPRITE MISSING"
             else
                 txtImgStatus.Text := "● READY"
@@ -444,7 +445,7 @@ OnSettingsChanged(*) {
     if (isUpdatingUI)
         return
     imgTolerance      := ParseSetting(edtTolerance.Value, imgTolerance, 0, 255)
-    recoveryTolerance := ParseSetting(edtRecTolerance.Value, recoveryTolerance, 0, 255)
+    recoveryTolerance := ParseSetting(edtRecTolerance.Value, recoveryTolerance, 5, 100)
     mapTolerance      := ParseSetting(edtMapTol.Value, mapTolerance, 0, 255)
     mapMsPerPx        := ParseSetting(edtMapMsPx.Value, mapMsPerPx, 5, 300)
     if IsSet(edtBossTol)
@@ -585,7 +586,7 @@ ImportPromptImage(*) {
 ImportRecoveryImage(*) {
     global recoveryImg, recoverySearchPrefix, mainGui, edtRecoveryPath
     mainGui.Opt("+OwnDialogs")
-    selected := FileSelect(3, A_ScriptDir, "Select Recovery Waystone Sprite Image", "Images (*.png; *.jpg; *.jpeg; *.bmp)")
+    selected := FileSelect(3, A_ScriptDir, "Select Waystone Animation Sheet (current grid: 4 equal frames)", "Images (*.png; *.jpg; *.jpeg; *.bmp)")
     if (selected != "") {
         recoveryImg := selected
         recoverySearchPrefix := ""
@@ -732,86 +733,110 @@ ImportTowerNextImg(*) {
 }
 
 TestWaystoneDetection(*) {
-    global mainGui, imgTolerance, recoveryImg, recoveryOffImg, recoveryTolerance, lastMatchedStatueImg
+    global mainGui, recoveryTolerance
+    StopAll("Manual waystone detection preview; automation stopped")
     if !InitVisionAndWindow(true)
         return
-
     mainGui.Hide()
     Sleep(120)
-    promptFound := IsOnWaystone(&fx, &fy)
-    statueFound := FindWaystoneStatue(&sx, &sy)
+    promptFound := IsOnWaystone()
+    kv := OcrHttpGetKV("/waystone_sprite?preview=1&threshold=" (recoveryTolerance / 100), 10000)
     mainGui.Show()
-
-    promptMsg := promptFound
-        ? "FOUND at (" fx ", " fy ")"
-        : "NOT found (Tol: " imgTolerance ")"
-
-    testedSprite := (statueFound && lastMatchedStatueImg != "") ? lastMatchedStatueImg : recoveryImg
-    GetImageDimensions(testedSprite, &rw, &rh)
-    statueTag := (testedSprite = recoveryOffImg) ? " [UNLIT]" : " [LIT]"
-
-    statueMsg := (!FileExist(recoveryImg) && !FileExist(recoveryOffImg))
-        ? "FILE MISSING (" recoveryImg ")"
-        : (statueFound ? "FOUND" statueTag " at (" sx ", " sy ") [" rw "x" rh "px]" : "NOT found (Tol: " recoveryTolerance ", Size: " rw "x" rh "px)")
-
+    score := kv.Has("score") ? Format("{:.3f}", Number(kv["score"])) : "unavailable"
+    found := kv.Has("found") && kv["found"] = "1"
+    detail := kv.Has("error") ? kv["error"] : (found ? "ACCEPTED" : "UNCERTAIN - no accepted detection")
+    previewPath := kv.Has("crop_path") ? kv["crop_path"] : "unavailable"
+    if FileExist(previewPath)
+        try Run('"' previewPath '"')
     mainGui.Opt("+OwnDialogs")
-    MsgBox(
-        "Point 0 Prompt ('Return to Town'):`n  " promptMsg
-        "`n`nRecovery Sprite:`n  " statueMsg
-        "`n`nTip: If Recovery Sprite is NOT found, crop an opaque ~24x34px stone + rune patch from Roblox at your zoom level.",
-        "Waystone Detection Test",
-        (promptFound || statueFound) ? "Iconi" : "Icon!"
-    )
+    MsgBox("Accepted detection: " detail "`nBest candidate score: " score " / " Format("{:.3f}", recoveryTolerance / 100)
+        "`nReference: " (kv.Has("reference_name") ? kv["reference_name"] : "unavailable")
+        "`nLive references loaded: " (kv.Has("live_reference_count") ? kv["live_reference_count"] : "unknown")
+        "`nCandidate verification: " (kv.Has("candidate_complete") && kv["candidate_complete"] = "1" ? "complete" : "incomplete")
+        "`nOptional search: " (kv.Has("search_complete") && kv["search_complete"] = "1" ? "complete" : "budget limited")
+        "`nPhysical objects: " (kv.Has("physical_object_count") ? kv["physical_object_count"] : "unknown")
+        "`nHypotheses in selected object: " (kv.Has("grouped_hypotheses") ? kv["grouped_hypotheses"] : "unknown")
+        "`nSearch scope: " (kv.Has("search_scope") ? kv["search_scope"] : "unknown")
+        "`nEdge evidence: " (kv.Has("edge_score") ? Format("{:.3f}", Number(kv["edge_score"])) : "unavailable")
+        "`nLuminance evidence: " (kv.Has("luminance_score") ? Format("{:.3f}", Number(kv["luminance_score"])) : "unavailable")
+        "`nCandidate margin: " (kv.Has("candidate_margin") ? Format("{:.3f}", Number(kv["candidate_margin"])) : "unavailable")
+        "`nReason: " (kv.Has("reason") ? kv["reason"] : "unavailable")
+        "`nMatching: " (kv.Has("compute_ms") ? kv["compute_ms"] : "unknown") " ms; capture: " (kv.Has("capture_ms") ? kv["capture_ms"] : "unknown") " ms"
+        "`nWard prompt: " (promptFound ? "FOUND - near-waystone evidence" : "not found")
+        "`n`nAmber = best candidate only. Green = accepted detection. Score is not a probability."
+        "`nPreview file: " previewPath
+        "`nSprite visibility alone does not confirm arrival; map overlap requires a live/prompt recheck.",
+        "Waystone Detection Preview", (found || promptFound) ? "Iconi" : "Icon!")
 }
 
 TestWorldMapDetection(*) {
-    global mainGui, mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, currentWaystoneIdx, waystoneRoutes
+    global mainGui, mapOpenImg, mapArrowImg, mapWaystoneImg, mapTolerance
+    StopAll("Manual World Map detection test; automation stopped")
     if !InitVisionAndWindow(false)
         return
 
-    hasWay := FileExist(mapWaystoneImg) || FileExist(mapWaystoneOffImg)
+    hasWay := FileExist(mapWaystoneImg)
     if (!FileExist(mapArrowImg) || !hasWay) {
         mainGui.Opt("+OwnDialogs")
         MsgBox("Missing World Map crop(s)!`n`nEnsure these exist:`n- " mapOpenImg " (recommended)`n- " mapArrowImg "`n- " mapWaystoneImg, "World Map Test", "Icon!")
         return
     }
 
-    mainGui.Hide()
-    Sleep(120)
-    res := ScanWorldMapVector(currentWaystoneIdx)
-    mainGui.Show()
+    try {
+        mainGui.Hide()
+        Sleep(120)
+        ; Detect the arrow's containing area; a saved route selection is not identity.
+        res := ScanWorldMapVector(-1, "waystone", "", true)
+    } finally {
+        mainGui.Show()
+    }
 
     GetImageDimensions(mapOpenImg, &ow, &oh)
     GetImageDimensions(mapArrowImg, &aw, &ah)
     GetImageDimensions(mapWaystoneImg, &ww, &wh)
 
     openMsg := !FileExist(mapOpenImg)
-        ? "FILE MISSING (using Arrow fallback)"
-        : (res.openDetected ? "DETECTED [" ow "x" oh "px]" : "NOT detected (Tol: " mapTolerance ", Size: " ow "x" oh "px)")
+        ? "FILE MISSING"
+        : (res.openDetected ? "DETECTED" : "NOT confirmed in captured frame")
 
+    arrowPositionKnown := res.HasOwnProp("ax") && res.HasOwnProp("ay") && IsNumber(res.ax) && IsNumber(res.ay)
     arrowMsg := res.arrowFound
-        ? "FOUND at (" res.ax ", " res.ay ") [" aw "x" ah "px]"
-        : "NOT found (Tol: " mapTolerance ", Size: " aw "x" ah "px)"
+        ? (arrowPositionKnown ? "FOUND at (" res.ax ", " res.ay ")" : "FOUND; position unavailable")
+        : "NOT found or ambiguous inside the map viewport"
 
-    areaMsg := res.areaFound
-        ? "MATCHED " waystoneRoutes[currentWaystoneIdx].file
-        : "NOT matched (used arrow radius fallback)"
+    areaMsg := res.areaFound && res.mapIdx >= 0
+        ? "WS #" res.mapIdx ": " res.mapName
+        : "UNKNOWN - no confirmed arrow-containing map area"
 
+    wayPositionKnown := res.HasOwnProp("wx") && res.HasOwnProp("wy") && IsNumber(res.wx) && IsNumber(res.wy)
     wayMsg := res.wayFound
-        ? "FOUND at (" res.wx ", " res.wy ") [" ww "x" wh "px]"
-        : "NOT found (Tol: " mapTolerance ")"
+        ? (wayPositionKnown ? "FOUND at (" res.wx ", " res.wy ")" : "FOUND; position unavailable")
+        : "NOT confirmed within the selected map area"
 
     vecMsg := res.ok
-        ? "dx = " res.dx "px, dy = " res.dy "px`n  Est. Walk: " Round(res.dx * mapMsPerPx) "ms X, " Round(res.dy * mapMsPerPx) "ms Y (" mapMsPerPx " ms/px)"
+        ? "dx = " res.dx "px, dy = " res.dy "px"
         : "N/A"
+
+    if res.previewPath != "" && FileExist(res.previewPath)
+        try Run('"' res.previewPath '"')
+
+    mapDetails := "`n`nCoordinates: " res.coordinateSpace "`nViewport: " (res.viewportFound ? "confirmed" : "unknown")
+    if res.mapScale != ""
+        mapDetails .= "`nMap zoom / registration scale: " res.mapScale
+    if res.mapEvidence != ""
+        mapDetails .= "`nIdentity evidence: " res.mapEvidence
+    if res.reason != ""
+        mapDetails .= "`nDetails: " res.reason
+    if res.previewPath != ""
+        mapDetails .= "`nPreview: " res.previewPath
 
     mainGui.Opt("+OwnDialogs")
     MsgBox(
         "Map Open Indicator (map_open.png):`n  " openMsg
         "`n`nRed Player Arrow:`n  " arrowMsg
-        "`n`nMap Area (" waystoneRoutes[currentWaystoneIdx].label "):`n  " areaMsg
+        "`n`nCurrent map (arrow's containing area):`n  " areaMsg
         "`n`nWaystone Icon:`n  " wayMsg
-        "`n`nReturn Vector:`n  " vecMsg,
+        "`n`nReturn Vector:`n  " vecMsg mapDetails,
         "World Map (M) Detection Test",
         res.ok ? "Iconi" : "Icon!"
     )
@@ -921,7 +946,7 @@ ResetWaystoneDefaults(*) {
     widePct  := 100
 
     imgTolerance      := 45
-    recoveryTolerance := 50
+    recoveryTolerance := 65
     mapTolerance      := 55
     mapMsPerPx        := 42
 

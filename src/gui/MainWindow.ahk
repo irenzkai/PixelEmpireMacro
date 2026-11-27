@@ -3,6 +3,7 @@
 ; ==============================================================================
 
 BuildGUI() {
+    global hotkeys
     global mainGui, activeTab, wayCardView, pageControls, wayCardSubControls, clickableHwnds
     global themeCards, themeDividers, themePrimaryText, themeMutedText, themeEdits
     global themePrimaryBtns, themeSecondaryBtns, themeTabs
@@ -38,7 +39,7 @@ BuildGUI() {
     themeTabs          := Map()
     hkBadges           := Map()
 
-    mainGui := Gui("-MaximizeBox", "Pixel Empire Macro")
+    mainGui := Gui("+Resize +MinSize780x520 +0x300000", "Pixel Empire Macro")
     mainGui.MarginX := 0
     mainGui.MarginY := 0
     mainGui.SetFont("s9", "Segoe UI")
@@ -91,7 +92,7 @@ BuildGUI() {
     edtTolerance := AddSubStyledEdit("WAYSTONE", "SPRITES", 108, 236, 56, 26, imgTolerance, "Number")
     edtTolerance.OnEvent("Change", OnSettingsChanged)
 
-    AddSubMutedLabel("WAYSTONE", "SPRITES", 180, 240, 64, "Sprite Tol:")
+    AddSubMutedLabel("WAYSTONE", "SPRITES", 180, 240, 64, "Min score %:")
     edtRecTolerance := AddSubStyledEdit("WAYSTONE", "SPRITES", 246, 236, 56, 26, recoveryTolerance, "Number")
     edtRecTolerance.OnEvent("Change", OnSettingsChanged)
 
@@ -370,7 +371,7 @@ BuildGUI() {
     ; ==========================================================================
     ; TAB 6: SETTINGS
     ; ==========================================================================
-    AddCard("SETTINGS", 20, 116, 500, 114)
+    AddCard("SETTINGS", 20, 116, 500, 132)
     AddCardTitle("SETTINGS", 36, 128, 390, "APPEARANCE & DISPLAY")
 
     AddPrimaryLabel("SETTINGS", 36, 156, 200, "Interface Theme")
@@ -381,20 +382,24 @@ BuildGUI() {
     AddFlatButton(290, 190, 102, 28, "Reset Pos", false, ResetOverlayPosition, "SETTINGS")
     btnSetHud := AddFlatButton(400, 190, 104, 28, "", false, ToggleHudSetting, "SETTINGS")
 
-    AddCard("SETTINGS", 20, 240, 500, 236)
-    AddCardTitle("SETTINGS", 36, 248, 200, "HOTKEY SWITCH")
+    AddPrimaryLabel("SETTINGS", 36, 222, 200, "Agent Overlay [" FormatHotkeyRaw(hotkeys.overlay) "]")
+    AddFlatButton(246, 220, 74, 22, "Show", false, RestoreAgentOverlay, "SETTINGS")
+    AddFlatButton(326, 220, 74, 22, "Hide", false, HideAgentOverlay, "SETTINGS")
+    AddFlatButton(406, 220, 98, 22, "Record route", false, StartAgentRecording, "SETTINGS")
+    AddCard("SETTINGS", 20, 252, 500, 224)
+    AddCardTitle("SETTINGS", 36, 260, 200, "HOTKEY SWITCH")
 
-    btnSetKeysToggle := AddFlatButton(290, 244, 102, 22, "", false, ToggleHotkeysEnabled, "SETTINGS")
-    AddFlatButton(400, 244, 104, 22, "Reset Keys", false, ResetDefaultHotkeys, "SETTINGS")
+    btnSetKeysToggle := AddFlatButton(290, 256, 102, 22, "", false, ToggleHotkeysEnabled, "SETTINGS")
+    AddFlatButton(400, 256, 104, 22, "Reset Keys", false, ResetDefaultHotkeys, "SETTINGS")
 
-    AddHotkeyRow("waystone", "Waystone 8-Star",          272)
-    AddHotkeyRow("tower",    "Tower Mode (Free Range)",  298)
-    AddHotkeyRow("mapCycle", "Map Cycle (All Maps)",     324)
-    AddHotkeyRow("preset",   "Toggle Short / Very Wide", 350)
-    AddHotkeyRow("circle",   "Queue Perimeter Circle",   376)
-    AddHotkeyRow("chaos",    "Chaos Stress Test",        402)
-    AddHotkeyRow("exit",     "Stop & Exit Macro",        428)
-    AddMutedLabel("SETTINGS", 36, 456, 468, "Click 'Change' then press any key (supports Ctrl / Shift / Alt combos).")
+    AddHotkeyRow("waystone", "Waystone 8-Star",          286)
+    AddHotkeyRow("tower",    "Tower Mode (Free Range)",  310)
+    AddHotkeyRow("mapCycle", "Map Cycle (All Maps)",     334)
+    AddHotkeyRow("preset",   "Toggle Short / Very Wide", 358)
+    AddHotkeyRow("circle",   "Queue Perimeter Circle",   382)
+    AddHotkeyRow("chaos",    "Chaos Stress Test",        406)
+    AddHotkeyRow("exit",     "Stop & Exit Macro",        430)
+    AddMutedLabel("SETTINGS", 36, 460, 468, "Click 'Change' then press any key (supports Ctrl / Shift / Alt combos).")
 
     ; ==========================================================================
     ; TAB 7: CREDITS
@@ -422,8 +427,10 @@ BuildGUI() {
     ; ==========================================================================
     ; PERSISTENT QUICK ACTIONS BAR & FOOTER
     ; ==========================================================================
-    AddCard("", 20, 486, 500, 100)
-    AddCardTitle("", 36, 494, 300, "QUICK ACTIONS")
+    AddCard("", 20, 486, 500, 108)
+    AddFlatButton(36, 490, 250, 22, "Define Indicator Region", false, DefineIndicatorRegion)
+    AddFlatButton(294, 490, 110, 22, "Reference Setup", false, OpenReferenceSetup)
+    AddFlatButton(412, 490, 92, 22, "Image Review", false, OpenImageReview)
 
     btnActWaystone := AddFlatButton(36,  514, 152, 28, "", true,  ToggleWaystoneMode)
     btnActTower    := AddFlatButton(194, 514, 152, 28, "", false, ToggleTowerMode)
@@ -433,10 +440,12 @@ BuildGUI() {
     btnActCircle := AddFlatButton(154, 548, 110, 26, "", false, QueuePerimeterCircle)
     btnActChaos  := AddFlatButton(272, 548, 110, 26, "", false, StartChaosStressTest)
     btnActExit   := AddFlatButton(390, 548, 114, 26, "", false, ExitMacro)
+    AddMutedLabel("", 36, 576, 468, "F10: Agent Overlay toggle | Shift+F11: Define Indicator Region")
 
     AddDivider(20, 594, 500)
     txtGuiStatus := mainGui.AddText("x20 y602 w500 h20 +0x80 +0x04000000", "● Ready")
     txtGuiStatus.SetFont("s8 Bold", "Segoe UI")
+    txtGuiStatus.OnEvent("DoubleClick", OpenAgentStartupLog)
     themeMutedText.Push({ctrl: txtGuiStatus, onCard: false})
 
     mainGui.OnEvent("Close", (*) => ExitMacro())
@@ -456,7 +465,7 @@ BuildGUI() {
     RefreshWorldMapUI()
     SwitchTab("WAYSTONE")
 
-    mainGui.Show("w540 h628")
+    InitSpaciousMainWindow()
     SendMessage(0x00B1, 999, 999, edtPromptPath.Hwnd)
     SendMessage(0x00B1, 999, 999, edtRecoveryPath.Hwnd)
     SendMessage(0x00B1, 999, 999, edtMapOpenPath.Hwnd)

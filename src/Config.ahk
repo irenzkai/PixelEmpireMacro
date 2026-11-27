@@ -3,8 +3,8 @@
 ; ==============================================================================
 
 LoadConfig() {
-    global iniFile, promptImg, recoveryImg, recoveryOffImg, recoveryTolerance, imgTolerance, wideStarMode
-    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
+    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
+    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
     global currentWaystoneIdx, maxWaystoneIdx, bossBannerTol, topLabelTol, portalTol
     global bossComingImg, bossSpawnImg, bossDefeatedImg
     global towerCenterMs, towerPortalMs, towerRadiusMs, towerBase, towerRangePct, towerImgTol
@@ -24,11 +24,8 @@ LoadConfig() {
     if (savedRecImg != "")
         recoveryImg := savedRecImg
 
-    savedRecOffImg := IniRead(iniFile, "General", "RecoveryOffImg", recoveryOffImg)
-    if (savedRecOffImg != "")
-        recoveryOffImg := savedRecOffImg
 
-    recoveryTolerance := ParseSetting(IniRead(iniFile, "General", "RecoveryTolerance", recoveryTolerance), recoveryTolerance, 0, 255)
+    recoveryTolerance := ParseSetting(IniRead(iniFile, "General", "RecoveryTolerance", recoveryTolerance), recoveryTolerance, 5, 100)
     imgTolerance      := ParseSetting(IniRead(iniFile, "General", "ImgTolerance", imgTolerance), imgTolerance, 0, 255)
     wideStarMode      := (IniRead(iniFile, "General", "WideStarMode", wideStarMode ? "1" : "0") = "1")
 
@@ -41,9 +38,6 @@ LoadConfig() {
     savedMapWay := IniRead(iniFile, "WorldMap", "WaystoneImg", mapWaystoneImg)
     if (savedMapWay != "")
         mapWaystoneImg := savedMapWay
-    savedMapWayOff := IniRead(iniFile, "WorldMap", "WaystoneOffImg", mapWaystoneOffImg)
-    if (savedMapWayOff != "")
-        mapWaystoneOffImg := savedMapWayOff
     mapTolerance        := ParseSetting(IniRead(iniFile, "WorldMap", "Tolerance", mapTolerance), mapTolerance, 0, 255)
     mapMsPerPx          := ParseSetting(IniRead(iniFile, "WorldMap", "MsPerPx", mapMsPerPx), mapMsPerPx, 5, 300)
     useWorldMapRecovery := (IniRead(iniFile, "WorldMap", "Enabled", useWorldMapRecovery ? "1" : "0") = "1")
@@ -99,6 +93,8 @@ LoadConfig() {
     hotkeys.circle    := IniRead(iniFile, "Hotkeys", "Circle", hotkeys.circle)
     hotkeys.chaos     := IniRead(iniFile, "Hotkeys", "Chaos", hotkeys.chaos)
     hotkeys.exit      := IniRead(iniFile, "Hotkeys", "Exit", hotkeys.exit)
+    hotkeys.overlay   := IniRead(iniFile, "Hotkeys", "Overlay", hotkeys.overlay)
+    hotkeys.indicator := IniRead(iniFile, "Hotkeys", "Indicator", hotkeys.indicator)
 
     shortCfg.up    := ParseSetting(IniRead(iniFile, "ShortPreset", "Up", shortCfg.up), shortCfg.up)
     shortCfg.down  := ParseSetting(IniRead(iniFile, "ShortPreset", "Down", shortCfg.down), shortCfg.down)
@@ -150,8 +146,8 @@ LoadConfig() {
 }
 
 SaveConfig() {
-    global iniFile, promptImg, recoveryImg, recoveryOffImg, recoveryTolerance, imgTolerance, wideStarMode
-    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
+    global iniFile, promptImg, recoveryImg, recoveryTolerance, imgTolerance, wideStarMode
+    global mapOpenImg, mapArrowImg, mapWaystoneImg, mapTolerance, mapMsPerPx, useWorldMapRecovery
     global currentWaystoneIdx, topLabelTol, bossBannerTol, portalTol, bossComingImg, bossSpawnImg, bossDefeatedImg
     global towerCenterMs, towerRadiusMs, towerPortalMs, towerBase, towerRangePct, towerImgTol
     global inTowerImg, towerClearedImg, towerNextImg
@@ -161,7 +157,7 @@ SaveConfig() {
 
     IniWrite(promptImg, iniFile, "General", "PromptImg")
     IniWrite(recoveryImg, iniFile, "General", "RecoveryImg")
-    IniWrite(recoveryOffImg, iniFile, "General", "RecoveryOffImg")
+    try IniDelete(iniFile, "General", "RecoveryOffImg")
     IniWrite(recoveryTolerance, iniFile, "General", "RecoveryTolerance")
     IniWrite(imgTolerance, iniFile, "General", "ImgTolerance")
     IniWrite(wideStarMode ? "1" : "0", iniFile, "General", "WideStarMode")
@@ -169,7 +165,8 @@ SaveConfig() {
     IniWrite(mapOpenImg, iniFile, "WorldMap", "OpenImg")
     IniWrite(mapArrowImg, iniFile, "WorldMap", "ArrowImg")
     IniWrite(mapWaystoneImg, iniFile, "WorldMap", "WaystoneImg")
-    IniWrite(mapWaystoneOffImg, iniFile, "WorldMap", "WaystoneOffImg")
+    ; The World Map has one waystone icon; remove the obsolete variant setting.
+    try IniDelete(iniFile, "WorldMap", "WaystoneOffImg")
     IniWrite(mapTolerance, iniFile, "WorldMap", "Tolerance")
     IniWrite(mapMsPerPx, iniFile, "WorldMap", "MsPerPx")
     IniWrite(useWorldMapRecovery ? "1" : "0", iniFile, "WorldMap", "Enabled")
@@ -208,6 +205,8 @@ SaveConfig() {
     IniWrite(hotkeys.circle, iniFile, "Hotkeys", "Circle")
     IniWrite(hotkeys.chaos, iniFile, "Hotkeys", "Chaos")
     IniWrite(hotkeys.exit, iniFile, "Hotkeys", "Exit")
+    IniWrite(hotkeys.overlay, iniFile, "Hotkeys", "Overlay")
+    IniWrite(hotkeys.indicator, iniFile, "Hotkeys", "Indicator")
 
     IniWrite(shortCfg.up, iniFile, "ShortPreset", "Up")
     IniWrite(shortCfg.down, iniFile, "ShortPreset", "Down")

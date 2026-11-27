@@ -1,0 +1,845 @@
+{
+  "purpose": "Recovery previews only; no review status or tombstone changed",
+  "records": [
+    {
+      "number": 1,
+      "sha256": "e2b00f317e984f61cfa4816192f4ff022bda0c9c6b137bb0a8269b31be24efea",
+      "original_filename": "f6fc3abaa15587b7fd7d9f988c552e30.png",
+      "updated_at": 1795709655.0685372,
+      "entries": [
+        {
+          "id": "f6fc3abaa15587b7fd7d9f988c552e30",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "001_e2b00f317e984f61cfa4816192f4ff022bda0c9c6b137bb0a8269b31be24efea.png"
+    },
+    {
+      "number": 2,
+      "sha256": "dbef15e6240762d0265e8f90bad52770a05d250c1fbd83d0df5d6de0121a6e7d",
+      "original_filename": "38940a6dce559603547cba21fc5f8457.png",
+      "updated_at": 1795709654.3522928,
+      "entries": [
+        {
+          "id": "38940a6dce559603547cba21fc5f8457",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "002_dbef15e6240762d0265e8f90bad52770a05d250c1fbd83d0df5d6de0121a6e7d.png"
+    },
+    {
+      "number": 3,
+      "sha256": "4326db975e8d9f514a50b4ba11ba2f1206ceac48772246ac181247eb04e361b0",
+      "original_filename": "1d12487bf5f19033fc69a87907d208cb.png",
+      "updated_at": 1795709653.7303724,
+      "entries": [
+        {
+          "id": "1d12487bf5f19033fc69a87907d208cb",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "003_4326db975e8d9f514a50b4ba11ba2f1206ceac48772246ac181247eb04e361b0.png"
+    },
+    {
+      "number": 4,
+      "sha256": "f0dde630f9bba30ab4ce09dd65c765ef88b90b034f6de625ea231b3bad621c18",
+      "original_filename": "f103dbb5f72419d8e00c75f18173deaa.png",
+      "updated_at": 1795709653.0759482,
+      "entries": [
+        {
+          "id": "f103dbb5f72419d8e00c75f18173deaa",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "004_f0dde630f9bba30ab4ce09dd65c765ef88b90b034f6de625ea231b3bad621c18.png"
+    },
+    {
+      "number": 5,
+      "sha256": "26dc46cf2cafa873adabe1335a7aa07966ebac6824372712497b763f78b3d8dd",
+      "original_filename": "cc791d68baa2660de35d1bf3b10edd0f.png",
+      "updated_at": 1795709652.4279866,
+      "entries": [
+        {
+          "id": "cc791d68baa2660de35d1bf3b10edd0f",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "005_26dc46cf2cafa873adabe1335a7aa07966ebac6824372712497b763f78b3d8dd.png"
+    },
+    {
+      "number": 6,
+      "sha256": "fc8d060309c2901cec4c2c68397d0fac6af23b35b9f175f541c6386fe693a6bb",
+      "original_filename": "7ec19be757170660ae0585c076e250b6.png",
+      "updated_at": 1795709651.6578972,
+      "entries": [
+        {
+          "id": "7ec19be757170660ae0585c076e250b6",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "006_fc8d060309c2901cec4c2c68397d0fac6af23b35b9f175f541c6386fe693a6bb.png"
+    },
+    {
+      "number": 7,
+      "sha256": "e5309e9a1651726b23051eab5272e8e7142912e4034bef4cb54323aa46656af5",
+      "original_filename": "85cc2e80f5e4ee4078dcbb28e0e62344.png",
+      "updated_at": 1795709650.9286745,
+      "entries": [
+        {
+          "id": "85cc2e80f5e4ee4078dcbb28e0e62344",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "007_e5309e9a1651726b23051eab5272e8e7142912e4034bef4cb54323aa46656af5.png"
+    },
+    {
+      "number": 8,
+      "sha256": "5e59df8c5ae99d941e972c28da1d95984354e48eee825301818338262c3d0fac",
+      "original_filename": "f0645f9e24df76087de66ddf16861374.png",
+      "updated_at": 1795709650.1754067,
+      "entries": [
+        {
+          "id": "f0645f9e24df76087de66ddf16861374",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "008_5e59df8c5ae99d941e972c28da1d95984354e48eee825301818338262c3d0fac.png"
+    },
+    {
+      "number": 9,
+      "sha256": "ce87ae6d2f2427ed8d451ee8c36b40b6e3b4c5e5895aa94d145d400a8a87cfbf",
+      "original_filename": "5de781f2798729f3b0af2735e44d7d5d.png",
+      "updated_at": 1795709649.4421127,
+      "entries": [
+        {
+          "id": "5de781f2798729f3b0af2735e44d7d5d",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "009_ce87ae6d2f2427ed8d451ee8c36b40b6e3b4c5e5895aa94d145d400a8a87cfbf.png"
+    },
+    {
+      "number": 10,
+      "sha256": "0c57522afe32750246fdc2004107528decfe039b5f6932f7183d630a8f024eff",
+      "original_filename": "3adfe51df9a8812c295a04aa47342d1d.png",
+      "updated_at": 1795709648.5225344,
+      "entries": [
+        {
+          "id": "3adfe51df9a8812c295a04aa47342d1d",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "010_0c57522afe32750246fdc2004107528decfe039b5f6932f7183d630a8f024eff.png"
+    },
+    {
+      "number": 11,
+      "sha256": "c602a286615497b06e5effe334b3be2841eeb31ea944a4e5ac0b200fc3cb771f",
+      "original_filename": "bb62cf38cf4b34618b884b9dcdbd52e8.png",
+      "updated_at": 1795709647.7099047,
+      "entries": [
+        {
+          "id": "bb62cf38cf4b34618b884b9dcdbd52e8",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "011_c602a286615497b06e5effe334b3be2841eeb31ea944a4e5ac0b200fc3cb771f.png"
+    },
+    {
+      "number": 12,
+      "sha256": "f3ce25a499b72397172f0ae5dc4f8de6c1d3ab8e4676a24b35dd37ffcf523629",
+      "original_filename": "7828960b8ba09a5b7d03acf36470bd70.png",
+      "updated_at": 1795709646.9833307,
+      "entries": [
+        {
+          "id": "7828960b8ba09a5b7d03acf36470bd70",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "012_f3ce25a499b72397172f0ae5dc4f8de6c1d3ab8e4676a24b35dd37ffcf523629.png"
+    },
+    {
+      "number": 13,
+      "sha256": "b7126450b23c544c2bc95a0044fa76a1af51f64785e71642001d885f09139e49",
+      "original_filename": "cc113f87721c36fa498b2d0a33a97413.png",
+      "updated_at": 1795709646.1803749,
+      "entries": [
+        {
+          "id": "cc113f87721c36fa498b2d0a33a97413",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "013_b7126450b23c544c2bc95a0044fa76a1af51f64785e71642001d885f09139e49.png"
+    },
+    {
+      "number": 14,
+      "sha256": "2cd8a56381e3fb4c8353aeb929fd3b58a53d8622927093c1ff17b0fbdcac6d91",
+      "original_filename": "e3432ba74110517c7cefa2af5e1b2a5d.png",
+      "updated_at": 1795709645.3096848,
+      "entries": [
+        {
+          "id": "e3432ba74110517c7cefa2af5e1b2a5d",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "014_2cd8a56381e3fb4c8353aeb929fd3b58a53d8622927093c1ff17b0fbdcac6d91.png"
+    },
+    {
+      "number": 15,
+      "sha256": "ae1c335c052e6f54923fd116ce5db8dc3e93121cd79fc22ab79b8fed95ab0142",
+      "original_filename": "72abf785db4f5f1190ae85768e0ad28e.png",
+      "updated_at": 1795709644.4040434,
+      "entries": [
+        {
+          "id": "72abf785db4f5f1190ae85768e0ad28e",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "015_ae1c335c052e6f54923fd116ce5db8dc3e93121cd79fc22ab79b8fed95ab0142.png"
+    },
+    {
+      "number": 16,
+      "sha256": "7c2e3b9a04dda0e6d08391dff63f02675297d5e1a3a7b146e5f2a24d1eb55827",
+      "original_filename": "8cc3a63df03d016aa481bffb20000062.png",
+      "updated_at": 1795709643.651069,
+      "entries": [
+        {
+          "id": "8cc3a63df03d016aa481bffb20000062",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "016_7c2e3b9a04dda0e6d08391dff63f02675297d5e1a3a7b146e5f2a24d1eb55827.png"
+    },
+    {
+      "number": 17,
+      "sha256": "890a02cd39f9cb8eabdd5bdb5d7b60a7e9184990f88a184a28968ceee3c6bf1f",
+      "original_filename": "3416a66b320c3219c8bbf25249adf69f.png",
+      "updated_at": 1795709642.7863853,
+      "entries": [
+        {
+          "id": "3416a66b320c3219c8bbf25249adf69f",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "017_890a02cd39f9cb8eabdd5bdb5d7b60a7e9184990f88a184a28968ceee3c6bf1f.png"
+    },
+    {
+      "number": 18,
+      "sha256": "d62ab57cb22cff725f5d56b263f72bd6c2d78d2fe9c4f3ebe9a2607d425c77a9",
+      "original_filename": "464e7d436d00522cebf0dbb525851e6b.png",
+      "updated_at": 1795709175.9874334,
+      "entries": [
+        {
+          "id": "464e7d436d00522cebf0dbb525851e6b",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "018_d62ab57cb22cff725f5d56b263f72bd6c2d78d2fe9c4f3ebe9a2607d425c77a9.png"
+    },
+    {
+      "number": 19,
+      "sha256": "909ffe473282a801238e630a6a73e1fb8729db88ddba880f519873256466523e",
+      "original_filename": "7b531f4b389b375e4f0f9579a1580607.png",
+      "updated_at": 1795709175.0737662,
+      "entries": [
+        {
+          "id": "7b531f4b389b375e4f0f9579a1580607",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "019_909ffe473282a801238e630a6a73e1fb8729db88ddba880f519873256466523e.png"
+    },
+    {
+      "number": 20,
+      "sha256": "c7851b40f28c543d90d656cf4b8d663494c59fd4ff1525c8539010d58abdc5bd",
+      "original_filename": "b365c175c6dc2e393e033dd7d8d4653e.png",
+      "updated_at": 1795709174.279664,
+      "entries": [
+        {
+          "id": "b365c175c6dc2e393e033dd7d8d4653e",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "020_c7851b40f28c543d90d656cf4b8d663494c59fd4ff1525c8539010d58abdc5bd.png"
+    },
+    {
+      "number": 21,
+      "sha256": "9481b4bd55bc1c1d57ebc44a0ea72854aa4151256b35b03960cd7f8225f9f478",
+      "original_filename": "a7ede0c7d20cfe1beb37bc41ade1fad8.png",
+      "updated_at": 1795709173.6418462,
+      "entries": [
+        {
+          "id": "a7ede0c7d20cfe1beb37bc41ade1fad8",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "021_9481b4bd55bc1c1d57ebc44a0ea72854aa4151256b35b03960cd7f8225f9f478.png"
+    },
+    {
+      "number": 22,
+      "sha256": "744d80d740fd6c0213201e5b0361bd5e0a167d94688daa8d2c4b8400a7155702",
+      "original_filename": "e691ee06d502b6f7017cca81cabea995.png",
+      "updated_at": 1795709172.9922264,
+      "entries": [
+        {
+          "id": "e691ee06d502b6f7017cca81cabea995",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "022_744d80d740fd6c0213201e5b0361bd5e0a167d94688daa8d2c4b8400a7155702.png"
+    },
+    {
+      "number": 23,
+      "sha256": "05bc73c7ea0d4eeb5f9fcacd29958925548fb0824d9e1b7e177924110f13af87",
+      "original_filename": "573e9b2cf0e0bd4166b4a986812806d9.png",
+      "updated_at": 1795709172.2168162,
+      "entries": [
+        {
+          "id": "573e9b2cf0e0bd4166b4a986812806d9",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "023_05bc73c7ea0d4eeb5f9fcacd29958925548fb0824d9e1b7e177924110f13af87.png"
+    },
+    {
+      "number": 24,
+      "sha256": "259d35ea98d2c192784c432f2e8da3b711e67cfa54c039f51eaf6b081b3e855f",
+      "original_filename": "66a14a2e2f19ce206844498a7077e62c.png",
+      "updated_at": 1795709171.5311255,
+      "entries": [
+        {
+          "id": "66a14a2e2f19ce206844498a7077e62c",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "024_259d35ea98d2c192784c432f2e8da3b711e67cfa54c039f51eaf6b081b3e855f.png"
+    },
+    {
+      "number": 25,
+      "sha256": "c8908c0068f3705e21c2be3b78b1b477d9e3ca0ac6266920c428bb397f28e437",
+      "original_filename": "0806fdba98aa92d72f56517fc1747845.png",
+      "updated_at": 1795709170.864452,
+      "entries": [
+        {
+          "id": "0806fdba98aa92d72f56517fc1747845",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "025_c8908c0068f3705e21c2be3b78b1b477d9e3ca0ac6266920c428bb397f28e437.png"
+    },
+    {
+      "number": 26,
+      "sha256": "6233c63dab2b459b414d0e92c1a184623c3ace71cb57cf06f27ac42dc2e59bb7",
+      "original_filename": "9a044b0a9a56e9bad9454a6a5d931a8c.png",
+      "updated_at": 1795709087.4501312,
+      "entries": [
+        {
+          "id": "9a044b0a9a56e9bad9454a6a5d931a8c",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "026_6233c63dab2b459b414d0e92c1a184623c3ace71cb57cf06f27ac42dc2e59bb7.png"
+    },
+    {
+      "number": 27,
+      "sha256": "6ddaed4e8617bd79323b56c5ff1e826cab31da8268464d37100e5b0c91eb6c78",
+      "original_filename": "41c86807ac3161cc002431039c09441d.png",
+      "updated_at": 1795709086.7128804,
+      "entries": [
+        {
+          "id": "41c86807ac3161cc002431039c09441d",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "027_6ddaed4e8617bd79323b56c5ff1e826cab31da8268464d37100e5b0c91eb6c78.png"
+    },
+    {
+      "number": 28,
+      "sha256": "33dc0535a1c4c50e48fd25a66795c51821fdc79d9b3620add222cc454be06dfc",
+      "original_filename": "b9aee400e738868e4dddeda451216a46.png",
+      "updated_at": 1795709085.9232204,
+      "entries": [
+        {
+          "id": "b9aee400e738868e4dddeda451216a46",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "028_33dc0535a1c4c50e48fd25a66795c51821fdc79d9b3620add222cc454be06dfc.png"
+    },
+    {
+      "number": 29,
+      "sha256": "16546638d68cd4430c8d4e6d4328cbbc05bf5002dcca403739064f9a3afa8c89",
+      "original_filename": "0da8e9298725d7b30a6f50594695671c.png",
+      "updated_at": 1795709084.9437823,
+      "entries": [
+        {
+          "id": "0da8e9298725d7b30a6f50594695671c",
+          "kind": "ktx2",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "029_16546638d68cd4430c8d4e6d4328cbbc05bf5002dcca403739064f9a3afa8c89.png"
+    },
+    {
+      "number": 30,
+      "sha256": "cd5077e07aa463925ac718ae7b10457a3c43a6471c6b29536dbc45ec9c3a31d4",
+      "original_filename": "67b10eae009f46ac4a32b6b6c4f32a79.png",
+      "updated_at": 1795708951.2472801,
+      "entries": [
+        {
+          "id": "67b10eae009f46ac4a32b6b6c4f32a79",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "030_cd5077e07aa463925ac718ae7b10457a3c43a6471c6b29536dbc45ec9c3a31d4.png"
+    },
+    {
+      "number": 31,
+      "sha256": "ac20ebe77b937a635c392cf7bc433215b8eeb750d4bf29b05bae3227cac68bcb",
+      "original_filename": "50689d89cf333485579bcc8ddf80ddf8.png",
+      "updated_at": 1795708938.5319664,
+      "entries": [
+        {
+          "id": "50689d89cf333485579bcc8ddf80ddf8",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "031_ac20ebe77b937a635c392cf7bc433215b8eeb750d4bf29b05bae3227cac68bcb.png"
+    },
+    {
+      "number": 32,
+      "sha256": "c7ca1549a9d61d40175e932f72d9ba3129fec02d773785c129269024c378979c",
+      "original_filename": "799671d3c1840b53f840463ee1e00b8c.png",
+      "updated_at": 1795708937.0528257,
+      "entries": [
+        {
+          "id": "799671d3c1840b53f840463ee1e00b8c",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "032_c7ca1549a9d61d40175e932f72d9ba3129fec02d773785c129269024c378979c.png"
+    },
+    {
+      "number": 33,
+      "sha256": "1e47177a85e427c3fdda355500bc6a53d6f52aa8e2c7523b08d2feb54189145e",
+      "original_filename": "593d8d85b4a9435d57d6783e4adaf51e.png",
+      "updated_at": 1795708920.7273226,
+      "entries": [
+        {
+          "id": "593d8d85b4a9435d57d6783e4adaf51e",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "033_1e47177a85e427c3fdda355500bc6a53d6f52aa8e2c7523b08d2feb54189145e.png"
+    },
+    {
+      "number": 34,
+      "sha256": "037a904f859e8020fa42c8ebbbefb5374285514ba62a76695bd38bae5ba2b4ec",
+      "original_filename": "408ff695acb8400b423c43611e4cc220.png",
+      "updated_at": 1795708919.5117824,
+      "entries": [
+        {
+          "id": "408ff695acb8400b423c43611e4cc220",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "034_037a904f859e8020fa42c8ebbbefb5374285514ba62a76695bd38bae5ba2b4ec.png"
+    },
+    {
+      "number": 35,
+      "sha256": "a37df47d69b0917e262854ce3393436e0d304d5248a8cd1cb59d630b465240c0",
+      "original_filename": "89a833ab0ecc0180355a4f69668915b5.png",
+      "updated_at": 1795708918.575442,
+      "entries": [
+        {
+          "id": "89a833ab0ecc0180355a4f69668915b5",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "035_a37df47d69b0917e262854ce3393436e0d304d5248a8cd1cb59d630b465240c0.png"
+    },
+    {
+      "number": 36,
+      "sha256": "982789987c4aaaf426f895b397f9fb4a7e94858984dbb37654d99c6269eb6a30",
+      "original_filename": "95bd523c9e4094f999689c3e337df2f9.png",
+      "updated_at": 1795708917.4678159,
+      "entries": [
+        {
+          "id": "95bd523c9e4094f999689c3e337df2f9",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "036_982789987c4aaaf426f895b397f9fb4a7e94858984dbb37654d99c6269eb6a30.png"
+    },
+    {
+      "number": 37,
+      "sha256": "fc31be7c23f6f625966c7a017996a0e38d66469426f0e9c4e9b2b0b2b200e288",
+      "original_filename": "294e0bc6c4035fc1b3093dc1e1eef53e.png",
+      "updated_at": 1795708913.5567474,
+      "entries": [
+        {
+          "id": "294e0bc6c4035fc1b3093dc1e1eef53e",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "037_fc31be7c23f6f625966c7a017996a0e38d66469426f0e9c4e9b2b0b2b200e288.png"
+    },
+    {
+      "number": 38,
+      "sha256": "a77989eab4fdb6f4dea572d6a026269e09ff45612cdee9cc1bf076b2d9c7fc38",
+      "original_filename": "f920efba732b234cc728ee224b99338c.png",
+      "updated_at": 1795708912.296278,
+      "entries": [
+        {
+          "id": "f920efba732b234cc728ee224b99338c",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "038_a77989eab4fdb6f4dea572d6a026269e09ff45612cdee9cc1bf076b2d9c7fc38.png"
+    },
+    {
+      "number": 39,
+      "sha256": "10fb2e64cf0f7b63413893cbcae4dfb18625066e8ba311081b1c344a316b9ea9",
+      "original_filename": "1a103f749c114771dd3d31fa28a02214.png",
+      "updated_at": 1795708910.887909,
+      "entries": [
+        {
+          "id": "1a103f749c114771dd3d31fa28a02214",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "039_10fb2e64cf0f7b63413893cbcae4dfb18625066e8ba311081b1c344a316b9ea9.png"
+    },
+    {
+      "number": 40,
+      "sha256": "5c5318b499cd862c687b29f06dca06055985a6ad4b3383f603452f9ee5e3d10d",
+      "original_filename": "c7b35c39bcb5d7a0cb3815f0235c2c4c.png",
+      "updated_at": 1795708909.7328491,
+      "entries": [
+        {
+          "id": "c7b35c39bcb5d7a0cb3815f0235c2c4c",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "040_5c5318b499cd862c687b29f06dca06055985a6ad4b3383f603452f9ee5e3d10d.png"
+    },
+    {
+      "number": 41,
+      "sha256": "40acbcabdce95c48b6f9e2c94f41412b2b90f7601b5a21785b7bbc9351e2ad9e",
+      "original_filename": "9868fc32adedca20c3e9409b687e8f11.png",
+      "updated_at": 1795708905.6502821,
+      "entries": [
+        {
+          "id": "9868fc32adedca20c3e9409b687e8f11",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "041_40acbcabdce95c48b6f9e2c94f41412b2b90f7601b5a21785b7bbc9351e2ad9e.png"
+    },
+    {
+      "number": 42,
+      "sha256": "08d698052c1f8346fa9922881ebab1dcfbd9002aa816737ede11823bbce2b87f",
+      "original_filename": "42a5a914636dff95040e02ae156ee51c.png",
+      "updated_at": 1795708904.4782135,
+      "entries": [
+        {
+          "id": "42a5a914636dff95040e02ae156ee51c",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "042_08d698052c1f8346fa9922881ebab1dcfbd9002aa816737ede11823bbce2b87f.png"
+    },
+    {
+      "number": 43,
+      "sha256": "5755c4c0abb505040c98c1321bd4dc204fc5722aaa419a41c703db9ff5d581fd",
+      "original_filename": "d126f4d1efe64dc35dedd5722fc1f0c8.png",
+      "updated_at": 1795708901.8352377,
+      "entries": [
+        {
+          "id": "d126f4d1efe64dc35dedd5722fc1f0c8",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "043_5755c4c0abb505040c98c1321bd4dc204fc5722aaa419a41c703db9ff5d581fd.png"
+    },
+    {
+      "number": 44,
+      "sha256": "cd4e443b48bb3aeac8940e007a8c91542673ab04988e1a76070b1dbbe7fe89ec",
+      "original_filename": "85fdc6f6665adeba53868c88f6365dfc.png",
+      "updated_at": 1795708897.6453614,
+      "entries": [
+        {
+          "id": "85fdc6f6665adeba53868c88f6365dfc",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "044_cd4e443b48bb3aeac8940e007a8c91542673ab04988e1a76070b1dbbe7fe89ec.png"
+    },
+    {
+      "number": 45,
+      "sha256": "ba52744a6ee9d9913432a98acf42c7f3275d07b35a8f23e0f436e3f818018cee",
+      "original_filename": "fe328c7dcfea0117ddd31eddbc3f9b2a.png",
+      "updated_at": 1795708892.998333,
+      "entries": [
+        {
+          "id": "fe328c7dcfea0117ddd31eddbc3f9b2a",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "045_ba52744a6ee9d9913432a98acf42c7f3275d07b35a8f23e0f436e3f818018cee.png"
+    },
+    {
+      "number": 46,
+      "sha256": "10f1ad2dda7b2d006cbc4af8a2295f77ef32af53554dc9a7ca6de18bfb5b7d34",
+      "original_filename": "727722e2eee7b55e6b1a1d19e30ea898.png",
+      "updated_at": 1795708891.6032732,
+      "entries": [
+        {
+          "id": "727722e2eee7b55e6b1a1d19e30ea898",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "046_10f1ad2dda7b2d006cbc4af8a2295f77ef32af53554dc9a7ca6de18bfb5b7d34.png"
+    },
+    {
+      "number": 47,
+      "sha256": "b7794663fb3171c9e6674f59f85663a22c21bd8b5a32067642737c181c492e7f",
+      "original_filename": "aaf1783411c7b43872a434a3433d4e53.png",
+      "updated_at": 1795708890.4257798,
+      "entries": [
+        {
+          "id": "aaf1783411c7b43872a434a3433d4e53",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "047_b7794663fb3171c9e6674f59f85663a22c21bd8b5a32067642737c181c492e7f.png"
+    },
+    {
+      "number": 48,
+      "sha256": "2c9ab1270c72ae17f67bb649180ee16f86153e6c3effe0719abfacc54759b797",
+      "original_filename": "30eb2a123a83c6ee6aef974f24575060.png",
+      "updated_at": 1795708889.1904829,
+      "entries": [
+        {
+          "id": "30eb2a123a83c6ee6aef974f24575060",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "048_2c9ab1270c72ae17f67bb649180ee16f86153e6c3effe0719abfacc54759b797.png"
+    },
+    {
+      "number": 49,
+      "sha256": "ff5e7fe389da2616a29ad48a12af3f4b8e7dfe6340c09712cc4a38adde3c8dc4",
+      "original_filename": "3bf5ecfa45751236abdaa4986a267974.png",
+      "updated_at": 1795708887.9142873,
+      "entries": [
+        {
+          "id": "3bf5ecfa45751236abdaa4986a267974",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "049_ff5e7fe389da2616a29ad48a12af3f4b8e7dfe6340c09712cc4a38adde3c8dc4.png"
+    },
+    {
+      "number": 50,
+      "sha256": "c671e2371cabab48d3e6f391f9c41e10fb4cab1b10dfa4e9cf9bfab476de0a05",
+      "original_filename": "065bbaecc8d76fe14335f3471a282edd.png",
+      "updated_at": 1795708883.4439435,
+      "entries": [
+        {
+          "id": "065bbaecc8d76fe14335f3471a282edd",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "050_c671e2371cabab48d3e6f391f9c41e10fb4cab1b10dfa4e9cf9bfab476de0a05.png"
+    },
+    {
+      "number": 51,
+      "sha256": "461a97114a4e08ac92b4c452676ea4902e6eefc0b4712cb40befdba94c6e1081",
+      "original_filename": "11ef7f6f3f8763a5b3a8a565e6fd3682.png",
+      "updated_at": 1795708882.4201198,
+      "entries": [
+        {
+          "id": "11ef7f6f3f8763a5b3a8a565e6fd3682",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "051_461a97114a4e08ac92b4c452676ea4902e6eefc0b4712cb40befdba94c6e1081.png"
+    },
+    {
+      "number": 52,
+      "sha256": "42033a67f16d7594ef9f6150529b3317308755e6cc950d401d4f81967fc9802a",
+      "original_filename": "7a0dc62c960e9450cca1ef2fdfa7f60d.png",
+      "updated_at": 1795708881.211854,
+      "entries": [
+        {
+          "id": "7a0dc62c960e9450cca1ef2fdfa7f60d",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "052_42033a67f16d7594ef9f6150529b3317308755e6cc950d401d4f81967fc9802a.png"
+    },
+    {
+      "number": 53,
+      "sha256": "48050786f1d7f01d2e80ae28ed8aae89148c6e8ef9f1fbd513a57ef0fea9df97",
+      "original_filename": "dc430782bca56aafb0492784e3ad4827.png",
+      "updated_at": 1795708880.1409562,
+      "entries": [
+        {
+          "id": "dc430782bca56aafb0492784e3ad4827",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "053_48050786f1d7f01d2e80ae28ed8aae89148c6e8ef9f1fbd513a57ef0fea9df97.png"
+    },
+    {
+      "number": 54,
+      "sha256": "02319bd8704c4197392985be81db5307cd3b2a436c706f0ff2a0a3534624a953",
+      "original_filename": "0dd49b172a5a5575973293af73ef1937.png",
+      "updated_at": 1795708878.9908535,
+      "entries": [
+        {
+          "id": "0dd49b172a5a5575973293af73ef1937",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "054_02319bd8704c4197392985be81db5307cd3b2a436c706f0ff2a0a3534624a953.png"
+    },
+    {
+      "number": 55,
+      "sha256": "a77764f271c4d26a4dc65b284e968577229ec76051ebd61ecf0ce9341ec935c4",
+      "original_filename": "e92c15c3a526c5ca36998f88af3c2ae9.png",
+      "updated_at": 1795708877.3418179,
+      "entries": [
+        {
+          "id": "e92c15c3a526c5ca36998f88af3c2ae9",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "055_a77764f271c4d26a4dc65b284e968577229ec76051ebd61ecf0ce9341ec935c4.png"
+    },
+    {
+      "number": 56,
+      "sha256": "5d2ef81640563bee1d3a376045de140301fe1f1809d857886b71befbfa76fc43",
+      "original_filename": "8d522c5573baec61255a98196bdc5f8e.png",
+      "updated_at": 1795708875.9146805,
+      "entries": [
+        {
+          "id": "8d522c5573baec61255a98196bdc5f8e",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "056_5d2ef81640563bee1d3a376045de140301fe1f1809d857886b71befbfa76fc43.png"
+    },
+    {
+      "number": 57,
+      "sha256": "83cb50d4afcbc1f85bbfa297d073242c7d78999f10a3ea5a9e3df9d72a260f79",
+      "original_filename": "7f81cd599d2a6c3e94beb1c10edc0f33.png",
+      "updated_at": 1795708800.5427537,
+      "entries": [
+        {
+          "id": "7f81cd599d2a6c3e94beb1c10edc0f33",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "057_83cb50d4afcbc1f85bbfa297d073242c7d78999f10a3ea5a9e3df9d72a260f79.png"
+    },
+    {
+      "number": 58,
+      "sha256": "cd079b6cecfa5ddc336cf49549ecc529e481a0d7ce2a7c687a17331a327dd368",
+      "original_filename": "ca0a8a520dc50d49e4a3f6bbffe95a8c.png",
+      "updated_at": 1795708799.346153,
+      "entries": [
+        {
+          "id": "ca0a8a520dc50d49e4a3f6bbffe95a8c",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "058_cd079b6cecfa5ddc336cf49549ecc529e481a0d7ce2a7c687a17331a327dd368.png"
+    },
+    {
+      "number": 59,
+      "sha256": "5d2e9da00556f2c73f2eed98a1c4bad40c32b72f4241b2c21bc302e833f00901",
+      "original_filename": "e83c0ccbc794fe5b5c906051852f3ae8.png",
+      "updated_at": 1795708794.5073867,
+      "entries": [
+        {
+          "id": "e83c0ccbc794fe5b5c906051852f3ae8",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "059_5d2e9da00556f2c73f2eed98a1c4bad40c32b72f4241b2c21bc302e833f00901.png"
+    },
+    {
+      "number": 60,
+      "sha256": "2d0d9a1389b6ef5363cb3894d7443f8d0e792276c9821eb56646341d6a19fd8b",
+      "original_filename": "f13268b8307129977a26765ea44a8091.png",
+      "updated_at": 1795708793.2396858,
+      "entries": [
+        {
+          "id": "f13268b8307129977a26765ea44a8091",
+          "kind": "png",
+          "cache_root": "C:\\Users\\DELL\\AppData\\Local\\Roblox"
+        }
+      ],
+      "file": "060_2d0d9a1389b6ef5363cb3894d7443f8d0e792276c9821eb56646341d6a19fd8b.png"
+    }
+  ]
+}

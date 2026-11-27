@@ -11,18 +11,26 @@ global ocrLastBossTick := 0
 global ocrAvailCached := false
 global ocrAvailTick := 0
 
-OcrHttpGetKV(endpoint, recvTimeoutMs := 6000) {
+OcrLogMsg(msg) {
+    try OutputDebug(msg)
+    try FileAppend(msg "`n", "**")
+}
+
+OcrHttpGetKV(endpoint, recvTimeoutMs := 6000, fastPoll := false) {
     global ocrServerUrl
     out := Map()
     try {
         req := ComObject("WinHttp.WinHttpRequest.5.1")
         req.SetProxy(1)
-        req.SetTimeouts(250, 250, 1000, recvTimeoutMs)
+        if fastPoll
+            req.SetTimeouts(25, 25, 25, recvTimeoutMs)
+        else
+            req.SetTimeouts(250, 250, 1000, recvTimeoutMs)
         sep := InStr(endpoint, "?") ? "&" : "?"
         req.Open("GET", ocrServerUrl . endpoint . sep . "format=ahk", false)
         req.Send()
         if (req.Status != 200) {
-            FileAppend("OcrHttpGetKV HTTP " req.Status " on " endpoint "`n", "**")
+            OcrLogMsg("OcrHttpGetKV HTTP " req.Status " on " endpoint)
             return out
         }
         for line in StrSplit(req.ResponseText, "`n", "`r") {
@@ -34,7 +42,7 @@ OcrHttpGetKV(endpoint, recvTimeoutMs := 6000) {
             }
         }
     } catch as err {
-        FileAppend("OcrHttpGetKV error on " endpoint ": " err.Message "`n", "**")
+        OcrLogMsg("OcrHttpGetKV error on " endpoint ": " err.Message)
     }
     return out
 }
@@ -89,7 +97,7 @@ EnsureOcrServerRunning() {
     if !FileExist(srv)
         return false
     try Run('"' pyExe '" "' srv '"', A_ScriptDir, "Hide")
-    Loop 20 {
+    Loop 28 {
         Sleep(250)
         if (OcrPing()) {
             ocrAvailCached := true
@@ -129,7 +137,7 @@ OcrReadRoiText(roi := "top_bar", preset := "auto", saveDebug := false) {
 ; --- Drop-in OCR detection functions ---
 
 OcrDetectCurrentMap(&mapName := "") {
-    st := OcrGetState(true, true)
+    st := OcrGetState(false, false, false, 350)
     if (st.Has("ok") && st["ok"] = "1") {
         mapName := st.Has("ws_name") ? st["ws_name"] : ""
         if st.Has("ws_idx") && IsInteger(st["ws_idx"])
@@ -137,6 +145,31 @@ OcrDetectCurrentMap(&mapName := "") {
     }
     mapName := ""
     return -1
+}
+
+; On-demand saved indicator detection; no new timer/detection loop.
+OcrTestIndicator(name) {
+    global recoveryTolerance
+    if name = "waystone"
+        return OcrHttpGetKV("/waystone_sprite?async=1&threshold=" (recoveryTolerance / 100), 60, true)
+    if name = "waystone_prompt" {
+        kv := OcrHttpGetKV("/waystone_fast", 3000)
+        return Map("ok", kv.Has("ok") ? kv["ok"] : "0", "found", kv.Has("on_waystone") ? kv["on_waystone"] : "0")
+    }
+    static stamp := "", config := ""
+    path := A_ScriptDir "\config\indicator_regions.json"
+    if !FileExist(path)
+        return Map()
+    current := FileGetTime(path, "M") FileGetSize(path)
+    if current != stamp {
+        config := FileRead(path, "UTF-8"), stamp := current
+    }
+    if !InStr(config, Chr(34) name Chr(34))
+        return Map()
+
+    if !RegExMatch(name, "^[A-Za-z][A-Za-z0-9_-]{0,63}$")
+        return Map("ok", "0", "error", "Invalid indicator name")
+    return OcrHttpGetKV("/indicator?name=" name, 4000)
 }
 
 OcrIsOnWaystone() {
@@ -188,10 +221,17 @@ OcrCheckBossBanner(&kind := "", &defeated := false, &youDefeated := false, &rawT
 }
 
 OcrFindPortalSprite(&px := 0, &py := 0) {
+    global portalPlayerX, portalPlayerY
+    portalPlayerX := 0
+    portalPlayerY := 0
     kv := OcrHttpGetKV("/portal_fast", 2500)
     if (kv.Has("ok") && kv["ok"] = "1" && kv.Has("found") && kv["found"] = "1") {
         px := Integer(kv["x"])
         py := Integer(kv["y"])
+        if (kv.Has("player_found") && kv["player_found"] = "1") {
+            portalPlayerX := Integer(kv["player_x"])
+            portalPlayerY := Integer(kv["player_y"])
+        }
         return true
     }
     return false
@@ -223,4 +263,23 @@ OcrScanWorldMapVector(targetMapIdx := -1) {
 OcrCaptureDebug(roi := "full") {
     EnsureOcrServerRunning()
     return OcrReadRoiText(roi, "full", true)
+}
+
+NavProgress(detail) {
+    global hudStatus
+    static navDeadUntil := 0
+    hudStatus := detail
+    if (A_TickCount < navDeadUntil)
+        return
+    try {
+        req := ComObject("WinHttp.WinHttpRequest.5.1")
+        req.SetProxy(1)
+        req.SetTimeouts(40, 40, 60, 80)
+        req.Open("POST", "http://127.0.0.1:8766", false)
+        req.SetRequestHeader("Content-Type", "application/json")
+        safe := StrReplace(StrReplace(detail, Chr(92), Chr(92) Chr(92)), Chr(34), Chr(92) Chr(34))
+        req.Send('{"action":"log","who":"AHK","text":"' safe '"}')
+    } catch {
+        navDeadUntil := A_TickCount + 10000
+    }
 }

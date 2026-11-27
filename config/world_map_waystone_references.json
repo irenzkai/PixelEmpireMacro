@@ -1,0 +1,27 @@
+{
+  "updated_at": "2026-11-27T08:04:11+08:00",
+  "reference_count": 2,
+  "original_map_reference": "public/map_waystone.png",
+  "original_preserved": true,
+  "references": [
+    {
+      "path": "public/world_map_waystone_live/Screenshot 2026-11-27 074738.png",
+      "sha256": "c89600a86a1f2228691735a47f968d00f8bf252dab3048b1239b54589878e7eb",
+      "dimensions": [
+        20,
+        37
+      ],
+      "purpose": "Same World Map waystone icon; actual rendered pixels, no activation classification"
+    },
+    {
+      "path": "public/world_map_waystone_live/Screenshot 2026-11-27 074755.png",
+      "sha256": "66945e1ed68907626deec3364a1ee339d43f5e4e83a48cdc04ce4893680bdc94",
+      "dimensions": [
+        20,
+        38
+      ],
+      "purpose": "Same World Map waystone icon; actual rendered pixels, no activation classification"
+    }
+  ],
+  "detection_performance": "unverified; user manual Test Map pending"
+}

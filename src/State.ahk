@@ -39,11 +39,12 @@ defaultWaystoneImg := A_ScriptDir "\public\waystone_prompt.png"
 legacyWardImg := FileExist(A_ScriptDir "\public\ward_prompt.png") ? A_ScriptDir "\public\ward_prompt.png" : A_ScriptDir "\ward_prompt.png"
 promptImg := FileExist(defaultWaystoneImg) ? defaultWaystoneImg : legacyWardImg
 
-recoveryImg          := A_ScriptDir "\public\waystone.png"
-recoveryOffImg       := A_ScriptDir "\public\waystone_off.png"
-recoveryTolerance    := 50
+recoveryImg          := A_ScriptDir "\public\waystone_default.png"
+recoveryTolerance    := 65
+lastWaystoneWidth := 0
+lastWaystoneHeight := 0
+lastWaystoneScore := 0
 recoverySearchPrefix := ""
-recoveryOffPrefix    := ""
 lastMatchedStatueImg := ""
 
 ; --- UPPER-CENTER BOSS & MINIBOSS BANNER IMAGES ---
@@ -101,17 +102,17 @@ towerPosX       := 0.0
 towerPosY       := 0.0
 
 ; --- WORLD MAP (M) RECOVERY ---
+global mapOpen := false
+global mapViewEpoch := 0
 mapOpenImg          := A_ScriptDir "\public\map_open.png"
 mapArrowImg         := A_ScriptDir "\public\map_arrow.png"
 mapWaystoneImg      := A_ScriptDir "\public\map_waystone.png"
-mapWaystoneOffImg   := A_ScriptDir "\public\map_waystone_off.png"
 mapTolerance        := 55
 mapMsPerPx          := 42
 useWorldMapRecovery := true
 mapOpenPrefix       := ""
 mapArrowPrefix      := ""
 mapWayPrefix        := ""
-mapWayOffPrefix     := ""
 isScanningMap       := false
 lastMapScanTick     := 0
 
@@ -133,9 +134,14 @@ hotkeys := {
     preset:   "F6",
     circle:   "F9",
     chaos:    "F7",
+    overlay:  "F10",
+    indicator: "+F11",
     exit:     "Esc"
 }
 registeredHotkeys := []
+assetPickerActive := false
+assetPickerSelecting := false
+assetPickerEpoch := ""
 
 ; --- F6 / F8 WAYSTONE 8-STAR PRESETS (Short vs Very Wide + Ratio Range %) ---
 shortCfg  := {up: 1050, down: 1300, left: 1300, right: 1300, diag: 1050, ret: 1850}

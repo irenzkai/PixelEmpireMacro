@@ -10,7 +10,12 @@ ApplyHotkeys() {
     }
     registeredHotkeys := []
 
+    Hotkey("F12", StopUserTravel, "On")
     if (!hotkeysEnabled) {
+        if hotkeys.overlay != "" {
+            try Hotkey(hotkeys.overlay, ToggleAgentOverlay, "On")
+            registeredHotkeys.Push(hotkeys.overlay)
+        }
         RefreshHotkeyLabels()
         return
     }
@@ -22,11 +27,13 @@ ApplyHotkeys() {
         {key: hotkeys.preset,   fn: ToggleShortWidePreset},
         {key: hotkeys.circle,   fn: QueuePerimeterCircle},
         {key: hotkeys.chaos,    fn: StartChaosStressTest},
+        {key: hotkeys.overlay,  fn: ToggleAgentOverlay},
+        {key: hotkeys.indicator, fn: DefineIndicatorRegion},
         {key: hotkeys.exit,     fn: ExitMacro}
     ]
 
     for b in bindings {
-        if (b.key != "") {
+        if (b.key != "" && StrLower(b.key) != "f12") {
             try {
                 Hotkey(b.key, b.fn, "On")
                 registeredHotkeys.Push(b.key)
@@ -38,8 +45,10 @@ ApplyHotkeys() {
 }
 
 ToggleHotkeysEnabled(*) {
-    global hotkeysEnabled
+    global hotkeysEnabled, assetPickerActive
     hotkeysEnabled := !hotkeysEnabled
+    if (!hotkeysEnabled && assetPickerActive)
+        ExitAssetPicker()
     ApplyHotkeys()
     SaveConfig()
     RefreshSettingsTabUI()
@@ -55,6 +64,8 @@ ResetDefaultHotkeys(*) {
         preset:   "F6",
         circle:   "F9",
         chaos:    "F7",
+        overlay:  "F10",
+        indicator: "+F11",
         exit:     "Esc"
     }
     ApplyHotkeys()
@@ -116,6 +127,8 @@ RebindHotkey(actionName) {
 
 FindHotkeyConflict(targetAction, candidateKey) {
     global hotkeys
+    if StrLower(candidateKey) = "f12"
+        return "Manual travel / recording stop (reserved)"
     labels := Map(
         "waystone", "Waystone 8-Star",
         "tower",    "Tower Mode",
@@ -123,6 +136,8 @@ FindHotkeyConflict(targetAction, candidateKey) {
         "preset",   "Short / Wide",
         "circle",   "Queue Circle",
         "chaos",    "Chaos Test",
+        "overlay",  "Agent Overlay",
+        "indicator", "Define Indicator Region",
         "exit",     "Stop & Exit"
     )
     for act, label in labels {

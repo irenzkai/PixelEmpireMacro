@@ -1,9 +1,15 @@
-; ==============================================================================
+﻿; ==============================================================================
 ; ROBLOX WINDOW, OCR-FIRST INTEGRATION & FALLBACK PNG VISION
 ; ==============================================================================
 #Include "OcrVision.ahk"
 
 InitVisionAndWindow(requirePrompt) {
+    global assetPickerActive
+    if assetPickerActive {
+        ReleaseMoveKeys()
+        UpdateGuiStatus("Exit Asset Picker with Esc/F11 before starting automated movement")
+        return false
+    }
     global promptImg, searchBox, robloxWinBox, statueSearchBox, mapBox, topLabelBox
     EnsureOcrServerRunning()
 
@@ -54,18 +60,23 @@ InitVisionAndWindow(requirePrompt) {
     }
 
     FocusWindow(windows[1])
+    ; Initialize the gate from the existing map-state detector, including a map
+    ; manually left open before F8 starts. No live request precedes this check.
+    IsWorldMapOpen()
     return true
 }
 
-IsOnWaystone(&fx := 0, &fy := 0) {
+IsOnWaystone(&fx := 0, &fy := 0, imageOnly := false) {
+    global mapOpen
+    if mapOpen
+        return false
     global searchBox, promptImg, imgTolerance, robloxWinBox
-    if (OcrServerReady()) {
+    if (!imageOnly && OcrServerReady()) {
         if (OcrIsOnWaystone()) {
             fx := (robloxWinBox.x1 + robloxWinBox.x2) // 2
             fy := (robloxWinBox.y1 + robloxWinBox.y2) // 2
             return true
         }
-        return false
     }
     try {
         return ImageSearch(&fx, &fy, searchBox.x1, searchBox.y1, searchBox.x2, searchBox.y2, "*" imgTolerance " " promptImg)
@@ -137,8 +148,8 @@ SearchImageWithCache(imgPath, box, tol, &fx := 0, &fy := 0, &cachedPrefix := "",
 
 InvalidateImageCaches(imgPath) {
     global bossMaskedCache, topLabelMaskedCache, towerMaskedCache, textSigCache
-    global mapAreaStripCache, portalStripCache, recoverySearchPrefix, recoveryOffPrefix
-    global mapOpenPrefix, mapArrowPrefix, mapWayPrefix, mapWayOffPrefix
+    global mapAreaStripCache, portalStripCache, recoverySearchPrefix
+    global mapOpenPrefix, mapArrowPrefix, mapWayPrefix
     global inTowerPrefix, towerClearedPrefix, towerNextPrefix
 
     for cmap in [bossMaskedCache, topLabelMaskedCache, towerMaskedCache] {
@@ -156,8 +167,8 @@ InvalidateImageCaches(imgPath) {
         portalStripCache.Delete(imgPath)
     }
     mapAreaStripCache := Map()
-    recoverySearchPrefix := "", recoveryOffPrefix := ""
-    mapOpenPrefix := "", mapArrowPrefix := "", mapWayPrefix := "", mapWayOffPrefix := ""
+    recoverySearchPrefix := ""
+    mapOpenPrefix := "", mapArrowPrefix := "", mapWayPrefix := ""
     inTowerPrefix := "", towerClearedPrefix := "", towerNextPrefix := ""
 }
 
@@ -608,6 +619,18 @@ CropPngSubImage(srcPath, dstPath, cx, cy, cw, ch) {
 
 FindMapAreaOnWorldMap(idx, &areaBox := "") {
     global mapBox, mapTolerance, mapAreaPrefixes
+    global robloxWinBox
+    if OcrServerReady() {
+        kv := OcrHttpGetKV("/worldmap_vector?target=" idx, 3000)
+        if (kv.Has("area_found") && kv["area_found"] = "1") {
+            x1 := Integer(kv["area_x1"]) + robloxWinBox.x1
+            y1 := Integer(kv["area_y1"]) + robloxWinBox.y1
+            x2 := Integer(kv["area_x2"]) + robloxWinBox.x1
+            y2 := Integer(kv["area_y2"]) + robloxWinBox.y1
+            areaBox := {x1:x1,y1:y1,x2:x2,y2:y2,cx:(x1+x2)//2,cy:(y1+y2)//2}
+            return true
+        }
+    }
     info := EnsureMapAreaStrips(idx)
     if !IsObject(info)
         return false
@@ -695,8 +718,23 @@ EnsurePortalStrips(imgPath) {
 
 FindPortalSprite(fromIdx, toIdx, &cx := 0, &cy := 0, customBox := "") {
     global statueSearchBox, robloxWinBox, portalTol, portalPrefixes
-    if (OcrServerReady() && OcrFindPortalSprite(&cx, &cy))
+    global portalPlayerX, portalPlayerY, waystoneRoutes
+    portalPlayerX := 0
+    portalPlayerY := 0
+    if HasConfiguredConnection(fromIdx,toIdx)
+        return OcrFindConfiguredPortal(fromIdx,toIdx,&cx,&cy)
+    if (OcrServerReady() && OcrFindPortalSprite(&cx, &cy)) {
+        if IsObject(customBox) && (cx < customBox.x1 || cx > customBox.x2 || cy < customBox.y1 || cy > customBox.y2)
+            return false
+        ; A candidate in the opposite direction is not the requested exit.
+        if (portalPlayerX && waystoneRoutes.Has(fromIdx) && waystoneRoutes.Has(toIdx)) {
+            dx := waystoneRoutes[toIdx].gx - waystoneRoutes[fromIdx].gx
+            dy := waystoneRoutes[toIdx].gy - waystoneRoutes[fromIdx].gy
+            if (dx * (cx - portalPlayerX) < -40 || dy * (cy - portalPlayerY) < -40)
+                return false
+        }
         return true
+    }
     b := IsObject(customBox) ? customBox : (IsSet(statueSearchBox) ? statueSearchBox : robloxWinBox)
     paths := GetPortalImagePaths(fromIdx, toIdx)
     if (paths.Length = 0)
@@ -738,98 +776,110 @@ FindPortalSprite(fromIdx, toIdx, &cx := 0, &cy := 0, customBox := "") {
 ; ==============================================================================
 
 FindWaystoneStatue(&fx := 0, &fy := 0, customBox := "") {
-    global statueSearchBox, robloxWinBox, recoveryImg, recoveryOffImg, recoveryTolerance
-    global recoverySearchPrefix, recoveryOffPrefix, lastMatchedStatueImg
-
-    if !IsSet(recoverySearchPrefix)
-        recoverySearchPrefix := ""
-    if !IsSet(recoveryOffPrefix)
-        recoveryOffPrefix := ""
-
-    defaultBox := IsSet(statueSearchBox) ? statueSearchBox : robloxWinBox
-    b := IsObject(customBox) ? customBox : defaultBox
-    allowTrans := !IsObject(customBox)
-
-    if SearchImageWithCache(recoveryImg, b, recoveryTolerance, &fx, &fy, &recoverySearchPrefix, allowTrans) {
-        lastMatchedStatueImg := recoveryImg
+    global mapOpen, mapViewEpoch
+    if mapOpen
+        return false
+    global statueSearchBox, robloxWinBox, recoveryTolerance, lastMatchedStatueImg
+    global lastWaystoneWidth, lastWaystoneHeight, lastWaystoneScore
+    b := IsObject(customBox) ? customBox : (IsSet(statueSearchBox) ? statueSearchBox : robloxWinBox)
+    ; Poll directly with short transport timeouts; no synchronous health/vision wait.
+    kv := OcrHttpGetKV("/waystone_sprite?async=1&view_epoch=" mapViewEpoch "&x1=" b.x1 "&y1=" b.y1 "&x2=" b.x2 "&y2=" b.y2 "&threshold=" (recoveryTolerance / 100), 60, true)
+    lastWaystoneScore := kv.Has("score") ? Number(kv["score"]) : 0
+    if kv.Has("found") && kv["found"] = "1" && kv.Has("x") && kv.Has("y") {
+        fx := Integer(kv["x"]), fy := Integer(kv["y"])
+        lastWaystoneWidth := Integer(kv["w"]), lastWaystoneHeight := Integer(kv["h"])
+        lastMatchedStatueImg := "waystone"
         return true
-    }
-    if SearchImageWithCache(recoveryOffImg, b, recoveryTolerance, &fx, &fy, &recoveryOffPrefix, allowTrans) {
-        lastMatchedStatueImg := recoveryOffImg
-        return true
-    }
-
-    if (!IsObject(customBox) && recoveryTolerance < 85) {
-        blueTol := Min(90, recoveryTolerance + 25)
-        if SearchImageWithCache(recoveryImg, b, blueTol, &fx, &fy, &recoverySearchPrefix, true) {
-            lastMatchedStatueImg := recoveryImg
-            return true
-        }
-        if SearchImageWithCache(recoveryOffImg, b, blueTol, &fx, &fy, &recoveryOffPrefix, true) {
-            lastMatchedStatueImg := recoveryOffImg
-            return true
-        }
     }
     return false
 }
 
 FindMapIcon(imgPath, box, &fx := 0, &fy := 0, &cachedPrefix := "", extraTol := 0) {
-    global mapTolerance
-    return SearchImageWithCache(imgPath, box, Min(110, mapTolerance + extraTol), &fx, &fy, &cachedPrefix, true)
+    ; Map icons use the cached Shins scanner at exact (*0) variation only.
+    return FastMapIcon(imgPath, box, &fx, &fy)
+}
+
+SetMapOpenState(value) {
+    global mapOpen, mapViewEpoch, f8Session
+    value := !!value
+    if (mapOpen = value)
+        return
+    mapOpen := value
+    mapViewEpoch += 1
+    ; Invalidate both pending responses and retained locks across UI contexts.
+    if IsObject(f8Session) {
+        F8CancelLiveRequest(f8Session)
+        if f8Session.HasOwnProp("liveTracker")
+            f8Session.liveTracker.active := false
+        if f8Session.wardReq
+            f8Session.wardReq.Cancel()
+        f8Session.wardReq := 0
+        f8Session.wardSeen := false
+    }
+    F8RecordEvent("MAP_CONTEXT", "open=" value " view_epoch=" mapViewEpoch)
 }
 
 IsWorldMapOpen(&fx := 0, &fy := 0) {
-    global mapBox, mapOpenImg, mapOpenPrefix, mapArrowImg, mapArrowPrefix
-    if FileExist(mapOpenImg) && FindMapIcon(mapOpenImg, mapBox, &fx, &fy, &mapOpenPrefix)
+    global mapOpen
+    if FastMapHeaderFound() {
+        SetMapOpenState(true)
         return true
-    if FileExist(mapArrowImg)
-        return FindMapIcon(mapArrowImg, mapBox, &fx, &fy, &mapArrowPrefix, 10)
-    return false
+    }
+    ; A missing exact template can be animation, scaling, or occlusion rather
+    ; than closure. Keep the gate closed to live vision until state is known.
+    kv := OcrHttpGetKV("/worldmap_state", 2500)
+    if (kv.Has("ok") && kv["ok"] = "1" && kv.Has("state"))
+        SetMapOpenState(kv["state"] = "open")
+    else
+        SetMapOpenState(true) ; Unknown UI state must not enable a live lock.
+    return mapOpen
 }
 
 OpenWorldMap() {
     global running
+    if !WinActive("ahk_exe RobloxPlayerBeta.exe")
+        return false
     if IsWorldMapOpen()
         return true
+    SetMapOpenState(true)
     SendEvent("m")
-    Loop 16 {
-        Sleep(50)
-        if (!running)
-            break
+    untilTick := GetQpcMs()+200
+    while (running && GetQpcMs() < untilTick) {
         if IsWorldMapOpen()
             return true
+        Sleep(5)
     }
-    return IsWorldMapOpen()
+    return false
 }
 
 CloseWorldMap() {
-    if !IsWorldMapOpen()
+    if !WinActive("ahk_exe RobloxPlayerBeta.exe")
+        return false
+    if !IsWorldMapOpen() {
+        SetMapOpenState(false)
         return true
+    }
+    SetMapOpenState(true)
     SendEvent("m")
-    Loop 10 {
-        Sleep(40)
-        if !IsWorldMapOpen()
+    untilTick := GetQpcMs()+250
+    while GetQpcMs() < untilTick {
+        if !IsWorldMapOpen() {
+            SetMapOpenState(false)
             return true
+        }
+        Sleep(5)
     }
-    if IsWorldMapOpen() {
-        SendEvent("m")
-        Sleep(150)
-    }
-    return !IsWorldMapOpen()
+    return false
 }
 
 FindWaystoneInMapBox(searchRegion, &wcx := 0, &wcy := 0, &wx := 0, &wy := 0, allowBlueFallback := false) {
-    global mapWaystoneImg, mapWaystoneOffImg, mapWayPrefix, mapWayOffPrefix
+    global mapWaystoneImg, mapWayPrefix
     matchedImg := ""
     if FindMapIcon(mapWaystoneImg, searchRegion, &wx, &wy, &mapWayPrefix)
         matchedImg := mapWaystoneImg
-    else if FindMapIcon(mapWaystoneOffImg, searchRegion, &wx, &wy, &mapWayOffPrefix)
-        matchedImg := mapWaystoneOffImg
     else if (allowBlueFallback) {
         if FindMapIcon(mapWaystoneImg, searchRegion, &wx, &wy, &mapWayPrefix, 24)
             matchedImg := mapWaystoneImg
-        else if FindMapIcon(mapWaystoneOffImg, searchRegion, &wx, &wy, &mapWayOffPrefix, 24)
-            matchedImg := mapWaystoneOffImg
     }
 
     if (matchedImg != "") {
@@ -841,9 +891,86 @@ FindWaystoneInMapBox(searchRegion, &wcx := 0, &wcy := 0, &wx := 0, &wy := 0, all
     return false
 }
 
-ScanWorldMapVector(targetMapIdx := -1) {
-    global mapBox, mapArrowImg, mapWaystoneImg, mapWaystoneOffImg, mapArrowPrefix, isScanningMap
-    res := {ok: false, openDetected: false, arrowFound: false, wayFound: false, areaFound: false, ax: 0, ay: 0, acx: 0, acy: 0, wx: 0, wy: 0, dx: 0, dy: 0}
+NewWorldMapScanResult() {
+    ; Coordinate fields always exist; empty means unavailable, not a fabricated 0,0.
+    return {ok:false,openDetected:false,arrowFound:false,wayFound:false,areaFound:false,
+        ax:"",ay:"",acx:"",acy:"",wx:"",wy:"",wcx:"",wcy:"",dx:0,dy:0,
+        coordinateSpace:"screen pixels",reason:"",mapIdx:-1,mapName:"UNKNOWN",mapEvidence:"",
+        mapScale:"",previewPath:"",viewportFound:false}
+}
+
+WorldMapScanResultFromKV(kv) {
+    res := NewWorldMapScanResult()
+    res.openDetected := kv.Has("open") && kv["open"] = "1"
+    res.areaFound := kv.Has("area_found") && kv["area_found"] = "1"
+    res.arrowFound := kv.Has("arrow_found") && kv["arrow_found"] = "1"
+    res.wayFound := kv.Has("way_found") && kv["way_found"] = "1"
+    res.coordinateSpace := kv.Has("coordinate_space") ? kv["coordinate_space"] : "Roblox client pixels"
+    res.reason := kv.Has("error") ? kv["error"] : (kv.Has("reason") ? kv["reason"] : "")
+    res.mapIdx := kv.Has("map_ws") && IsNumber(kv["map_ws"]) ? Integer(kv["map_ws"]) : -1
+    res.mapName := kv.Has("map_name") ? kv["map_name"] : "UNKNOWN"
+    res.mapEvidence := kv.Has("identity_evidence") ? kv["identity_evidence"] : ""
+    res.mapScale := kv.Has("map_scale") ? kv["map_scale"] : ""
+    res.previewPath := kv.Has("crop_path") ? kv["crop_path"] : ""
+    res.viewportFound := kv.Has("viewport_found") && kv["viewport_found"] = "1"
+    if kv.Has("acx") && kv.Has("acy") && IsNumber(kv["acx"]) && IsNumber(kv["acy"]) {
+        res.ax := res.acx := Number(kv["acx"])
+        res.ay := res.acy := Number(kv["acy"])
+    }
+    if kv.Has("wcx") && kv.Has("wcy") && IsNumber(kv["wcx"]) && IsNumber(kv["wcy"]) {
+        res.wx := res.wcx := Number(kv["wcx"])
+        res.wy := res.wcy := Number(kv["wcy"])
+    } else if kv.Has("way_x") && kv.Has("way_y") && IsNumber(kv["way_x"]) && IsNumber(kv["way_y"]) {
+        res.wx := res.wcx := Number(kv["way_x"])
+        res.wy := res.wcy := Number(kv["way_y"])
+    }
+    res.ok := kv.Has("ok") && kv["ok"] = "1" && kv.Has("dx") && kv.Has("dy") && IsNumber(kv["dx"]) && IsNumber(kv["dy"])
+    if res.ok {
+        res.dx := Number(kv["dx"])
+        res.dy := Number(kv["dy"])
+    }
+    return res
+}
+
+ScanWorldMapVector(targetMapIdx := -1, targetKind := "waystone", quadrant := "", preview := false) {
+    global isScanningMap
+    res := NewWorldMapScanResult()
+    ReleaseMoveKeys()
+    if !OcrServerReady() {
+        res.reason := "Local vision service unavailable; current map identity is unknown"
+        return res
+    }
+
+    isScanningMap := true
+    sentOpen := false
+    try {
+        if !IsWorldMapOpen() {
+            SetMapOpenState(true)
+            SendEvent("m")
+            sentOpen := true
+            Sleep(220)
+        }
+        kv := OcrHttpGetKV("/worldmap_vector?target=" targetMapIdx "&kind=" targetKind "&quad=" quadrant "&preview=" (preview ? 1 : 0), preview ? 12000 : 6000)
+        res := WorldMapScanResultFromKV(kv)
+        return res
+    } finally {
+        if (res.openDetected || sentOpen || IsWorldMapOpen()) {
+            SetMapOpenState(true)
+            SendEvent("m")
+            Sleep(140)
+            if IsWorldMapOpen()
+                CloseWorldMap()
+        }
+        if !IsWorldMapOpen()
+            SetMapOpenState(false)
+        isScanningMap := false
+        ReleaseMoveKeys()
+    }
+}
+
+ScanWorldMapVectorLegacy(targetMapIdx := -1) {
+    global mapBox, mapArrowImg, mapWaystoneImg, mapArrowPrefix, isScanningMap
+    res := NewWorldMapScanResult()
 
     windows := GetSortedRobloxWindows()
     if (windows.Length = 0)
@@ -854,28 +981,32 @@ ScanWorldMapVector(targetMapIdx := -1) {
 
     ; OCR/HSV World Map vector path (works without manual World Map PNGs)
     if (OcrServerReady()) {
+        SetMapOpenState(true)
         SendEvent("m")
         Sleep(220)
         kv := OcrHttpGetKV("/worldmap_vector?target=" targetMapIdx)
         if (kv.Has("open") && kv["open"] = "1") {
-            res.openDetected := true
-            res.arrowFound := kv.Has("arrow_found") && (kv["arrow_found"] = "1")
-            res.wayFound   := kv.Has("way_found")   && (kv["way_found"] = "1")
-            res.dx         := kv.Has("dx") ? Integer(kv["dx"]) : 0
-            res.dy         := kv.Has("dy") ? Integer(kv["dy"]) : 0
-            res.ok         := kv.Has("ok") && (kv["ok"] = "1")
+            res := WorldMapScanResultFromKV(kv)
+            SetMapOpenState(true)
             SendEvent("m")
             Sleep(140)
+            if !IsWorldMapOpen()
+                SetMapOpenState(false)
             isScanningMap := false
             if (res.ok)
                 return res
         } else {
+            SetMapOpenState(true)
             SendEvent("m")
             Sleep(140)
+            if !IsWorldMapOpen()
+                SetMapOpenState(false)
         }
     }
 
-    hasWayIcon := FileExist(mapWaystoneImg) || FileExist(mapWaystoneOffImg)
+    res.coordinateSpace := "screen pixels"
+    res.reason := "Local PNG fallback"
+    hasWayIcon := FileExist(mapWaystoneImg)
     if (!FileExist(mapArrowImg) || !hasWayIcon) {
         isScanningMap := false
         return res

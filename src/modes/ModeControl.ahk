@@ -1,20 +1,28 @@
-; ==============================================================================
+﻿; ==============================================================================
 ; SHARED MODE LIFECYCLE (OVERLAY ACTIVATION, STOP ALL, EXIT)
 ; ==============================================================================
 
-ActivateRunOverlay() {
+ActivateRunOverlay(forceHUD := false) {
     global hudEnabled, mainGui
-    if (hudEnabled) {
+    if (forceHUD || hudEnabled) {
         if IsSet(mainGui)
             mainGui.Hide()
-        ShowOverlay()
+        ShowOverlay(forceHUD)
     }
 }
 
 StopAll(reason) {
     global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning
-    global completedLoops, mainGui, isScanningMap
+    global completedLoops, mainGui, isScanningMap, f8Session
     running := false
+    ReleaseMoveKeys()
+    F8RecordStop(reason)
+    if IsObject(f8Session) {
+        if f8Session.wardReq
+            f8Session.wardReq.Cancel()
+    }
+    f8Session := 0
+    F8SetStatus(reason, "STOPPED")
     chaosTestRunning := false
     freeCircleMode := false
     mapCycleMode := false
@@ -42,8 +50,19 @@ StopAll(reason) {
 }
 
 ExitMacro(*) {
-    global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning, isScanningMap
+    global assetPickerActive
+    if assetPickerActive
+        ExitAssetPicker()
+    global running, chaosTestRunning, freeCircleMode, mapCycleMode, shortestPathRunning, manualRecordRunning, isScanningMap, f8Session
     running := false
+    ReleaseMoveKeys()
+    F8RecordStop("Macro exited")
+    if IsObject(f8Session) {
+        if f8Session.wardReq
+            f8Session.wardReq.Cancel()
+    }
+    f8Session := 0
+    F8SetStatus("Macro exited", "STOPPED")
     chaosTestRunning := false
     freeCircleMode := false
     mapCycleMode := false

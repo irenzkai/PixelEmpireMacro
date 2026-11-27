@@ -19,6 +19,14 @@ ToggleMapCycleMode(*) {
         }
         Sleep(60)
 
+        detectedStart := DetectCurrentMapByTopLabel()
+        if (detectedStart < 0 || !IsOnWaystone()) {
+            running := false
+            NavProgress("Map Cycle start needs a recognized map and confirmed waystone prompt")
+            return
+        }
+        currentWaystoneIdx := detectedStart
+
         if (currentWaystoneIdx <= 1)
             cycleDir := 1
         else if (currentWaystoneIdx >= 30)
@@ -177,6 +185,7 @@ FightBossWithF8Cycle(wsIdx, kind := "Boss") {
     wsLabel := waystoneRoutes[wsIdx].label
     bossesHunted += 1
     SoundBeep(1100, 110)
+    TryBossLandmarkRoute(wsIdx)
 
     state := {
         pendingSweeps: 0,
@@ -243,119 +252,81 @@ FightBossWithF8Cycle(wsIdx, kind := "Boss") {
     }
 }
 
+TryBossLandmarkRoute(wsIdx) {
+    global running
+    deadline := A_TickCount + 15000
+    try {
+        Loop 8 {
+            ReleaseMoveKeys()
+            if (!running || A_TickCount >= deadline)
+                return false
+            kv := OcrHttpGetKV("/boss_target", 6000)
+            if (!kv.Has("target_reliable") || kv["target_reliable"] != "1") {
+                reason := kv.Has("reason") ? kv["reason"] : "Boss location endpoint unavailable"
+                NavProgress(reason " -> F8 sweep fallback")
+                return false
+            }
+            if (kv.Has("hp_bar") && kv["hp_bar"] = "1") {
+                NavProgress("Boss HP bar visible: arrival signal -> F8 fight/loot")
+                return true
+            }
+            dx := Integer(kv["dx"])
+            dy := Integer(kv["dy"])
+            keys := []
+            if (Abs(dx) > 5)
+                keys.Push(dx < 0 ? "a" : "d")
+            if (Abs(dy) > 5)
+                keys.Push(dy < 0 ? "w" : "s")
+            if (keys.Length = 0)
+                return true
+            NavProgress("Boss landmark " kv["location"] " -> minimap vector " dx "," dy)
+            HoldKeys(keys, 200)
+        }
+        NavProgress("Boss approach bounded limit -> F8 fallback")
+        return false
+    } finally {
+        ReleaseMoveKeys()
+    }
+}
+
 ExecuteMapTransit(fromIdx, dir) {
     global running, waystoneRoutes, hudStatus
     targetIdx := fromIdx + dir
+    if HasConfiguredConnection(fromIdx,targetIdx)
+        return ExecuteConfiguredConnection(fromIdx,targetIdx)
     legs := GetActiveRouteLegs(fromIdx, targetIdx, &routeSrc)
+    deadline := A_TickCount + 45000
     if (legs.Length = 0)
         return false
-
-    totalMs := GetRouteTotalMs(legs)
-    brakeAfterTick := A_TickCount + Max(1800, Round(totalMs * 0.60))
-    portalScanTick := A_TickCount + Max(1200, Round(totalMs * 0.35))
-
-    targetLabel := waystoneRoutes.Has(targetIdx) ? waystoneRoutes[targetIdx].label : ("WS #" targetIdx)
-    hudStatus := "[" routeSrc "] -> " targetLabel "..."
-
-    inTargetMap := false
-    heldKeys := []
-    for l in legs {
-        if (!running) {
-            ReleaseMoveKeys()
-            return false
-        }
-
-        for oldK in heldKeys {
-            stillHeld := false
-            for newK in l.keys {
-                if (newK = oldK)
-                    stillHeld := true
-            }
-            if (!stillHeld)
-                SendEvent("{" oldK " up}")
-        }
-        for newK in l.keys {
-            alreadyHeld := false
-            for oldK in heldKeys {
-                if (oldK = newK)
-                    alreadyHeld := true
-            }
-            if (!alreadyHeld)
-                SendEvent("{" newK " down}")
-        }
-        heldKeys := l.keys.Clone()
-
-        stepEnd := A_TickCount + l.ms
-        while (A_TickCount < stepEnd && running) {
-            Sleep(25)
-
-            if (A_TickCount >= brakeAfterTick && IsOnWaystone()) {
-                ReleaseMoveKeys()
-                MarkWaystoneOrigin()
-                return true
-            }
-
-            if (!inTargetMap && A_TickCount >= portalScanTick) {
-                if (!IsMapTopLabel(fromIdx) && IsMapTopLabel(targetIdx)) {
-                    inTargetMap := true
-                } else if (FindPortalSprite(fromIdx, targetIdx)) {
-                    ReleaseMoveKeys()
-                    pRes := PathToPortalSprite(fromIdx, targetIdx)
-                    if (pRes = "TARGET_MAP")
-                        inTargetMap := true
-                    break
+    NavProgress("[" routeSrc "] WS" fromIdx " -> WS" targetIdx " (unconfirmed until label changes)")
+    try {
+        for leg in legs {
+            remaining := leg.ms
+            while (running && remaining > 0 && A_TickCount < deadline) {
+                chunk := Min(250, remaining)
+                HoldKeys(leg.keys, chunk)
+                remaining -= chunk
+                ; Expensive vision must execute with keys UP.
+                if IsMapTopLabel(targetIdx) {
+                    NavProgress("Confirmed transition WS" fromIdx " -> WS" targetIdx)
+                    return true
+                }
+                if FindPortalSprite(fromIdx, targetIdx) {
+                    result := PathToPortalSprite(fromIdx, targetIdx)
+                    if (result = "TARGET_MAP")
+                        return true
+                    if (result = "PLAYER_UNKNOWN" || result = "BLOCKED")
+                        return false
                 }
             }
-
-            ; Once inside target map, if Waystone sprite is spotted on screen, go straight to it!
-            if ((inTargetMap || A_TickCount >= brakeAfterTick) && FindWaystoneStatue()) {
-                ReleaseMoveKeys()
-                if (PathToWaystoneSprite())
-                    return true
+            if (!running || A_TickCount >= deadline)
                 break
-            }
         }
-        RecordMoveDisplacement(l.keys, l.ms)
-        if (inTargetMap && IsOnWaystone()) {
-            ReleaseMoveKeys()
-            MarkWaystoneOrigin()
-            return true
-        }
+        NavProgress("Bounded transit ended; checking destination label")
+        return IsMapTopLabel(targetIdx)
+    } finally {
+        ReleaseMoveKeys()
     }
-
-    ReleaseMoveKeys()
-    Sleep(160)
-
-    if (IsOnWaystone()) {
-        MarkWaystoneOrigin()
-        return true
-    }
-
-    curMap := DetectCurrentMapByTopLabel([targetIdx, fromIdx, 3, 5, 7])
-    if (curMap >= 0 && curMap != targetIdx) {
-        if (curMap = fromIdx && FindPortalSprite(fromIdx, targetIdx)) {
-            hudStatus := "Portal spotted in " waystoneRoutes[fromIdx].label " -> Entering..."
-            if (PathToPortalSprite(fromIdx, targetIdx) = "TARGET_MAP") {
-                if (FindWaystoneStatue() && PathToWaystoneSprite())
-                    return true
-                AntiTrapRecovery([], targetIdx)
-                return IsOnWaystone()
-            }
-        }
-        hudStatus := "Wrong Map (" waystoneRoutes[curMap].label ")! Recovering..."
-        if (curMap != fromIdx)
-            RecoverBetweenMapsByGrid(curMap, fromIdx)
-        AntiTrapRecovery([], fromIdx)
-        return false
-    }
-
-    if (running) {
-        hudStatus := "Aligning onto " targetLabel "..."
-        if (FindWaystoneStatue() && PathToWaystoneSprite())
-            return true
-        AntiTrapRecovery([], targetIdx)
-    }
-    return IsOnWaystone()
 }
 
 RunMapCycle() {
@@ -395,15 +366,26 @@ RunMapCycle() {
 
     nextIdx := prevIdx + cycleDir
     detected := DetectCurrentMapByTopLabel([nextIdx, prevIdx])
-    if (detected = nextIdx || ok) {
+    if (detected = nextIdx) {
         currentWaystoneIdx := Max(1, Min(maxWaystoneIdx, nextIdx))
     } else if (detected >= 1) {
         currentWaystoneIdx := detected
     } else {
-        currentWaystoneIdx := Max(1, Min(maxWaystoneIdx, nextIdx))
+        currentWaystoneIdx := prevIdx
+        StopAll("Map transition unconfirmed; retaining WS #" prevIdx)
+        return
     }
 
     RefreshCycleUI()
+
+    if (!ok || !IsOnWaystone()) {
+        NavProgress("Transition checked; recovering only to current confirmed WS" currentWaystoneIdx)
+        AntiTrapRecovery([], currentWaystoneIdx)
+        if !IsOnWaystone() {
+            StopAll("Waystone arrival unconfirmed; transit paused")
+            return
+        }
+    }
 
     if (running && mapCycleMode)
         SetTimer(RunMapCycle, -30)

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "header_threshold": 0.75,
+  "header_scales": [1.0, 0.75, 0.85, 1.15, 1.25, 1.5],
+  "registration_min_inliers": 12,
+  "registration_min_ratio": 0.45,
+  "area_margin": 0.08,
+  "waystone_threshold": 0.72,
+  "waystone_margin": 0.06,
+  "waystone_live_dir": "public/world_map_waystone_live",
+  "waystone_body_box": [0.2, 0.18, 0.6, 0.74],
+  "waystone_scales": [1.0, 0.85, 1.15, 0.75, 1.35, 0.6, 1.6, 0.45, 2.0, 2.4, 3.0],
+  "notes": "Arrow first inside the confirmed World Map viewport. Associate only registered map areas containing that arrow, with label/layout evidence. Configuration target is not current-map identity. All output coordinates are Roblox client pixels."
+}
