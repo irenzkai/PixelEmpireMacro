@@ -14,3 +14,32 @@ __pycache__/
 agent_memory.db*
 /debug_ocr/
 /shortest_routes_log.txt
+
+# Local exported libraries and recovery copies; curated public references stay tracked.
+/public/cache_assets/
+/public/cache_recovery_preview/
+/config/backups/
+
+# Installed tooling and Python environments (retain tool source).
+/.tools/rbxcache/*.exe
+/.venv/
+/venv/
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+*.py[cod]
+
+# Local databases, credentials, and transient locks.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+.env
+.env.*
+!.env.example
+*.lock
+/agent_startup_error.txt
+/ting
+/tingq

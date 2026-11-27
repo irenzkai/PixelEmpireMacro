@@ -1,17 +1,17 @@
-﻿# PixelEmpireMacro — current handoff
+# PixelEmpireMacro — current handoff
 
-**Items 1-5 remain fully manually approved (2026-11-27). User now confirms ward-present F8 movement works, including Very Wide; the supplied SHORT record completes all eight returns using the saved ward image. Preserve that sweep. User now confirms live/World Map recovery works in the previous tested conditions. The new blocked-area backoff/random-sidestep extension awaits manual feedback; see the latest note. Do not start items 7 onward. No automated tests or character control by the agent.**
+**Current status - 2026-11-27:** Items 1-5 remain fully manually approved. The user approves current F8 (item 6) as **usable for now**, including the current recovery work. It occasionally locks briefly onto an obstacle/unrelated object and then drops that false live-waystone lock. Record this as unresolved; final navigation/detection revision follows asset setup and coordinate calibration in item 15. This provisional usability approval does not imply calibrated collision avoidance or final detector accuracy.
 
-Read **`PROJECT_CONTEXT.md` first** in future sessions; inspect only relevant code and preserve existing edits. All previous item 5 pending checks, crop requests and failed results below are historical and superseded by the user's full manual approval. Do not ask to repeat item 5 setup or obtain those references again. `config/manual_workflow.json` now mirrors final item 5 approval and item 6 awaiting manual feedback. Retained earlier failed/pending results are historical, not requests to retest item 5.
+Read this file first and inspect relevant source/diffs. Preserve source, curated references, images, labels, metadata, review choices, local history/settings and recordings. The checklist and current status here supersede pending approvals/recovery caps/next actions in historical implementation notes below. No automated/game tests or character actions by Codex. **This turn: GitHub cleanup and planning documentation only; item 7 is not implemented.**
 
 ## Approved item 5 implementation and next-chat entry points
 
 - **Live waystone and ward prompt:** `src/gui/Actions.ahk:TestWaystoneDetection`; `ocr_vision_server.py:detect_live_waystone`; `scripts/waystone_detection.py:match_waystone`, `match_ward_prompt`, `frames`, `live_body`; `scripts/waystone_body_matching.py:match_stable_body`; `scripts/waystone_tracking.py:WaystoneTracking.region/observe`; `scripts/waystone_worker.py:WaystoneWorker.poll`. One generic live waystone, without lit/unlit classification. Preserve the source sheet `public/waystone_default.png` (four frames), eight original crops in `public/waystone_live/` (12 body references total), `public/ward_prompt.png`, `config/waystone_detector.json` and `config/waystone_live_references.json`. Frame extraction, reference caching, physical-object grouping, bounded local tracking and freshness handling remain part of the approved implementation.
 - **World Map pipeline:** `src/gui/Actions.ahk:TestWorldMapDetection`; `src/VisionWindow.ahk:IsWorldMapOpen`, `OpenWorldMap`, `CloseWorldMap`, `ScanWorldMapVector`, `WorldMapScanResultFromKV`; `ocr_vision_server.py:analyze_world_map`; `navigation_vision.py:registered_map_vector`; `scripts/world_map_detection.py:viewport`, `registered_areas`, `confirm_identity`, `waystone_icon`, `detect_world_map`, `save_preview`; `scripts/world_map_window.py:locate_window`, `tooltip_mask`. Window/header/border/close/zoom anchors bound the viewport; match arrow first inside it, choose a supported containing map area, and find its icon. Hover titles/highlights and neighboring appearance alone do not determine current map. Ambiguity stays UNKNOWN. Keep positions in Roblox client pixels; return vector is waystone center minus arrow centroid.
 - **Arrow and map icon:** `scripts/world_map_arrow.py:arrow_models`, `find_arrows` use all five preserved originals in `public/world_map_arrow_live/`, inventoried in `config/world_map_arrow_references.json`. `scripts/world_map_icon.py:aligned_icon`, `color_model`, `verify_colors` align/mask the two originals in `public/world_map_waystone_live/`, inventoried in `config/world_map_waystone_references.json`. Preserve `public/map_open.png`, `public/map_arrow.png`, single `public/map_waystone.png`, `config/world_map_detector.json`, authoritative `src/MapRoutes.ahk` and `public/maps/map_area/`. No World Map lit/unlit or on/off variant exists. Preview/JSON diagnostics are `.task-output/world_map_preview.png` and `.json`; failed scans can save previews without reporting a successful detection.
-- **Item 6 entry points (implemented, awaiting manual feedback):** F8 binding `src/Hotkeys.ahk:ApplyHotkeys` calls `src/modes/WaystoneMode.ahk:ToggleWaystoneMode`; also inspect `ExecuteSingleWaystoneLeg`, `RunHomingCycle`. Movement/recovery helpers are `src/Movement.ahk:HoldKeys`, `SyncMoveKeys`, `ReleaseMoveKeys`, `ContinuousWaystoneMove`, `ReturnUntilPrompt`, `PathToWaystoneSprite`, `WalkVectorToWaystone`, `AntiTrapRecovery`; live/map consumers include `src/VisionWindow.ahk:IsOnWaystone`, `FindWaystoneStatue`, `ScanWorldMapVector`. These are inspection entry points, not approval of current movement behavior. Preserve configured hotkeys/timings in `waystone_config.ini` and existing routes/recordings/history.
+- **Item 6 entry points (implemented, user-approved as usable for now):** F8 binding `src/Hotkeys.ahk:ApplyHotkeys` calls `src/modes/WaystoneMode.ahk:ToggleWaystoneMode`; also inspect `ExecuteSingleWaystoneLeg`, `RunHomingCycle`. Movement/recovery helpers are `src/Movement.ahk:HoldKeys`, `SyncMoveKeys`, `ReleaseMoveKeys`, `ContinuousWaystoneMove`, `ReturnUntilPrompt`, `PathToWaystoneSprite`, `WalkVectorToWaystone`, `AntiTrapRecovery`; live/map consumers include `src/VisionWindow.ahk:IsOnWaystone`, `FindWaystoneStatue`, `ScanWorldMapVector`. Source inspection confirms these implementation entry points; user approval is provisional usability as described above. Preserve configured hotkeys/timings in `waystone_config.ini` and existing routes/recordings/history.
 
-Item 6 requirements (latest user steering supersedes earlier recovery caps): recovery retries indefinitely until the ward prompt confirms arrival, or the user cancels/focus is lost/an unexpected runtime error stops it. Individual scans, map walks and sight-loss grace remain timed; no overall recovery deadline or retry count. Keep movement keys held while direction is unchanged, avoid repeated release/repress cycles and blocking frequent vision calls, and use fresh detection results. Detect/approach the generic live waystone; use the ward prompt as near-waystone/arrival evidence. When neither sprite nor prompt is available, use repeated World Map arrow-to-waystone checks with two-second live-monitored walks and an internal waystone lock. Map overlap must trigger a live-view/prompt recheck; sprite detection or a return vector alone never confirms arrival. Release keys on stop, focus loss, error or exhausted recovery. Use the existing AHK runtime; safely reload changed runtime components stopped, give one short user-run F8 check and wait. Do not start items 7 onward. No end-to-end F8 arrival approval is implied by item 5; preserve the sample recording's `partial_arrival_unverified` / `mouse_or_text_ui` status.
+Item 6 requirements (latest user steering supersedes earlier recovery caps): recovery retries indefinitely until the ward prompt confirms arrival, or the user cancels/focus is lost/an unexpected runtime error stops it. Individual scans, map walks and sight-loss grace remain timed; no overall recovery deadline or retry count. Keep movement keys held while direction is unchanged, avoid repeated release/repress cycles and blocking frequent vision calls, and use fresh detection results. Detect/approach the generic live waystone; use the ward prompt as near-waystone/arrival evidence. When neither sprite nor prompt is available, use repeated World Map arrow-to-waystone checks with two-second live-monitored walks and an internal waystone lock. Map overlap must trigger a live-view/prompt recheck; sprite detection or a return vector alone never confirms arrival. Release keys on stop, focus loss or error; no overall recovery limit. Use the existing AHK runtime; safely reload changed runtime components stopped, give one short user-run F8 check and wait. Advance only under a new item-specific instruction. Item 5 approval alone does not establish F8 arrival; preserve the sample recording's `partial_arrival_unverified` / `mouse_or_text_ui` status.
 
 ## Location and important files
 
@@ -51,7 +51,7 @@ Source syntax was checked; the agent ran no automated tests, live import tests o
 
 Prior cleanup removed F11 screen-to-cache matching/indexing, Roblox API naming, Undo storage, Reply routing, feature tests/diagnostics, Python survey runners, survey-only actions/data/tracing and guessed landmark mappings. Manual recording was extracted and four route INIs migrated. Public assets, history and working waystone/World Map settings were retained; obsolete outside-public OCR registrations were reset. **Audit current references before deleting anything again.** A previous requested rbxcache reset succeeded; do not reset again without task-specific need/authorization.
 
-Item 5 reference/detection behavior is now fully manually approved. Later notification/navigation items remain unapproved; F8 smoothness and bounded recovery are next and remain unresolved. No supplied ZIP movement reference has been located for this handoff; look for it only when item 6 is reached. There is no VS Code conversation capture: SQLite covers explicit local integration events, older local messages/notes and optional Groq analysis.
+Item 5 reference/detection behavior is fully manually approved; item 6 is usable for now by user approval. Items 7-17 remain planned/unapproved; any existing draft code is not proof of runtime behavior. No supplied ZIP movement reference has been located for this handoff; look for it only when item 6 is reached. There is no VS Code conversation capture: SQLite covers explicit local integration events, older local messages/notes and optional Groq analysis.
 
 ## Ordered checklist
 
@@ -60,14 +60,103 @@ Item 5 reference/detection behavior is now fully manually approved. Later notifi
 3. **COMPLETE - Overlay and recording handoff, manually approved.** GUI Show starts the overlay, F10 works and closing permits reopening. Recording details display correctly and Copy Recording Summary works on click. Preserve the local-only save/copy behavior, local history/provider labels, existing controls and no Reply box. Sample `routes/demonstrations/demo-20261127004058-817750718.ini` stores `duration_ms=7187` (displayed 7.19 s), `completion=partial_arrival_unverified`, and `stop_reason=mouse_or_text_ui`. Approval confirms recording/display/copying only, not arrival. Do not rewrite or upgrade its evidence/status.
 4. **COMPLETE - Reference cleanup, manually approved.** Confirmed earlier test/survey/cache-matching removals before further cleanup. Removed only the unused standalone Tk-window inventory diagnostic `scripts/overlay_inventory.py` after code/config/docs caller checks found no callers. No stale detector/manual-reference registrations remained to delete. Preserved public assets, review records/files, map-area images, local history, recordings, drafts and working configuration. See the historical audit note below.
 5. **COMPLETE - Fully manually approved.** Test Waystone, ward prompt, World Map open, red arrow, current-map identification, map waystone and return vector all approved by the user, including blue and unfamiliar map checks. Preserve all references and the implementation listed above. Earlier failures/pending checks below are historical; no further item 5 test or file request is outstanding.
-6. **IMPLEMENTED - Smooth F8 movement and bounded recovery; awaiting manual feedback.** See the latest implementation note below; do not advance to item 7. Inspect the entry points above and any supplied ZIP if available; keep keys held while direction is unchanged, use fresh nonblocking vision results, bound recovery and release keys on stop/focus loss/completion/error. Approach a live waystone, otherwise navigate by World Map arrow/icon vector; overlap requires a live-view/ward-prompt recheck. Preserve approved item 5 behavior. Safely reload changed runtime stopped, ask for one short user-run F8 check, then wait.
-7. **Pending manual setup — Current map OCR.** User defines top-label OCR region; map recognized/corrected text to predefined WS#–MapName entries, deduplicate labels/references, persist and request confirmation.
-8. **Pending confirmation; draft code exists — Subareas.** Choose existing WS#, TL/TR/BL/BR, name and image from existing folders. Save `WS#_<quadrant>_<SubareaName>` with collision handling and preserved map-area structure. Confirm one saved entry before entering more.
-9. **Pending confirmation; draft code exists — Portals.** Crop individual arches and animated centers from reviewed images. Store source WS#–MapName, portal 1/2 (optional 3/4), explicit destination and source-sheet/crop/frame metadata. Separate arch/center roles; brightness-tolerant normalized color/edge matching and optional day/night references. Expose thresholds/previews; OCR only readable text. Confirm one saved portal and user-checked detection. Never restore screen-to-cache matching.
-10. **Pending runtime verification; draft code exists — Relative directions.** Directed source→destination edges with Up/Down/Left/Right and assigned portal. Start at a confirmed waystone; bounded, interruptible AHK travel detects/approaches that portal and verifies destination. Missing confirmation releases keys and pauses or uses explicitly configured recovery. User initiates and verifies navigation.
-11. **Pending examples/confirmation; draft code exists — Whole-map tooltips.** One supplied crop per WS#–MapName. Local OCR proposes common/rare mobs, minibosses and bosses; use visible symbols/colors as evidence, leave uncertain categories unassigned and allow correction. Save image, raw OCR and confirmed categorized names for the whole map area, not a quadrant.
-12. **Pending examples/confirmation; draft code exists — Boss/miniboss OCR.** Request region and real Coming, Appeared, Already In and Defeated examples individually. Preserve raw OCR; annotate only visible status/name/spawn map or area/defeating player. Learn actual supplied formats, mark missing/uncertain fields, and obtain confirmation for each format.
-13. **Pending examples/confirmation; draft code exists — Tower OCR.** Separate steps for tower presence, current floor/progress and cleared indicators. User supplies regions/examples later; unavailable items remain pending.
+6. **USABLE FOR NOW - F8, manually approved provisionally.** Preserve the confirmed sweep, continuous movement, map/live gate, unlimited recovery, three-fail reverse/perpendicular detour, upward separation, ward-only arrival and key-release/stale-result safeguards. Known issue: occasional transient false live-waystone lock on obstacles/unrelated objects. Final revision is scheduled in item 15 after asset setup and calibration. No further F8 implementation in this turn.
+
+The following is the requested implementation order. Each item/subitem requires its own scope and manual approval; existing drafts remain unverified.
+
+7. Asset organization and crop workflow
+Replace the current permanent-delete workflow with:
+- Deleted: recoverable local storage for unrelated/unwanted exported assets. Let me open/browse this folder and select an image to recover directly.
+- Game Assets: current imported game assets. Support multiple selection to move into Deleted or Reviewed.
+- Reviewed: assets I intend to use. Reference inputs select individual images directly through a file picker.
+- Preserve existing images, labels, metadata, and review state during migration. Previously permanently deleted files may require recovery from cache if still available.
+- Avoid forced Previous/Next review when I can select files directly.
+- One source image can produce multiple named crops without changing the original. Provide zoom/pan for large sheets and allow choosing the destination category.
+- Support animation strips with multiple frames, like the four-frame waystone reference.
+- Create an obstacles folder with an NPC subfolder. NPC animation references will also support tower reentry later.
+- Keep reference identity linked to content hashes, source crops, and animation metadata.
+
+8. Current-map OCR setup
+Let me define the map-label region. I will manually visit each map, run OCR, and select the correct WS#–MapName from the existing list. Save confirmed associations and corrections.
+
+9. Subarea references
+For each map, accept four obstacle-free, high-definition gameplay background images, not World Map screenshots.
+Choose WS#, TL/TR/BL/BR, subarea name, and image. Use the existing naming convention.
+Record these game-layout assumptions for later manual calibration:
+- The combined four-subarea center is the waystone.
+- Each subarea’s center is its boss spawn point.
+- Minibosses spawn near the player within the current subarea.
+Treat these as user-supplied layout rules awaiting per-map verification.
+
+10. Portal references
+First let me crop portal arches and animated center strips into their folders.
+Allow combinations of arch and center references.
+Store explicit source→destination connections for WS0–WS30:
+- Normal adjacent sequence links in both directions.
+- Additional links 0↔3, 0↔5, and 0↔7.
+Reconcile these with existing route data and ask about conflicts.
+Support 1–4 portals per map. My stated pattern is usually two, Eldoria four, and some adjacent maps three, with Whisperwood an exception. Explicit confirmed links determine the saved graph.
+Later calibration assigns portal coordinates as landmarks.
+
+11. Relative directions
+Let me assign Up/Down/Left/Right to each directed portal connection.
+Examples such as 0→1 Left or 1→2 Up are illustrative until I confirm them.
+Use these directions as fallback guidance when calibrated coordinates are unavailable.
+
+12. Whole-map tooltip records
+Import a tooltip crop per WS#–MapName and propose:
+- Common mobs: dot, gray text.
+- Rare mobs: star, yellow text.
+- Minibosses: crossed swords, yellow text.
+- Bosses: skull and bones, red text.
+Let me correct and confirm names/categories. Save image, raw OCR, and confirmed data for future functions.
+
+13. Boss/miniboss notification OCR
+Let me define the notification region and supply real examples.
+Extract Coming/Appeared/Already In/Defeated, mob name, subarea, and defeating player where visible.
+Use confirmed map mob lists and subarea names to assist recognition. Retain raw OCR and uncertainty.
+
+14. Tower OCR and references
+Configure tower presence, floor number/progress, cleared status, and chest-required status.
+Let me provide examples and chest/portal references.
+Record the expected tower layout: an open box-like area, next-floor portal at top-center, boss chest around the center of the TR quadrant. Verify these during manual setup rather than hardcoding guessed coordinates.
+
+15. Coordinate calibration and final F8 revision
+Do prerequisite calibration before final navigation work.
+- Provide a manual calibration tool for map-relative coordinates, landmarks, obstacles, portals, subareas, and waystone center.
+- Save coordinates independently of screen position. Track the transform between map coordinates and the live view, reacquiring it when camera/scale/context changes.
+- Guide me through calibration, show an annotated preview, and provide Copy Calibration Summary for feedback.
+- Complete and manually approve one map’s calibration before proceeding to the next.
+- Distinguish confirmed collision regions from conservative avoidance regions. Trees’ visible canopies are not necessarily solid. Whole-sprite avoidance is an optional conservative starting point and may block valid corridors.
+- Handle overlapping and animated references without treating moving mobs/effects as permanent obstacles.
+- After calibration, revise F8 to navigate smoothly around obstacles using coordinates and approved recovery. Fix transient false-waystone locks without weakening accepted detections indiscriminately.
+- Preserve direction-change, cancellation, stale-result, and key-release safeguards.
+
+Subitem: shortest paths
+After the required maps are calibrated, let me manually verify portal-to-portal routes using the coordinate graph without an unnecessary waystone detour.
+Track approval per directed route until all intended routes are covered.
+
+16. Auto Tower
+Use confirmed tower geometry and indicators:
+- Navigate to the center and sweep a box.
+- On a confirmed cleared floor, handle a required chest before the next-floor portal.
+- Stop after floor 80 is cleared and its chest is collected. Do not enter its onward portal.
+- Use observed indicator changes to confirm progress.
+
+Prerequisite/subitem: death and reentry
+During an active tower run, loss of the in-tower indicator triggers a state recheck. Confirm respawn/Eldoria before loading its calibrated route.
+Let me select the tower NPC animation from obstacles/NPC.
+Navigate to it, interact with E, then use manually configured OCR/image indicators and click targets for the entry dialogs.
+Confirm return to the tower. If reentry fails, stop and report it.
+
+17. Boss Finder
+Route through maps excluding Eldoria, using confirmed shortest paths.
+- Coming/Appeared: go to the reported subarea and travel between its center and the waystone.
+- Miniboss: use the reported/current subarea, consistent with the near-player spawn behavior.
+- Already In: visit all four subarea centers, returning through the map center and respecting obstacles.
+- Defeated: perform two subarea-center↔waystone round trips, then proceed.
+Define deduplication and handling of overlapping events when implementing this item so one persistent banner does not repeatedly create work.
+Allow selecting target maps. Non-selected maps are transit-only. For example, selecting 1 and 30 should use shortest transit routes between them and perform boss-search behavior only in those selected maps.
 
 ## Preserved implementation notes (code exists; manual verification still required)
 
@@ -84,12 +173,29 @@ Item 5 reference/detection behavior is now fully manually approved. Later notifi
 
 ## Working agreement and next action
 
-- Implement **one item at a time**. Safely reload macro/changed helpers as needed, release held keys, leave automation stopped, give a short manual test/request needed input, then **end the turn and wait**.
-- Advance only after the user's confirmation. The user performs runtime tests, surveys and character actions. Do not create/run automated tests, launch live tests or control the character. Ask for screenshots/captures/manual actions when needed.
-- Routine collection, OCR, cropping, recording and reference management stay local. Groq remains optional for small analysis, with no execution/game-input/live-test tools.
-- Read `PROJECT_CONTEXT.md` first in future sessions. Inspect relevant code; do not load past sessions or full SQLite history unless a specific missing detail requires it. Maintain this single current handoff; update `PROJECT_CONTEXT.md` after completed major features.
+- Implement items/subitems individually. Complete prerequisites first and request manual approval before advancing.
+- GUI additions must follow the approved spacious main-window design.
+- I perform runtime tests and character actions. Codex may safely reload changed components with automation stopped, but must not run automated/game tests.
+- Request screenshots, captures, or recordings when needed. Then end the turn and wait.
+- Keep routine processing local. Groq is optional for small analysis tasks.
+- Cache reusable decoded assets, features, OCR configuration, and validated geometry. Invalidate caches when source data or geometry changes. Historical screen positions are not permanent world coordinates.
+- Update PROJECT_CONTEXT.md after major work, keeping paths, current status, approvals, unresolved issues, and the next concrete action concise.
 
-**Next action: stop for a new chat.** Items 1-5 are approved. The next implementation scope is item 6 only: smooth F8 movement and bounded recovery, using the entry points and requirements above. Do not implement, reload or run anything in this documentation-only approval turn. No further item 5 manual check is pending.
+**Next concrete action:** stop and wait after cleanup/documentation. On the user's next implementation instruction, begin item 7 only: inspect current asset/review schemas and propose a lossless Deleted / Game Assets / Reviewed migration before changing storage. No item 7 work, runtime reload or manual recovery test is needed in this documentation-only turn.
+
+## GitHub cleanup and implementation audit - 2026-11-27
+
+Initial working tree/index were clean on `main`, aligned with fetched `origin/main` at `7bba1c12` (accidental push: "partial release only f8 works"). Relevant source and commit diff confirm the implemented v4 map/live gate/epoch invalidation (`State.ahk`, `VisionWindow.ahk`), continuous F8/tracker/blocked/upward recovery (`Movement.ahk`, `WaystoneMode.ahk`), cached Shins map UI (`FastMapScan.ahk`, vendored licensed source), and reusable validated Python map registration/local icon tracking (`world_map_cache.py`, `world_map_detection.py`). These are implementation findings, not new runtime validation or expanded manual approval. Earlier implementation notes below retain detail; their pending statuses and next actions are historical.
+
+Cleanup removes only Git tracking, retaining all local bytes: 134 files under `public/cache_assets/` (131 reviewed exports plus manifest/lock/obsolete collection README), 65 recovery-preview files, two backup manifests under `config/backups/`, the installed `.tools/rbxcache/rbxcache.exe`, and two stray root Git-file-list exports. Source/tool Rust files, curated references under public (including maps and animation strips), current detector/workflow configuration, retained map-label associations, and unrelated work stay tracked. `.gitignore` now excludes those local stores plus environments, databases, secrets files and transient caches. Existing INI ignore policy is retained; local settings/recordings are preserved.
+
+Local security audit scanned 1,619 historical blobs across all fetched local refs for common credential/private-key/token/credential-URL patterns, without outputting values: no matches. This pattern scan cannot prove that arbitrary encoded/unknown secrets are absent; no specific credential rotation is indicated. The only historical blob over 10 MiB is the installed rbxcache executable (20,048,384 bytes). Local audit/integrity inventories are in ignored `.task-output/git_cleanup_*.json`.
+
+A normal cleanup commit is to be pushed to the same `main` branch. Removed files remain accessible in earlier remote history, including the executable, cache exports, manifests and backups; this does not reduce historical clone size. No history rewrite or force push is authorized/performed. If history erasure becomes necessary, explain exact refs/path filtering and obtain approval first. No source/runtime changes, tests, character actions or reload are part of this cleanup.
+
+## Historical implementation and approval records
+
+The entries below preserve earlier evidence and implementation detail. Current status, checklist 6-17 and working agreement above supersede their old pending approvals, bounded-recovery wording and next actions.
 
 **Item 2 recovery history (2026-11-27; manually approved):** Exported hash-verified preview copies of the 60 most recently deleted images (all 60 available) into `public/cache_recovery_preview/20261127_001809_27f9fd/`. Three numbered `contact_sheet_*.jpg` files and `manifest.json` map numbers to original filenames, content hashes and cache IDs. Preview generation changed no deletion tombstones, review states, incoming/reviewed files or cache data. The user subsequently selected preview 001; only that image was restored as recorded below. Retain the previews and all other deletion choices. This was local recovery work, not a cache reset or automated/game test.
 
